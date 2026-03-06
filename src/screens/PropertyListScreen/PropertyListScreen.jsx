@@ -71,7 +71,7 @@ const PropertyListScreen = ({ navigation }) => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      
+
       // filters can be residential / commercial / land / agricultural
       const filters =
         category === "Residential"
@@ -85,7 +85,7 @@ const PropertyListScreen = ({ navigation }) => {
                 : {};
 
       const params = buildSearchParams(category, filters);
-      console.log("Search Params :", params, filters);
+      // console.log("Search Params :", params, filters);
 
       const result = await apiService.category_search(params);
       console.log("Result :", result)
