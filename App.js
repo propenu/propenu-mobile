@@ -7,6 +7,8 @@ import { store } from "./src/redux/store/store";
 import CityDropdown from "./src/components/ui/CityDropDown";
 import { AuthProvider } from "./src/context/AuthContext";
 
+
+// / // "package": "com.anonymous.propenu"
 export default function App() {
   return (
     <Provider store={store}>

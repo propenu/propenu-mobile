@@ -21,13 +21,18 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.anonymous.propenu"
+      "package": "com.propenu.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "@react-native-community/datetimepicker"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "696adb46-ad4c-40a8-8641-21509282ee12"
+      }
+    }
   }
 }
