@@ -34,6 +34,8 @@ const PropertyListScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const { selectedCity } = useCity();
   const [value, setValue] = useState("");
+  const [type, setType] =  useState("sale")
+  
 
   // const fetchData = async () => {
   //   try {
@@ -51,6 +53,11 @@ const PropertyListScreen = ({ navigation }) => {
 
   const buildSearchParams = (category, filters) => {
     const params = { category };
+
+    if(listingTypeValue === "buy"){
+      params.listingType = "sale"
+    }
+    else params.listingType = "rent";
 
     if (filters && Object.keys(filters).length > 0) {
       Object.entries(filters).forEach(([key, value]) => {
@@ -85,10 +92,10 @@ const PropertyListScreen = ({ navigation }) => {
                 : {};
 
       const params = buildSearchParams(category, filters);
-      // console.log("Search Params :", params, filters);
+      console.log("Search Params :", params, filters);
+      setType(params?.listingType)
 
       const result = await apiService.category_search(params);
-      console.log("Result :", result)
       setDetails(Array.isArray(result) ? result : []);
     } catch (error) {
       console.log("Error occurred:", error);
@@ -99,6 +106,7 @@ const PropertyListScreen = ({ navigation }) => {
 
   const total = details?.[0]?.__meta?.total;
   const properties = details?.filter(item => !item.__meta);
+  console.log("properties :",total, properties)
 
   useEffect(() => {
     fetchData();
@@ -159,7 +167,7 @@ const PropertyListScreen = ({ navigation }) => {
 
       {total > 0 && (
         <Text style={styles.lengthText} numberOfLines={1}>
-          {total} Properties for sale{" "}
+          {total} Properties for {type}{" "}
           {selectedCity?.city ? `in ${selectedCity.city}` : ""}
         </Text>
       )}

@@ -14,6 +14,8 @@ import {
   Pressable,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import Entypo from "@expo/vector-icons/Entypo";
+import { postPropertyServices } from "../../../services/postPropertyServices";
 import { useSelector } from "react-redux";
 import { Picker } from "@react-native-picker/picker";
 import { submitDetailsThunk } from "../../../redux/thunk/SubmitPropertyThunk";
@@ -180,12 +182,70 @@ const AgriculturalProfile = () => {
     );
   };
 
+
+    const handleRemoveImage = async (img, index) => {
+      if (img?.uri) {
+        const updatedFiles = files.filter((_, i) => i !== index);
+        setFiles(updatedFiles);
+        return;
+      }
+  
+      if (!draftId) {
+        ToastError("Please refresh and try again.");
+        return;
+      }
+  
+      const serverIndex =
+        agricultural.gallery
+          .slice(0, index + 1)
+          .filter((f) => f.source === "server").length - 1;
+  
+      if (serverIndex < 0) {
+        ToastError("Invalid image index.");
+        return;
+      }
+  
+      try {
+        const res = await postPropertyServices.deleteGalleryImageApi(
+          "agricultural",
+          draftId,
+          serverIndex,
+        );
+      
+        const updatedGallery = agricultural.gallery.filter(
+        (_, i) => i !== serverIndex
+      );
+  
+      console.log(updatedGallery.length,"updatedGallery")
+  
+        if (res?.success) {
+          dispatch(
+            setProfileField({
+              propertyType: "agricultural",
+              key: "gallery",
+              value: updatedGallery,
+            }),
+          );
+        }
+      } catch (err) {
+        const message =
+          err?.message ||
+          err?.response?.data?.message ||
+          "Failed to delete image from server";
+          console.log("Error when deleting image :", err)
+  
+        // ToastError(message);
+      }
+    };
+
   const handleAgriculturalSubmitDetails = () => {
     setShowErrors(true);
 
+    const allImages = [...(agricultural?.gallery || []), ...(files || [])];
+    
     const validationResult = validateAgriculturalProfile(
       agricultural,
-      files.map((f) => f),
+      allImages.map((f) => f),
     );
 
     const ZodErrors = !validationResult.success
@@ -195,7 +255,7 @@ const AgriculturalProfile = () => {
 
     const isFormValid = validationResult.success;
 
-    console.log("validation result agricultural", validationResult);
+    // console.log("validation result agricultural", validationResult);
 
     if (!isFormValid && !draftId) {
       ToastError("Something went wrong");
@@ -219,6 +279,10 @@ const AgriculturalProfile = () => {
         console.log("🔥 FULL ERROR FROM API:", error);
       });
   };
+
+   const allImages = [...(agricultural?.gallery || []), ...(files || [])];
+   console.log(allImages,"allImages")
+
   const Section = ({ title, subtitle, children }) => (
     <View style={styles.section}>
       <Text style={styles.title}>{title}</Text>
@@ -233,9 +297,9 @@ const AgriculturalProfile = () => {
       keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
     >
       <ScrollView
-        style={[styles.container, { paddingBottom: insets.bottom + 16 }]}
+        style={[styles.container]}
         // contentContainerStyle={{ paddingBottom: keyboardOpen ? 135 : 40 }}
-        contentContainerStyle={{ paddingBottom: insets.bottom + 16 }}
+        // contentContainerStyle={{ paddingBottom: insets.bottom + 16 }}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
@@ -574,30 +638,31 @@ const AgriculturalProfile = () => {
 
         {/* Preview images after upload */}
         <Text style={styles.label}>Add photos of your property</Text>
-        <View style={styles.previewContainer}>
-          {files?.length > 0 &&
-            files.map((img, index) => (
+               <View style={styles.previewContainer}>
+          {/* Existing gallery images */}
+          {allImages.map((img, index) => (
+            <View key={index} style={styles.imageWrapper}>
               <Image
                 key={index}
-                source={{ uri: img.uri }}
+                source={{ uri: img.url || img.uri }}
                 style={styles.previewImage}
               />
-            ))}
-          {/* {files.map((img, index) => (
-            <Image
-              key={index}
-              source={{ uri: img.uri }}
-              style={styles.previewImage}
-            />
-          ))} */}
+              <Pressable
+                style={styles.removeIcon}
+                onPress={() => handleRemoveImage(img, index)}
+              >
+                <Entypo name="cross" size={17} color="black" />
+              </Pressable>
+            </View>
+          ))}
         </View>
         {/* Image Upload */}
         <Pressable style={styles.uploadBox} onPress={pickImages}>
           <ImageListIcon width={50} height={40} color="#82D1A3" />
 
-          {files.length > 0 ? (
+          {allImages.length > 0 ? (
             <Text style={styles.uploadText}>
-              {files.length} image(s) selected
+              {allImages.length} image(s) selected
             </Text>
           ) : (
             <View style={styles.uploadContent}>
@@ -833,6 +898,12 @@ const styles = StyleSheet.create({
     marginBottom: 7,
     color: "#374151",
   },
+   previewImage: {
+    width: "100%",
+    borderRadius: 8,
+    height: "100%",
+  },
+
   previewContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -840,14 +911,23 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     marginBottom: 10,
   },
-  previewImage: {
+  imageWrapper: {
     width: "30%",
     height: 100,
     borderRadius: 8,
-    marginRight: 8,
+    marginRight: 10,
     marginBottom: 8,
     borderWidth: 1,
     borderColor: "#ccc",
+    position: "relative",
+  },
+  removeIcon: {
+    position: "absolute",
+    top: 3,
+    right: 3,
+    // backgroundColor: "rgba(133, 57, 57, 0.7)",
+    // borderRadius: 12,
+    // padding: 4,
   },
   uploadBox: {
     borderWidth: 1,

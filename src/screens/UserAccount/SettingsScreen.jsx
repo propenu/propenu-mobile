@@ -7,6 +7,8 @@ import {
   Pressable,
   ScrollView,
   TextInput,
+  Linking,
+  ActivityIndicator,
 } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Feather from "react-native-vector-icons/Feather";
@@ -18,8 +20,10 @@ import { setItem, getItem, clearStorage } from "../../utils/Storage";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-
+import { useQuery } from "@tanstack/react-query";
+import { userServices } from "../../services/userServices";
 import * as Keychain from "react-native-keychain";
+
 const SettingsScreen = () => {
   const { isLoggedIn, updateUserDetails, userDetails, refreshAuth } = useAuth();
   const navigation = useNavigation();
@@ -34,6 +38,11 @@ const SettingsScreen = () => {
 
   // const [image, setImage] = useState("");
   const [image, setImage] = useState(null);
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["membershipHistory"],
+    queryFn: userServices.getMembershipHistory,
+  });
 
   const pickImage = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -71,6 +80,32 @@ const SettingsScreen = () => {
     }
   };
 
+  const formatDate = (date) =>
+    new Date(date).toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+
+  const handleOpenInvoice = async (url) => {
+    try {
+      if (!url) {
+        console.log("Invoice not available");
+        return;
+      }
+
+      const supported = await Linking.canOpenURL(url);
+
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        console.log("Cannot open this invoice");
+      }
+    } catch (error) {
+      console.error("Invoice open error:", error);
+    }
+  };
+
   useEffect(() => {
     const loadImage = async () => {
       const savedImage = await getItem("profileImage");
@@ -93,6 +128,40 @@ const SettingsScreen = () => {
     }
   }, [userDetails]);
 
+  if (isLoading) {
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <ActivityIndicator size="large" color="#27AE60" />
+      <Text>Loading...</Text>
+    </View>;
+  }
+  const StatusBadge = ({ status }) => {
+    const isActive = status === "active";
+
+    return (
+      <View
+        style={[
+          styles.badge,
+          { backgroundColor: isActive ? "#f4f9f6" : "#EBEDEF" },
+        ]}
+      >
+        <View
+          style={[
+            styles.dot,
+            { backgroundColor: isActive ? "#27AE60" : "#DD3355" },
+          ]}
+        />
+        <Text
+          style={{
+            color: isActive ? "#1E7F4B" : "#DD3355",
+            fontSize: 12,
+          }}
+        >
+          {isActive ? "Active" : "Expired"}
+        </Text>
+      </View>
+    );
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {/* Profile Card */}
@@ -110,11 +179,29 @@ const SettingsScreen = () => {
 
         <View>
           <Text style={styles.userName}>{userDetails?.name || "Guest"}</Text>
+
+          <View style={styles.verified}>
+            <MaterialIcons name="verified" size={16} color="#27A361" />
+            <Text style={styles.verifiedText}>KYC Verified</Text>
+          </View>
+
           <Text style={styles.userCity}>
             {userDetails?.city ? userDetails.city : "Hyderabad"}
           </Text>
         </View>
       </View>
+      {/* KYC Verification */}
+      {/* <View style={styles.section}>
+        <Text style={styles.sectionTitle}>KYC Verification</Text>
+
+        <View style={styles.kycCard}>
+          <Text style={styles.kycLabel}>Driving License</Text>
+          <View style={styles.verified}>
+            <MaterialIcons name="verified" size={18} color="#27A361" />
+            <Text style={styles.verifiedText}>Verification done</Text>
+          </View>
+        </View>
+      </View> */}
 
       {/* Personal Information */}
       <View style={styles.section}>
@@ -178,7 +265,6 @@ const SettingsScreen = () => {
                 <Pressable
                   style={styles.saveBtn}
                   onPress={async () => {
-                    console.log("SAVE DATA:", form);
                     await updateUserDetails(form);
                     setIsEditing(false);
                   }}
@@ -190,27 +276,42 @@ const SettingsScreen = () => {
           </View>
         </View>
       </View>
+
+      <ScrollView style={styles.membership}>
+        <Text style={[styles.cardTitle, { paddingTop: 5, paddingLeft: 5 }]}>
+          Membership History
+        </Text>
+        {data?.history?.map((item, index) => (
+          <View key={index} style={styles.membershipRow}>
+            <View style={styles.history}>
+              <Text style={styles.planName}>
+                {item.planName}
+                <Text style={styles.smallText}> ({item.category})</Text>
+              </Text>
+              <StatusBadge status={item.status} />
+            </View>
+            <View style={[styles.history, { paddingTop: 3 }]}>
+              <Text style={styles.date}>
+                Acivated on : {formatDate(item.startDate)} -{" "}
+                {formatDate(item.endDate)}{" "}
+              </Text>
+              <Text style={styles.detailValue}>₹{item.price}/-</Text>
+            </View>
+            <Pressable
+              style={styles.download}
+              onPress={() => handleOpenInvoice(item?.invoiceUrl)}
+            >
+              <AntDesign name="cloud-download" size={16} color="#27AE60" />
+              <Text style={styles.invoiceText}>Invoice</Text>
+            </Pressable>
+          </View>
+        ))}
+      </ScrollView>
       {/* LOGOUT BUTTON */}
-      <Pressable
-        onPress={handleLogout}
-        style={[styles.menuItem]}
-      >
+      {/* <Pressable onPress={handleLogout} style={[styles.menuItem]}>
         <AntDesign name="logout" size={19} color="#E53935" />
         <Text style={[styles.label, styles.logoutLabel]}>Logout</Text>
-      </Pressable>
-
-      {/* KYC Verification */}
-      {/* <View style={styles.section}>
-        <Text style={styles.sectionTitle}>KYC Verification</Text>
-
-        <View style={styles.kycCard}>
-          <Text style={styles.kycLabel}>Driving License</Text>
-          <View style={styles.verified}>
-            <MaterialIcons name="verified" size={18} color="#27A361" />
-            <Text style={styles.verifiedText}>Verification done</Text>
-          </View>
-        </View>
-      </View> */}
+      </Pressable> */}
 
       {/* Footer */}
       {/* <Pressable>
@@ -241,9 +342,9 @@ const InfoField = ({ label, value, editing, onChange }) => (
 export default SettingsScreen;
 const styles = StyleSheet.create({
   container: {
-    padding: 12,
+    padding: 10,
     flex: 1,
-    backgroundColor: "#F9F9F9",
+    backgroundColor: "#fff",
   },
 
   profileCard: {
@@ -254,7 +355,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     marginBottom: 20,
-    elevation: 1,
+    elevation: 2,
   },
 
   avatarWrapper: {
@@ -369,12 +470,13 @@ const styles = StyleSheet.create({
   verified: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: 5,
+    marginTop: 5,
   },
 
   verifiedText: {
     color: "#27A361",
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "500",
   },
 
@@ -404,7 +506,7 @@ const styles = StyleSheet.create({
   },
 
   cancelBtn: {
-    paddingVertical: 8,
+    paddingVertical: 4,
     paddingHorizontal: 16,
     borderRadius: 6,
     borderWidth: 1,
@@ -412,7 +514,7 @@ const styles = StyleSheet.create({
   },
 
   saveBtn: {
-    paddingVertical: 8,
+    paddingVertical: 5,
     paddingHorizontal: 16,
     borderRadius: 6,
     backgroundColor: "#27A361",
@@ -426,6 +528,10 @@ const styles = StyleSheet.create({
   saveText: {
     color: "#fff",
     fontWeight: "600",
+  },
+  cardTitle: {
+    fontWeight: "bold",
+    marginBottom: 10,
   },
   menuItem: {
     flexDirection: "row",
@@ -445,5 +551,69 @@ const styles = StyleSheet.create({
   logoutLabel: {
     color: "#E53935",
     fontWeight: "500",
+  },
+  membership: {
+    marginHorizontal: 5,
+    // padding: 10,
+    borderRadius: 12,
+  },
+  history: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  date: {
+    fontSize: 12,
+    color: "#000",
+  },
+  detailValue: {
+    fontSize: 12,
+    fontWeight: "500",
+  },
+  download: {
+    backgroundColor: "#F1FCF5",
+    flexDirection: "row",
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 12,
+    paddingVertical: 5,
+  },
+  invoiceText: {
+    fontSize: 13,
+    fontWeight: 500,
+    paddingLeft: 5,
+    color: "#27AE60",
+  },
+  membershipRow: {
+    borderRadius: 8,
+    paddingVertical: 10,
+    borderWidth: 1,
+    backgroundColor: "#fff",
+    borderColor: "#eee",
+    padding: 13,
+    marginBottom: 12,
+  },
+  planName: {
+    fontWeight: "600",
+  },
+  smallText: {
+    fontSize: 12,
+    fontWeight: 400,
+    color: "gray",
+  },
+  badge: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 20,
+    marginTop: 6,
+  },
+  dot: {
+    height: 6,
+    width: 6,
+    borderRadius: 3,
+    marginRight: 6,
   },
 });

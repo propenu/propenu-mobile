@@ -1,3 +1,4 @@
+import { tryCatch } from "ramda";
 import { ENV } from "../../config";
 import { API_ROUTES } from "./apiRoutes";
 import * as Keychain from "react-native-keychain";
@@ -107,7 +108,7 @@ export const postPropertyServices = {
 
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data.message || "Something went wrong");
+        throw new Error(data || "Something went wrong");
       }
       return await data;
     } catch (error) {
@@ -130,14 +131,40 @@ export const postPropertyServices = {
         },
       );
       const data = await res.json();
+      console.log("RESSSSSSSSS", data);
+
       if (!res.ok) {
-        throw new Error(data.message || "Something went wrong");
+        throw new Error(data || "Something went wrong");
       }
 
       return await data;
     } catch (error) {
       console.log("🔥 VERIFY API ERROR:", error);
       throw error;
+    }
+  },
+
+  deleteGalleryImageApi: async (category, id, imageIndex) => {
+    const token = await getToken();
+    try {
+      const res = await fetch(
+        `${ENV.BASE_URL}/api/properties/${category}/${id}/gallery/${imageIndex}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw error;
+      }
+
+      return await res.json();
+    } catch (err) {
+      console.log("ERROR", err);
     }
   },
 };

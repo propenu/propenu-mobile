@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, Pressable, StyleSheet, Alert } from "react-native";
+import {
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+  ScrollView,
+  Image,
+} from "react-native";
 import { useSelector } from "react-redux";
 import * as DocumentPicker from "expo-document-picker";
 import { useNavigation } from "@react-navigation/native";
@@ -17,9 +24,12 @@ import { validatePropertyVerify } from "../../../zod/verificationZod/propertyVer
 import { ToastSuccess, ToastInfo, ToastError } from "../../../utils/Toast";
 import Feather from "@expo/vector-icons/Feather";
 import LottieView from "lottie-react-native";
+import TrackPropertyStatus from "./TrackPropertyStatus ";
 
 const VerificationStep = () => {
   const dispatch = useAppDispatch();
+  const [submissionMeta, setSubmissionMeta] = useState(null);
+  const [showTracker, setShowTracker ]= useState(false)
 
   const VERIFICATION_DOCS = [
     {
@@ -87,6 +97,8 @@ const VerificationStep = () => {
     const f = result.assets?.[0];
     if (!f) return;
 
+    console.log("MMMMMMMMMMMM", f.uri, f.name, f.mimeType);
+
     setFiles({
       uri: f.uri,
       name: f.name,
@@ -132,30 +144,93 @@ const VerificationStep = () => {
         payload: formData,
       }),
     )
+      // .unwrap()
+      // .then((res) => {
+      //   setShowConfetti(true);
+      //   console.log("RESPONSE :::", res)
+
+      //   dispatch(setPercentage(res?.data?.completion?.percent));
+      //   ToastSuccess("Property posted successfully");
+      //   dispatch(resetPostProperty());
+      //   setTimeout(() => {
+      //     setShowConfetti(false);
+      //     navigation.navigate("Home");
+      //   }, 3000);
+      // })
+      // .catch((error) => {
+      //   console.log("error when submitting:", error);
+      // });
       .unwrap()
       .then((res) => {
+        console.log("RESPONSE :::", res)
+        ToastSuccess("Property is under review");
+
+        const data = res?.data;
+        const approved = Boolean(res?.verified);
+        const updatedAt = data?.updatedAt || new Date().toISOString();
+        if(res?.success && !res?.verified){
+          setShowTracker(true)
+        }
+
+        setSubmissionMeta({
+          isSubmitted: true,
+          isApproved: approved,
+          submittedAt: data?.createdAt || base?.createdAt || updatedAt,
+          reviewAt: updatedAt,
+          approvedAt: approved ? updatedAt : undefined,
+        });
         setShowConfetti(true);
 
         dispatch(setPercentage(res?.data?.completion?.percent));
-        ToastSuccess("Property posted successfully");
-        dispatch(resetPostProperty());
-        setTimeout(() => {
-          setShowConfetti(false);
-          navigation.navigate("Home");
-        }, 3000);
+        // dispatch(resetPostProperty());
+        // setTimeout(() => {
+        //   setShowConfetti(false);
+        //   navigation.navigate("Home");
+        // }, 3000);
       })
       .catch((error) => {
-        console.log("error when submitting:", error);
+        console.log("ERROR :", error);
+        const errObj =
+          error?.response?.data ??
+          (typeof error === "string" ? { message: error } : error);
+
+        if (errObj?.code === "NO_VALID_PLAN") {
+          ToastError(errObj.message || "Please subscribe to a plan");
+
+          const listingType = propertyProfile?.listingType || "sale";
+
+          const redirectScreen =
+            listingType === "sale" ? "OwnerSellPlans" : "OwnerRentPlans";
+
+          navigation.navigate(redirectScreen);
+
+          return;
+        }
+
+        if (errObj?.code === "PLAN_LIMIT_REACHED") {
+          const listingType = propertyProfile?.listingType || "sale";
+
+          const redirectScreen =
+            listingType === "sale" ? "OwnerSellPlans" : "OwnerRentPlans";
+
+          navigation.navigate(redirectScreen);
+
+          ToastError("Your plan limit is reached");
+          return;
+        }
+
+        // 🔴 Fallback
+       ToastError(errObj?.message || "Verification failed");
       });
   };
   // const existingDoc = propertyProfile?.verificationDocuments?.[0];
-  console.log(
-    "propertyProfile?.verificationDocuments?.[0]",
-    propertyProfile?.verificationDocument,
-  );
+  console.log("propertyProfile?.verificationDocuments?.[0]", propertyProfile?.verificationDocuments?.[0])
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
+      {showTracker ? 
+      <TrackPropertyStatus  submissionMeta={submissionMeta}/>
+      : <>
       <View style={styles.card}>
         <Text style={styles.cardText}>
           Ownership proof verifies properties and prevents duplicates. Buyers
@@ -208,18 +283,12 @@ const VerificationStep = () => {
       })}
 
       {/* FILE PICKER */}
-      {/* <Pressable style={styles.uploadBtn} onPress={pickFile}>
-        <Text style={styles.uploadText}>
-          {files.length ? files[0].name : "Upload Verification Document"}
-        </Text>
-      </Pressable> */}
 
-      {/* Image Upload */}
-      {/* {propertyProfile?.verificationDocument && (
-        <Text style={{ marginBottom: 10, color: "green" }}>
-          Document already uploaded
-        </Text>
-      )} */}
+      {file?.uri && (
+        <View style={styles.previewContainer}>
+          <Image source={{ uri: file.uri }} style={styles.previewImage} />
+        </View>
+      )}
 
       <Pressable style={styles.uploadBox} onPress={pickFile}>
         <ImageListIcon width={50} height={40} color="#82D1A3" />
@@ -268,13 +337,14 @@ const VerificationStep = () => {
           />
         </View>
       )}
-    </View>
+      </>} 
+    </ScrollView>
   );
 };
 export default VerificationStep;
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 15,
+    paddingHorizontal: 12,
   },
   overlay: {
     justifyContent: "center",
@@ -368,6 +438,22 @@ const styles = StyleSheet.create({
     color: "red",
     fontSize: 12,
     marginTop: 6,
+  },
+  previewContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    // justifyContent:"flex-start",
+    flexWrap: "wrap",
+    marginBottom: 10,
+  },
+  previewImage: {
+    width: "30%",
+    height: 100,
+    borderRadius: 8,
+    marginRight: 8,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: "#ccc",
   },
   uploadBox: {
     borderWidth: 1,

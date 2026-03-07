@@ -12,6 +12,8 @@ import {
   Image
 } from "react-native";
 import { useSelector } from "react-redux";
+import Entypo from "@expo/vector-icons/Entypo";
+import { postPropertyServices } from "../../../services/postPropertyServices";
 import { useNavigation } from "@react-navigation/native";
 import { useAppDispatch } from "../../../redux/store/store";
 import { submitDetailsThunk } from "../../../redux/thunk/SubmitPropertyThunk";
@@ -124,6 +126,61 @@ const LandProfile = () => {
     );
   };
 
+    const handleRemoveImage = async (img, index) => {
+      if (img?.uri) {
+        const updatedFiles = files.filter((_, i) => i !== index);
+        setFiles(updatedFiles);
+        return;
+      }
+  
+      if (!draftId) {
+        ToastError("Please refresh and try again.");
+        return;
+      }
+  
+      const serverIndex =
+        land.gallery
+          .slice(0, index + 1)
+          .filter((f) => f.source === "server").length - 1;
+  
+      if (serverIndex < 0) {
+        ToastError("Invalid image index.");
+        return;
+      }
+  
+      try {
+        const res = await postPropertyServices.deleteGalleryImageApi(
+          "land",
+          draftId,
+          serverIndex,
+        );
+      
+        const updatedGallery = land.gallery.filter(
+        (_, i) => i !== serverIndex
+      );
+  
+      console.log(updatedGallery.length,"updatedGallery")
+  
+        if (res?.success) {
+          dispatch(
+            setProfileField({
+              propertyType: "land",
+              key: "gallery",
+              value: updatedGallery,
+            }),
+          );
+        }
+      } catch (err) {
+        const message =
+          err?.message ||
+          err?.response?.data?.message ||
+          "Failed to delete image from server";
+          console.log("Error when deleting image :", err)
+  
+        // ToastError(message);
+      }
+    };
+
 
   const handleLandSubmitDetails = () => {
      setShowErrors(true);
@@ -138,9 +195,13 @@ const LandProfile = () => {
          : [],
      };
  
+
+       const allImages = [...(land?.gallery || []), ...(files || [])];
+     
      const validationResult = validateLandProfile(
        payloadForValidation,
-       files.map((f) => f),
+        allImages.map((f) => f),
+
      );
  
      const ZodErrors = !validationResult.success
@@ -200,6 +261,8 @@ const LandProfile = () => {
       hide.remove();
     };
   }, []);
+
+   const allImages = [...(land?.gallery || []), ...(files || [])];
 
   const SwitchRow = ({ label, value, onChange }) => (
     <View
@@ -426,23 +489,23 @@ const LandProfile = () => {
 
   {/* Preview images after upload */}
         <Text style={styles.label}>Add photos of your property</Text>
-        <View style={styles.previewContainer}>
-           {files?.length > 0 && (
-            files.map((img, index) => (
+               <View style={styles.previewContainer}>
+          {/* Existing gallery images */}
+          {allImages.map((img, index) => (
+            <View key={index} style={styles.imageWrapper}>
               <Image
                 key={index}
-                source={{ uri: img.uri }}
+                source={{ uri: img.url || img.uri }}
                 style={styles.previewImage}
               />
-            ))
-          ) }
-          {/* {files.map((img, index) => (
-            <Image
-              key={index}
-              source={{ uri: img.uri }}
-              style={styles.previewImage}
-            />
-          ))} */}
+              <Pressable
+                style={styles.removeIcon}
+                onPress={() => handleRemoveImage(img, index)}
+              >
+                <Entypo name="cross" size={17} color="black" />
+              </Pressable>
+            </View>
+          ))}
         </View>
         {/* Image Upload */}
         <Pressable style={styles.uploadBox} onPress={pickImages}>
@@ -662,21 +725,36 @@ const styles = StyleSheet.create({
     color: "#15803d",
     fontWeight: "600",
   },
-   previewContainer: {
+  previewImage: {
+    width: "100%",
+    borderRadius: 8,
+    height: "100%",
+  },
+
+  previewContainer: {
     flexDirection: "row",
     alignItems: "center",
     // justifyContent:"flex-start",
     flexWrap: "wrap",
     marginBottom: 10,
   },
-  previewImage: {
+  imageWrapper: {
     width: "30%",
     height: 100,
     borderRadius: 8,
-    marginRight: 8,
+    marginRight: 10,
     marginBottom: 8,
     borderWidth: 1,
     borderColor: "#ccc",
+    position: "relative",
+  },
+  removeIcon: {
+    position: "absolute",
+    top: 3,
+    right: 3,
+    // backgroundColor: "rgba(133, 57, 57, 0.7)",
+    // borderRadius: 12,
+    // padding: 4,
   },
   uploadBox: {
     borderWidth: 1,

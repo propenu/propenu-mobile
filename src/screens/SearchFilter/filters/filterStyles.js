@@ -247,6 +247,10 @@ export default StyleSheet.create({
     fontSize: 12,
     // color:"gray"
   },
+  lableSelectText:{
+    fontSize:13, 
+    fontWeight:500
+  },
 
   activeChip: {
     backgroundColor: "#E9F7EF",

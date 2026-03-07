@@ -86,17 +86,22 @@ export const residentialProfileSchema = z.object({
   /* ===== IMAGES (React Native format) ===== */
   images: z
     .array(
-      z.object({
-        uri: z.string(),
-        name: z.string().optional(),
-        type: z.string().optional(),
-      }),
+      z
+        .object({
+          uri: z.string().optional(),
+          url: z.string().optional(),
+          name: z.string().optional(),
+          type: z.string().optional(),
+        })
+        .refine((data) => data.uri || data.url, {
+          message: "Image must have uri or url",
+        }),
     )
     .min(5, "Upload at least 5 images"),
 });
 
 export const validateResidentialProfile = (residential, images) => {
-  console.log(images, "zod")
+  console.log(images, "zod");
   return residentialProfileSchema.safeParse({
     ...residential,
     images,

@@ -58,28 +58,34 @@ const filterSlice = createSlice({
     // },
 
     setResidentialFilter(state, action) {
-      const { key, value } = action.payload;
+       const { key, value } = action.payload;
+      state.residential[key] = value;
+      // const { key, value } = action.payload;
 
-      const existingValue = state.residential[key];
+      // const existingValue = state.residential[key];
 
-      // if already array → handle multiple selection
-      if (Array.isArray(existingValue)) {
-        if (existingValue.includes(value)) {
-          // remove (unselect)
-          state.residential[key] = existingValue.filter(
-            (item) => item !== value,
-          );
-        } else {
-          // add
-          state.residential[key] = [...existingValue, value];
-        }
-      } else if (existingValue) {
-        // convert single value → array
-        state.residential[key] = [existingValue, value];
-      } else {
-        // first value
-        state.residential[key] = [value];
-      }
+      // // if already array → handle multiple selection
+      // if (Array.isArray(existingValue)) {
+      //   if (existingValue.includes(value)) {
+      //     // remove (unselect)
+      //     const updated = existingValue.filter((item) => item !== value);
+
+      //     if (updated.length === 0) {
+      //       delete state.residential[key]; // remove key if empty
+      //     } else {
+      //       state.residential[key] = updated;
+      //     }
+      //   } else {
+      //     // add
+      //     state.residential[key] = [...existingValue, value];
+      //   }
+      // } else if (existingValue) {
+      //   // convert single value → array
+      //   state.residential[key] = [existingValue, value];
+      // } else {
+      //   // first value
+      //   state.residential[key] = [value];
+      // }
     },
 
     /* -------- Commercial -------- */

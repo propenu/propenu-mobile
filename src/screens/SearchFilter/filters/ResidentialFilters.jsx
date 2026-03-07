@@ -53,8 +53,8 @@ const ResidentialFilters = () => {
 
   const { minBudget, maxBudget, residential, listingTypeValue } = filtersState;
 
-  const { locality, bhk, postedBy } = residential;
-  console.log("residential filters :", bhk, residential);
+  const { locality, bedrooms, listingSource } = residential;
+  console.log("residential filters :", bedrooms, residential);
 
   const inputRef = useRef(null);
   const TOTAL_STEPS = 3;
@@ -80,7 +80,7 @@ const ResidentialFilters = () => {
     Facing: "facing",
     "Verified Properties": "verifiedProperties",
     "Posted Since": "postedSince",
-    "Posted By": "postedBy",
+    "Posted By": "listingSource",
   };
 
   const bhkOptions = [
@@ -104,7 +104,7 @@ const ResidentialFilters = () => {
     return b === "6+ BHK" ? 6 : Number(b.split(" ")[0]);
   };
 
-  const bhkLabel = bhk ? `${bhk}${bhk === 6 ? "+" : ""} BHK` : "BHK";
+  // const bhkLabel = bhk ? `${bhk}${bhk === 6 ? "+" : ""} BHK` : "BHK";
 
   /* -------------------- BUDGET -------------------- */
 
@@ -123,13 +123,17 @@ const ResidentialFilters = () => {
 
   /* -------------------- POSTED BY -------------------- */
 
-  const postedByOptions = ["Owners", "Agents", "Builders"];
+  const postedByOptions = [
+    { label: "Owners", value: "user" },
+    { label: "Agents", value: "agent" },
+    { label: "Builders", value: "builder" },
+  ];
 
   const getSelectedMoreFiltersCount = () => {
     let count = 0;
 
-    Object.values(keyMapping).forEach((key) => {
-      const value = residential[key];
+    Object.values(residential).forEach((value) => {
+      console.log(value, "LLLLLLLL");
 
       if (Array.isArray(value)) {
         count += value.length;
@@ -401,26 +405,27 @@ const ResidentialFilters = () => {
         <View style={filterStyles.toggleContainer}>
           {bhkOptions.map((opt) => {
             const value = getBhkNumber(opt);
+            // const isSelected = bhk?.includes(value);
             return (
               <Pressable
                 key={opt}
                 onPress={() => {
                   dispatch(
                     setResidentialFilter({
-                      key: "bhk",
+                      key: "bedrooms",
                       value,
                     }),
                   );
                 }}
                 style={[
                   filterStyles.bhkData,
-                  bhk === value && filterStyles.activeChip,
+                  bedrooms === value && filterStyles.activeChip,
                 ]}
               >
                 <Text
                   style={[
                     filterStyles.labelText,
-                    bhk === value && filterStyles.activeChipText,
+                    bedrooms === value && filterStyles.activeChipText,
                   ]}
                 >
                   {opt}
@@ -432,32 +437,36 @@ const ResidentialFilters = () => {
 
         <Text style={filterStyles.subTitle}>Posted By</Text>
         <View style={filterStyles.toggleContainer}>
-          {postedByOptions.map((item) => (
-            <Pressable
-              key={item}
-              onPress={() => {
-                dispatch(
-                  setResidentialFilter({
-                    key: "postedBy",
-                    value: item,
-                  }),
-                );
-              }}
-              style={[
-                filterStyles.bhkData,
-                postedBy === item && filterStyles.activeChip,
-              ]}
-            >
-              <Text
+          {postedByOptions.map((item) => {
+            // console.log("item, posted by", item, postedBy);
+            //  const isSelected = postedBy?.includes(item)
+            return (
+              <Pressable
+                key={item.value}
+                onPress={() => {
+                  dispatch(
+                    setResidentialFilter({
+                      key: "listingSource",
+                      value: item.value,
+                    }),
+                  );
+                }}
                 style={[
-                  filterStyles.labelText,
-                  postedBy === item && filterStyles.activeChipText,
+                  filterStyles.bhkData,
+                  listingSource === item.value && filterStyles.activeChip,
                 ]}
               >
-                {item}
-              </Text>
-            </Pressable>
-          ))}
+                <Text
+                  style={[
+                    filterStyles.labelText,
+                    listingSource === item.value && filterStyles.activeChipText,
+                  ]}
+                >
+                  {item.label}
+                </Text>
+              </Pressable>
+            );
+          })}
         </View>
 
         <Pressable

@@ -429,6 +429,7 @@ export const apiService = {
   category_search: async (params) => {
     try {
       const query = new URLSearchParams(params).toString();
+      console.log("`${ENV.BASE_URL}${API_ROUTES.SEARCH.CATEGORY_SEARCH}?${query}`,",`${ENV.BASE_URL}${API_ROUTES.SEARCH.CATEGORY_SEARCH}?${query}`)
 
       const response = await fetch(
         `${ENV.BASE_URL}${API_ROUTES.SEARCH.CATEGORY_SEARCH}?${query}`,

@@ -30,6 +30,10 @@ const TAB_KEY_MAP = {
 };
 
 const categories = ["Residential", "Commercial", "Plot", "Agriculture"];
+const categoriesDropdown = [
+  { label: "Buy", value: "sale" },
+  { label: "Rent / Lease", value: "other" },
+];
 
 const MyProperties = () => {
   const navigation = useNavigation();
@@ -43,6 +47,7 @@ const MyProperties = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [selectedFilter, setSelectedFilter] = useState("All");
+  
 
   // console.log(selectedFilter, "KKKKKKKKKKKKKKKK")
 
@@ -69,13 +74,12 @@ const MyProperties = () => {
           p.address?.toLowerCase().includes(q),
       );
     }
-
-    if (status !== "All") {
-      list = list.filter((p) => p.status === status);
+    if (selectedFilter !== "All") {
+      list = list.filter((p) => p.status === selectedFilter.toLowerCase());
     }
 
     return list;
-  }, [data, activeTab, search, status, listingType]);
+  }, [data, activeTab, search, selectedFilter, listingType]);
 
   if (isLoading) {
     return (
@@ -251,9 +255,8 @@ const MyProperties = () => {
               {[
                 "All",
                 "Active",
-                "Reported",
-                "Subscription Expired",
-                "Deactive",
+                "Draft",
+                "Deactived",
               ].map((item, index) => {
                 const isSelected = selectedFilter === item;
 
@@ -277,9 +280,33 @@ const MyProperties = () => {
                   </Pressable>
                 );
               })}
+                 {categoriesDropdown.map((item, index) => {
+                const isSelected = listingType === item.value;
+
+                return (
+                  <Pressable
+                    key={index}
+                    onPress={() => setListingType(item.value)}
+                    style={[
+                      styles.categoryFilter,
+                      isSelected && styles.activeFilter,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.filterText,
+                        isSelected && styles.activeFilterText,
+                      ]}
+                    >
+                      {item.label}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+
             </ScrollView>
-            {count ? (
-              <Text style={styles.totalCount}>{count} Properties found</Text>
+            {filteredProperties ? (
+              <Text style={styles.totalCount}>{filteredProperties.length} Properties found</Text>
             ) : null}
           </View>
         }
@@ -475,6 +502,16 @@ const styles = StyleSheet.create({
 
   filterText: {
     fontSize: 13,
+  },
+  categoryFilter :{
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+    backgroundColor: "#fff",
+    marginRight: 8,
+    borderWidth:1,
+    borderColor:"#27AE60",
+    marginBottom: 5,
   },
 
   activeFilterText: {

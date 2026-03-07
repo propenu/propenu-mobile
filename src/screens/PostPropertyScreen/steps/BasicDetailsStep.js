@@ -89,7 +89,9 @@ export default function BasicDetailsStep() {
         ? commercial
         : propertyType === "land"
           ? land
-          : propertyType === "agricultural" ? agricultural : null;
+          : propertyType === "agricultural"
+            ? agricultural
+            : null;
 
   const profileData =
     propertyType === "residential"
@@ -98,7 +100,9 @@ export default function BasicDetailsStep() {
         ? commercial
         : propertyType === "land"
           ? land
-          : propertyType === "agricultural" ? agricultural : null;
+          : propertyType === "agricultural"
+            ? agricultural
+            : null;
 
   const validationResult = validateBasicDetails(
     {
@@ -224,7 +228,7 @@ export default function BasicDetailsStep() {
 
   const handleSubmitBasic = () => {
     setShowErrors(true);
-    console.log("isformvalid and draft id checking :", isFormValid, draftId,);
+    console.log("isformvalid and draft id checking :", isFormValid, draftId);
 
     if (!isFormValid || !draftId) {
       console.log("Validation failed", fieldErrors);
@@ -243,7 +247,7 @@ export default function BasicDetailsStep() {
     )
       .unwrap()
       .then((result) => {
-        console.log("Thunk result:",result, result.data.completion.percent);
+        console.log("Thunk result:", result, result.data.completion.percent);
         dispatch(setPercentage(result?.data?.completion?.percent));
 
         ToastSuccess("Basic details submitted successfully");
@@ -267,6 +271,7 @@ export default function BasicDetailsStep() {
     </>
   );
 
+  console.log("RESIDENTIAL  :0", residential.facing);
   return (
     <KeyboardAwareScrollView
       contentContainerStyle={{ flexGrow: 1 }}
@@ -313,7 +318,9 @@ export default function BasicDetailsStep() {
             );
           })}
         </View>
-        {showErrors && fieldErrors?.listingType && (   <Text style={styles.errorText}>{fieldErrors.listingType}</Text>)}
+        {showErrors && fieldErrors?.listingType && (
+          <Text style={styles.errorText}>{fieldErrors.listingType}</Text>
+        )}
 
         {/* Property Type */}
         <Text style={styles.label}>Select your property type</Text>
@@ -612,14 +619,14 @@ export default function BasicDetailsStep() {
                   />
                 ))}
               </View>
-               {fieldErrors?.furnishing ? (
+              {fieldErrors?.furnishing ? (
                 <Text style={styles.errorText}>{fieldErrors.furnishing}</Text>
               ) : null}
 
               <View style={styles.facingDropDown}>
                 <Dropdownui
                   label="Facing"
-                  value={residential.facing || null}
+                  value={residential?.facing || null}
                   onChange={(value) => {
                     dispatch(
                       setProfileField({
@@ -993,7 +1000,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#374151",
     marginBottom: 8,
-    marginTop:15
+    marginTop: 15,
   },
 
   listngTypeRow: {

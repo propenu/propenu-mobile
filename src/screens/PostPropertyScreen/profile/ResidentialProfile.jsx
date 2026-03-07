@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   View,
   Text,
@@ -23,7 +23,7 @@ import {
   prevStep,
   setPercentage,
 } from "../../../redux/slice/PostPropertySlice";
-import { submitPropertyThunk } from "../../../redux/thunk/SubmitPropertyThunk";
+import { postPropertyServices } from "../../../services/postPropertyServices";
 import { useAppDispatch } from "../../../redux/store/store";
 import CounterField from "../../../components/ui/CounterField";
 import Dropdownui from "../../../components/ui/DropDownUI";
@@ -75,7 +75,6 @@ const ResidentialProfile = () => {
   const { residential, propertyType, draftId } = useSelector(
     (state) => state.postProperty,
   );
-  console.log("draft id", draftId)
   const dispatch = useAppDispatch();
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
@@ -164,8 +163,6 @@ const ResidentialProfile = () => {
         })),
       }),
     );
-
-   
   };
 
   useEffect(() => {
@@ -226,12 +223,75 @@ const ResidentialProfile = () => {
     return result.success;
   };
 
+  const handleRemoveImage = async (img, index) => {
+    if (img?.uri) {
+      const updatedFiles = files.filter((_, i) => i !== index);
+      setFiles(updatedFiles);
+      return;
+    }
+
+    if (!draftId) {
+      ToastError("Please refresh and try again.");
+      return;
+    }
+
+    const serverIndex =
+      residential.gallery
+        .slice(0, index + 1)
+        .filter((f) => f.source === "server").length - 1;
+
+    if (serverIndex < 0) {
+      ToastError("Invalid image index.");
+      return;
+    }
+
+    try {
+      const res = await postPropertyServices.deleteGalleryImageApi(
+        "residential",
+        draftId,
+        serverIndex,
+      );
+    
+      const updatedGallery = residential.gallery.filter(
+      (_, i) => i !== serverIndex
+    );
+
+    console.log(updatedGallery.length,"updatedGallery")
+
+      if (res?.success) {
+        dispatch(
+          setProfileField({
+            propertyType: "residential",
+            key: "gallery",
+            value: updatedGallery,
+          }),
+        );
+      }
+    } catch (err) {
+      const message =
+        err?.message ||
+        err?.response?.data?.message ||
+        "Failed to delete image from server";
+        console.log("Error when deleting image :", err)
+
+      // ToastError(message);
+    }
+  };
+
   const handleResidetialDetails = () => {
     setShowErrors(true);
+
+    const allImages = [...(residential?.gallery || []), ...(files || [])];
+
     const validationResult = validateResidentialProfile(
       residential,
-      files.map((f) => f),
+      allImages.map((f) => f),
     );
+
+    // const validationResult = validateResidentialProfile(
+    //   residential,
+    //   files.map((f) => f),
+    // );
 
     const ZodErrors = !validationResult.success
       ? validationResult.error.flatten().fieldErrors
@@ -275,312 +335,334 @@ const ResidentialProfile = () => {
         });
     }
   };
-  const isChecked = residential?.isModularKitchen || false;
+  useEffect(()=>{
+    console.log(files.length,"JJJJ")
+  }, [files])
 
+  const allImages = [...(residential?.gallery || []), ...(files || [])];
+
+  const isChecked = residential?.isModularKitchen || false;
+  console.log(
+    "residentialresidentialresidential",
+    allImages.length,
+    residential.gallery.length,
+  );
+  console.log("gallery:", residential?.gallery);
+  console.log("files:", files);
   return (
-    <KeyboardAwareScrollView
-      style={styles.container}
-      // contentContainerStyle={{ paddingBottom: 40 }}
-      enableOnAndroid
-      extraScrollHeight={20}
-      keyboardShouldPersistTaps="handled"
-      showsVerticalScrollIndicator={false}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      {/* Amenities */}
-      <AmenitiesSelect
-        label="Amenities"
-        options={AMENITIES}
-        value={residential.amenities || []}
-        onChange={(value) =>
-          dispatch(
-            setProfileField({
-              propertyType: "residential",
-              key: "amenities",
-              value,
-            }),
-          )
-        }
-      />
-      {/* Floor Details */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Floor Details</Text>
-        <View style={styles.grid3}>
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Amenities */}
+        <AmenitiesSelect
+          label="Amenities"
+          options={AMENITIES}
+          value={residential.amenities || []}
+          onChange={(value) =>
+            dispatch(
+              setProfileField({
+                propertyType: "residential",
+                key: "amenities",
+                value,
+              }),
+            )
+          }
+        />
+        {/* Floor Details */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Floor Details</Text>
+          <View style={styles.grid3}>
+            <Dropdownui
+              label="Flooring Type"
+              value={residential.flooringType || null}
+              onChange={(value) =>
+                dispatch(
+                  setProfileField({
+                    propertyType: "residential",
+                    key: "flooringType",
+                    value,
+                  }),
+                )
+              }
+              options={FLOORING_TYPES.map((t) => ({
+                value: t,
+                label: t.replace("-", " ").toUpperCase(),
+              }))}
+              placeholder="Select"
+            />
+            <View style={styles.counterGrid}>
+              <View style={styles.parkingItem}>
+                <CounterField
+                  label="Floor Number"
+                  value={residential.floorNumber || 0}
+                  min={0}
+                  onChange={(value) =>
+                    dispatch(
+                      setProfileField({
+                        propertyType: "residential",
+                        key: "floorNumber",
+                        value,
+                      }),
+                    )
+                  }
+                />
+              </View>
+              <View style={styles.parkingItem}>
+                <CounterField
+                  label="Total Floors"
+                  value={residential.totalFloors || 0}
+                  min={0}
+                  onChange={(value) =>
+                    dispatch(
+                      setProfileField({
+                        propertyType: "residential",
+                        key: "totalFloors",
+                        value,
+                      }),
+                    )
+                  }
+                />
+              </View>
+            </View>
+          </View>
+        </View>
+        {/* Parking Details */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Parking Details (Optional)</Text>
+          <View style={styles.grid3}>
+            <Dropdownui
+              label="Parking Type"
+              value={residential.parkingType || null}
+              onChange={(value) =>
+                dispatch(
+                  setProfileField({
+                    propertyType: "residential",
+                    key: "parkingType",
+                    value,
+                  }),
+                )
+              }
+              options={ParkingTypes.map((t) => ({
+                value: t,
+                label: t.toUpperCase(),
+              }))}
+              placeholder="Select"
+            />
+            <View style={styles.counterGrid}>
+              <View style={styles.parkingItem}>
+                <CounterField
+                  label="Two-Wheeler Parking"
+                  value={residential.parkingDetails?.twoWheeler || 0}
+                  min={0}
+                  onChange={(value) =>
+                    dispatch(
+                      setProfileField({
+                        propertyType: "residential",
+                        key: "parkingDetails",
+                        value: {
+                          ...residential.parkingDetails,
+                          twoWheeler: value,
+                        },
+                      }),
+                    )
+                  }
+                />
+              </View>
+              <View style={styles.parkingItem}>
+                <CounterField
+                  label="Four-Wheeler Parking"
+                  value={residential.parkingDetails?.fourWheeler || 0}
+                  min={0}
+                  onChange={(value) =>
+                    dispatch(
+                      setProfileField({
+                        propertyType: "residential",
+                        key: "parkingDetails",
+                        value: {
+                          ...residential.parkingDetails,
+                          fourWheeler: value,
+                        },
+                      }),
+                    )
+                  }
+                />
+              </View>
+            </View>
+          </View>
+        </View>
+        {/* Kitchen Type & Modular */}
+        <View style={styles.row}>
           <Dropdownui
-            label="Flooring Type"
-            value={residential.flooringType || null}
+            label="Kitchen Type"
+            value={residential.kitchenType || null}
             onChange={(value) =>
               dispatch(
                 setProfileField({
                   propertyType: "residential",
-                  key: "flooringType",
+                  key: "kitchenType",
                   value,
                 }),
               )
             }
-            options={FLOORING_TYPES.map((t) => ({
+            options={KITCHEN_TYPES.map((t) => ({
               value: t,
               label: t.replace("-", " ").toUpperCase(),
             }))}
             placeholder="Select"
           />
-          <View style={styles.counterGrid}>
-            <View style={styles.parkingItem}>
-              <CounterField
-                label="Floor Number"
-                value={residential.floorNumber || 0}
-                min={0}
-                onChange={(value) =>
-                  dispatch(
-                    setProfileField({
-                      propertyType: "residential",
-                      key: "floorNumber",
-                      value,
-                    }),
-                  )
-                }
-              />
-            </View>
-            <View style={styles.parkingItem}>
-              <CounterField
-                label="Total Floors"
-                value={residential.totalFloors || 0}
-                min={0}
-                onChange={(value) =>
-                  dispatch(
-                    setProfileField({
-                      propertyType: "residential",
-                      key: "totalFloors",
-                      value,
-                    }),
-                  )
-                }
-              />
-            </View>
-          </View>
         </View>
-      </View>
-      {/* Parking Details */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Parking Details (Optional)</Text>
-        <View style={styles.grid3}>
-          <Dropdownui
-            label="Parking Type"
-            value={residential.parkingType || null}
-            onChange={(value) =>
+
+        <View style={styles.modularKitchen}>
+          <Text style={styles.modularKitchenText}>Modular Kitchen</Text>
+
+          <Pressable
+            onPress={() =>
               dispatch(
                 setProfileField({
                   propertyType: "residential",
-                  key: "parkingType",
-                  value,
+                  key: "isModularKitchen",
+                  value: !isChecked,
                 }),
               )
             }
-            options={ParkingTypes.map((t) => ({
-              value: t,
-              label: t.toUpperCase(),
-            }))}
-            placeholder="Select"
-          />
-          <View style={styles.counterGrid}>
-            <View style={styles.parkingItem}>
-              <CounterField
-                label="Two-Wheeler Parking"
-                value={residential.parkingDetails?.twoWheeler || 0}
-                min={0}
-                onChange={(value) =>
-                  dispatch(
-                    setProfileField({
-                      propertyType: "residential",
-                      key: "parkingDetails",
-                      value: {
-                        ...residential.parkingDetails,
-                        twoWheeler: value,
-                      },
-                    }),
-                  )
-                }
-              />
+          >
+            <View style={styles.modular}>
+              <Text style={styles.smallText}>Available</Text>
+
+              <View style={[styles.checkbox, isChecked && styles.checked]}>
+                {isChecked && <Entypo name="check" size={14} color="white" />}
+              </View>
             </View>
-            <View style={styles.parkingItem}>
-              <CounterField
-                label="Four-Wheeler Parking"
-                value={residential.parkingDetails?.fourWheeler || 0}
-                min={0}
-                onChange={(value) =>
-                  dispatch(
-                    setProfileField({
-                      propertyType: "residential",
-                      key: "parkingDetails",
-                      value: {
-                        ...residential.parkingDetails,
-                        fourWheeler: value,
-                      },
-                    }),
-                  )
-                }
+          </Pressable>
+        </View>
+        <Text style={styles.label}>Add photos of your property</Text>
+        <View style={styles.previewContainer}>
+          {/* Existing gallery images */}
+          {allImages.map((img, index) => (
+            <View key={index} style={styles.imageWrapper}>
+              <Image
+                key={index}
+                source={{ uri: img.url || img.uri }}
+                style={styles.previewImage}
               />
+              <Pressable
+                style={styles.removeIcon}
+                onPress={() => handleRemoveImage(img, index)}
+              >
+                <Entypo name="cross" size={17} color="black" />
+              </Pressable>
             </View>
+          ))}
+        </View>
+        {/* Image Upload */}
+        <Pressable style={styles.uploadBox} onPress={pickImages}>
+          <ImageListIcon width={50} height={40} color="#82D1A3" />
+
+          {residential?.gallery?.length > 0 || files.length > 0 ? (
+            <Text style={styles.uploadText}>
+              {allImages?.length} image(s) selected
+            </Text>
+          ) : (
+            <View style={styles.uploadContent}>
+              <Text style={styles.uploadText}>
+                Tap to upload property images
+              </Text>
+
+              <Text style={styles.uploadText}>
+                Max 5 photos upto size 10 MB • png, jpg
+              </Text>
+            </View>
+          )}
+          <Text style={styles.uploadButton}>Upload photos</Text>
+        </Pressable>
+        {showErrors && fieldErrors?.images ? (
+          <Text style={styles.errorText}>{fieldErrors?.images}</Text>
+        ) : null}
+        <View style={[styles.warning]}>
+          <Ionicons name="warning" size={17} color="orange" />
+          <Text style={[styles.smallText]}>
+            Postings with no photos attract less attention
+          </Text>
+        </View>
+        {/* Price Negotiable */}
+        <View style={styles.negotiableContainer}>
+          <View>
+            <Text style={styles.label}>Is the price negotiable?</Text>
+            <Text style={styles.smallText}>
+              Enable this if you are open to offers from buyers
+            </Text>
+          </View>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
+            <Text
+              style={{
+                color: residential?.isPriceNegotiable ? "green" : "gray",
+              }}
+            >
+              {residential?.isPriceNegotiable ? "YES" : "NO"}
+            </Text>
+            <Toggle
+              enabled={residential?.isPriceNegotiable || false}
+              onChange={(val) =>
+                dispatch(
+                  setProfileField({
+                    propertyType: "residential",
+                    key: "isPriceNegotiable",
+                    value: val,
+                  }),
+                )
+              }
+            />
           </View>
         </View>
-      </View>
-      {/* Kitchen Type & Modular */}
-      <View style={styles.row}>
-        <Dropdownui
-          label="Kitchen Type"
-          value={residential.kitchenType || null}
+        {/* Property Description */}
+        <TextArea
+          label="Property Description"
+          value={residential.description || ""}
+          placeholder="e.g. Spacious 3 BHK apartment with east-facing balcony, covered parking, power backup, and close to IT parks."
+          maxLength={500}
           onChange={(value) =>
             dispatch(
               setProfileField({
                 propertyType: "residential",
-                key: "kitchenType",
+                key: "description",
                 value,
               }),
             )
           }
-          options={KITCHEN_TYPES.map((t) => ({
-            value: t,
-            label: t.replace("-", " ").toUpperCase(),
-          }))}
-          placeholder="Select"
         />
-      </View>
-
-      <View style={styles.modularKitchen}>
-        <Text style={styles.modularKitchenText}>Modular Kitchen</Text>
-
-        <Pressable
-          onPress={() =>
-            dispatch(
-              setProfileField({
-                propertyType: "residential",
-                key: "isModularKitchen",
-                value: !isChecked,
-              }),
-            )
-          }
-        >
-          <View style={styles.modular}>
-            <Text style={styles.smallText}>Available</Text>
-
-            <View style={[styles.checkbox, isChecked && styles.checked]}>
-              {isChecked && <Entypo name="check" size={14} color="white" />}
-            </View>
-          </View>
-        </Pressable>
-      </View>
-      <Text style={styles.label}>Add photos of your property</Text>
-      <View style={styles.previewContainer}>
-        {files.map((img, index) => (
-          <Image
-            key={index}
-            source={{ uri: img.uri }}
-            style={styles.previewImage}
-          />
-        ))}
-      </View>
-      {/* Image Upload */}
-      <Pressable style={styles.uploadBox} onPress={pickImages}>
-        <ImageListIcon width={50} height={40} color="#82D1A3" />
-
-        {files.length > 0 ? (
-          <Text style={styles.uploadText}>
-            {files.length} image(s) selected
-          </Text>
-        ) : (
-          <View style={styles.uploadContent}>
-            <Text style={styles.uploadText}>
-              Tap to upload property images
-            </Text>
-
-            <Text style={styles.uploadText}>
-              Max 5 photos upto size 10 MB • png, jpg
-            </Text>
-          </View>
-        )}
-        <Text style={styles.uploadButton}>Upload photos</Text>
-      </Pressable>
-      {showErrors && fieldErrors?.images ? (
-        <Text style={styles.errorText}>{fieldErrors?.images}</Text>
-      ) : null}
-      <View style={[styles.warning]}>
-        <Ionicons name="warning" size={17} color="orange" />
-        <Text style={[styles.smallText]}>
-          Postings with no photos attract less attention
-        </Text>
-      </View>
-      {/* Price Negotiable */}
-      <View style={styles.negotiableContainer}>
         <View>
-          <Text style={styles.label}>Is the price negotiable?</Text>
-          <Text style={styles.smallText}>
-            Enable this if you are open to offers from buyers
-          </Text>
+          {showErrors && fieldErrors?.description ? (
+            <Text style={styles.errorText}>{fieldErrors?.description}</Text>
+          ) : null}
         </View>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
-          <Text
-            style={{
-              color: residential?.isPriceNegotiable ? "green" : "gray",
-            }}
+
+        {/* Continue */}
+        <View style={styles.btnOptions}>
+          <Pressable
+            style={styles.backButton}
+            onPress={() => dispatch(prevStep())}
           >
-            {residential?.isPriceNegotiable ? "YES" : "NO"}
-          </Text>
-          <Toggle
-            enabled={residential?.isPriceNegotiable || false}
-            onChange={(val) =>
-              dispatch(
-                setProfileField({
-                  propertyType: "residential",
-                  key: "isPriceNegotiable",
-                  value: val,
-                }),
-              )
-            }
-          />
+            <Text style={styles.backButtonText}>Back</Text>
+          </Pressable>
+          <Pressable
+            style={styles.button}
+            onPress={handleResidetialDetails}
+            // if (isFormValid) {
+            //   console.log("Location Data:", base);
+            //   dispatch(nextStep());
+            // }
+          >
+            <Text style={styles.buttonText}>Continue</Text>
+          </Pressable>
         </View>
-      </View>
-      {/* Property Description */}
-      <TextArea
-        label="Property Description"
-        value={residential.description || ""}
-        placeholder="e.g. Spacious 3 BHK apartment with east-facing balcony, covered parking, power backup, and close to IT parks."
-        maxLength={500}
-        onChange={(value) =>
-          dispatch(
-            setProfileField({
-              propertyType: "residential",
-              key: "description",
-              value,
-            }),
-          )
-        }
-      />
-      <View>
-        {showErrors && fieldErrors?.description ? (
-          <Text style={styles.errorText}>{fieldErrors?.description}</Text>
-        ) : null}
-      </View>
-    
-        
-      {/* Continue */}
-      <View style={styles.btnOptions}>
-        <Pressable
-          style={styles.backButton}
-          onPress={() => dispatch(prevStep())}
-        >
-          <Text style={styles.backButtonText}>Back</Text>
-        </Pressable>
-        <Pressable
-          style={styles.button}
-          onPress={handleResidetialDetails}
-          // if (isFormValid) {
-          //   console.log("Location Data:", base);
-          //   dispatch(nextStep());
-          // }
-        >
-          <Text style={styles.buttonText}>Continue</Text>
-        </Pressable>
-      </View>
-    </KeyboardAwareScrollView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -588,7 +670,7 @@ export default ResidentialProfile;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     paddingHorizontal: 10,
     paddingVertical: 3,
   },
@@ -792,6 +874,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     // gap: 10,
   },
+  previewImage: {
+    width: "100%",
+    borderRadius: 8,
+    height: "100%",
+  },
+
   previewContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -799,14 +887,23 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     marginBottom: 10,
   },
-  previewImage: {
+  imageWrapper: {
     width: "30%",
     height: 100,
     borderRadius: 8,
-    marginRight: 8,
+    marginRight: 10,
     marginBottom: 8,
     borderWidth: 1,
     borderColor: "#ccc",
+    position: "relative",
+  },
+  removeIcon: {
+    position: "absolute",
+    top: 3,
+    right: 3,
+    // backgroundColor: "rgba(133, 57, 57, 0.7)",
+    // borderRadius: 12,
+    // padding: 4,
   },
   negotiableContainer: {
     flexDirection: "row",
