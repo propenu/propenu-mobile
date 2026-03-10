@@ -66,8 +66,9 @@ export const postPropertyServices = {
     }
   },
 
-  BasicDetailsStep: async (category, id, step, data) => {
+  BasicDetailsStep: async (category, id, step, payload) => {
     const token = await getToken();
+    console.log("@@@@@@@@", category, id, step, payload);
 
     try {
       const response = await fetch(
@@ -78,15 +79,17 @@ export const postPropertyServices = {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(data),
+          body: JSON.stringify(payload),
         },
       );
-      const data = await response.json();
+
+      const result = await response.json();
+
       if (!response.ok) {
-        throw new Error(data.message || "Something went wrong");
+        throw new Error(result.message || "Something went wrong");
       }
 
-      return await data;
+      return result;
     } catch (error) {
       console.log("Error in basic details step:", error);
     }

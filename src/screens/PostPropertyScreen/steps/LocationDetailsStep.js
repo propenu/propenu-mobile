@@ -87,6 +87,7 @@ const LocationDetailsStep = () => {
     const data = search(numericValue);
     if (!data || !data.length) return;
     const pin = data[0];
+    console.log("PIN :", pin)
      dispatch(
       setBaseField({
         key: "state",
@@ -116,7 +117,7 @@ const LocationDetailsStep = () => {
     setShowErrors(true);
 
     if (!isFormValid || !draftId) return;
-
+      console.log("BASE :", base)
     dispatch(
       submitLocationThunk({
         category: propertyType,
@@ -127,6 +128,7 @@ const LocationDetailsStep = () => {
     )
       .unwrap()
       .then((result) => {
+        console.log("REsult :", result)
         dispatch(setPercentage(result?.data?.completion?.percent));
         ToastSuccess("Location details submitted successfully");
         dispatch(nextStep());
@@ -181,12 +183,12 @@ const LocationDetailsStep = () => {
           rows={4}
           maxLength={500}
           onChange={(value) =>
-            dispatch(
-              setBaseField({
-                key: "address",
-                value: formatToTitleCase(value),
-              }),
-            )
+          dispatch(
+            setBaseField({
+              key: "address",
+              value: formatToTitleCase(value),
+            }),
+          )
           }
           error={getCustomError("address", "Enter property address")}
         />

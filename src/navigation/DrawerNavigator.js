@@ -410,6 +410,7 @@ const CustomDrawerContent = ({ navigation, state }) => {
             );
           })}
           {/* {userDetails?.roleName !== "user" && ( */}
+          {isLoggedIn && (
             <Pressable
               onPress={handleLogout}
               style={[styles.menuItem, styles.logoutItem]}
@@ -417,6 +418,7 @@ const CustomDrawerContent = ({ navigation, state }) => {
               <AntDesign name="logout" size={19} color="#E53935" />
               <Text style={[styles.label, styles.logoutLabel]}>Logout</Text>
             </Pressable>
+          )}
           {/* )} */}
 
           {/*--------------------Bottom card---------------------- */}
