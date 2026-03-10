@@ -28,7 +28,7 @@ import CounterField from "../../../components/ui/CounterField";
 import Dropdownui from "../../../components/ui/DropDownUI";
 import Toggle from "../../../components/ui/ToggleSwitch";
 import TextArea from "../../../components/ui/TextArea";
-
+import AmenitiesSelect from "./AmenitiesSelect";
 import { setFiles as setFileStoreFiles } from "../../../lib/FileStore";
 import { ImageListIcon } from "../../../../assets/svg/Logo";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -327,6 +327,21 @@ const AgriculturalProfile = () => {
             </View>
           </View>
         </View>
+        {/* Amenities */}
+        <AmenitiesSelect
+          label="Amenities"
+          options={AGRICULTURE_AMENITIES}
+          value={agricultural.amenities || []}
+          onChange={(value) =>
+            dispatch(
+              setProfileField({
+                propertyType: "agricultural",
+                key: "amenities",
+                value,
+              }),
+            )
+          }
+        />
 
         <View>
           <Text style={styles.sectionTitle}>Soil & Irrigation</Text>

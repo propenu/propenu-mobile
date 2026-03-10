@@ -28,7 +28,7 @@ import { useAppDispatch } from "../../../redux/store/store";
 import CounterField from "../../../components/ui/CounterField";
 import Dropdownui from "../../../components/ui/DropDownUI";
 import AmenitiesSelect from "./AmenitiesSelect";
-import { AMENITIES } from "../constants/amenities";
+import { RESIDENTIAL_AMENITIES } from "../constants/amenities";
 import Toggle from "../../../components/ui/ToggleSwitch";
 import InputField from "../../../components/ui/InputField";
 import TextArea from "../../../components/ui/TextArea";
@@ -251,12 +251,12 @@ const ResidentialProfile = () => {
         draftId,
         serverIndex,
       );
-    
-      const updatedGallery = residential.gallery.filter(
-      (_, i) => i !== serverIndex
-    );
 
-    console.log(updatedGallery.length,"updatedGallery")
+      const updatedGallery = residential.gallery.filter(
+        (_, i) => i !== serverIndex,
+      );
+
+      console.log(updatedGallery.length, "updatedGallery");
 
       if (res?.success) {
         dispatch(
@@ -272,7 +272,7 @@ const ResidentialProfile = () => {
         err?.message ||
         err?.response?.data?.message ||
         "Failed to delete image from server";
-        console.log("Error when deleting image :", err)
+      console.log("Error when deleting image :", err);
 
       // ToastError(message);
     }
@@ -335,9 +335,9 @@ const ResidentialProfile = () => {
         });
     }
   };
-  useEffect(()=>{
-    console.log(files.length,"JJJJ")
-  }, [files])
+  useEffect(() => {
+    console.log(files.length, "JJJJ");
+  }, [files]);
 
   const allImages = [...(residential?.gallery || []), ...(files || [])];
 
@@ -362,7 +362,7 @@ const ResidentialProfile = () => {
         {/* Amenities */}
         <AmenitiesSelect
           label="Amenities"
-          options={AMENITIES}
+          options={RESIDENTIAL_AMENITIES}
           value={residential.amenities || []}
           onChange={(value) =>
             dispatch(

@@ -1,6 +1,17 @@
-import React, { useState } from "react";
-import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
-import Entypo from "@expo/vector-icons/Entypo";
+import React, { useMemo, useState } from "react";
+import {
+  View,
+  Text,
+  Pressable,
+  Modal,
+  FlatList,
+  Image,
+  ScrollView,
+  StyleSheet,
+} from "react-native";
+import { AMENITY_ICONS } from "../constants/amenityIcons";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Entypo from '@expo/vector-icons/Entypo';
 const AmenitiesSelect = ({
   label = "Amenities",
   value = [],
@@ -9,6 +20,16 @@ const AmenitiesSelect = ({
   error,
 }) => {
   const [open, setOpen] = useState(false);
+
+  const groupedAmenities = useMemo(() => {
+    const grouped = {};
+    options.forEach((item) => {
+      const category = item.category || "Other";
+      if (!grouped[category]) grouped[category] = [];
+      grouped[category].push(item);
+    });
+    return grouped;
+  }, [options]);
 
   const toggleAmenity = (amenity) => {
     const exists = value.some((a) => a.key === amenity.key);
@@ -20,190 +41,223 @@ const AmenitiesSelect = ({
     }
   };
 
+  const renderAmenity = ({ item }) => {
+    const checked = value.some((a) => a.key === item.key);
+    const Icon = AMENITY_ICONS[item.key];
+    const AlternateImage = AMENITY_ICONS["security"]
+
+    return (
+      <Pressable
+        onPress={() => toggleAmenity(item)}
+        style={[
+          styles.amenityCard,
+          checked ? styles.selectedAmenity : styles.unselectedAmenity,
+        ]}
+      >
+        {Icon ? (
+          // <Image source={{ uri: item?.icon }} style={styles.icon} />
+          <Icon width={24} height={24} />
+        ) :  <AlternateImage width={24} height={24} />}
+
+        <Text style={[styles.amenityText, checked && styles.selectedText]}>
+          {item.title}
+        </Text>
+      </Pressable>
+    );
+  };
+
   return (
-    <View style={styles.wrapper}>
-      {/* Label */}
+    <View style={{ marginBottom: 15 }}>
       <Text style={styles.label}>{label}</Text>
 
-      {/* Input Box */}
       <Pressable
-        onPress={() => setOpen(!open)}
-        style={[
-          styles.inputBox,
-          error ? styles.errorBorder : styles.normalBorder,
-        ]}
+        style={[styles.selector, error && { borderColor: "red" }]}
+        onPress={() => setOpen(true)}
       >
         {value.length === 0 ? (
           <Text style={styles.placeholder}>Select amenities</Text>
         ) : (
-          <View style={styles.chipsContainer}>
-            {value.map((amenity, idx) => (
-              <View
-                key={amenity.key ?? amenity.title ?? idx}
-                style={styles.chip}
-              >
+          <View style={styles.selectedContainer}>
+            {value.map((amenity) => (
+              <View key={amenity.key} style={styles.selectedChip}>
                 <Text style={styles.chipText}>{amenity.title}</Text>
-                <Pressable onPress={() => toggleAmenity(amenity)}>
-                  <Entypo name="cross" size={15} color="#27AE60" />
-                </Pressable>
               </View>
             ))}
           </View>
         )}
       </Pressable>
 
-      {/* Dropdown */}
-      {open && (
-        <ScrollView style={styles.dropdown} nestedScrollEnabled>
-          <View style={styles.grid}>
-            {options.map((amenity, idx) => {
-              const checked = value.some((a) => a.key === amenity.key);
+      <Modal visible={open} transparent animationType="fade">
+        <View style={styles.overlay}>
+          <View style={styles.modalWrapper}>
+            <View style={styles.modalContainer}>
+              <View style={styles.modalHeader}>
+                <View>
+                  <Text style={styles.modalTitle}>Add property amenities</Text>
+                  <Text style={styles.selectedCount}>
+                    {value.length} selected
+                  </Text>
+                </View>
 
-              return (
-                <Pressable
-                  key={amenity.key ?? amenity.title ?? idx}
-                  onPress={() => toggleAmenity(amenity)}
-                  style={[styles.option, checked && styles.optionChecked]}
-                >
-                  <View
-                    style={[styles.checkbox, checked && styles.checkboxChecked]}
-                  >
-                    {checked ? (
-                      <Entypo name="check" size={12} color="white" />
-                    ) : null}
-                  </View>
-                  <Text style={styles.optionText}>{amenity.title}</Text>
+                <Pressable onPress={() => setOpen(false)} hitSlop={10}>
+                 <Entypo name="cross" size={25} color="black" />
                 </Pressable>
-              );
-            })}
-          </View>
-        </ScrollView>
-      )}
+              </View>
 
-      {/* Error */}
-      {error && <Text style={styles.errorText}>{error}</Text>}
+              <ScrollView>
+                {Object.entries(groupedAmenities).map(([category, items]) => (
+                  <View key={category} style={{ marginBottom: 15 }}>
+                    <Text style={styles.category}>{category}</Text>
+
+                    <FlatList
+                      data={items}
+                      renderItem={renderAmenity}
+                      keyExtractor={(item) => item.key}
+                      numColumns={3}
+                      scrollEnabled={false}
+                    />
+                  </View>
+                ))}
+              </ScrollView>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {error && <Text style={styles.error}>{error}</Text>}
     </View>
   );
 };
 
 export default AmenitiesSelect;
+
 const styles = StyleSheet.create({
-  wrapper: {
-    marginBottom: 12,
-  },
-
   label: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: "500",
-    color: "#374151",
-    marginBottom: 8,
+    marginBottom: 5,
   },
 
-  inputBox: {
-    minHeight: 50,
+  selector: {
+    // minHeight: 50,
     borderWidth: 1,
     borderStyle: "dashed",
-    borderRadius: 6,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    backgroundColor: "#fff",
-    justifyContent: "center",
-  },
-
-  normalBorder: {
-    borderColor: "#D1D5DB",
-  },
-
-  errorBorder: {
-    borderColor: "#EF4444",
+    borderColor: "#ccc",
+    borderRadius: 8,
+    padding: 10,
   },
 
   placeholder: {
-    fontSize: 14,
-    color: "#9CA3AF",
+    color: "#999",
+  },
+  row:{
+    flexDirection:"row",
+   flexWrap:"wrap"
   },
 
-  chipsContainer: {
+
+  selectedContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 8,
   },
 
-  chip: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#DCFCE7",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 20,
+  selectedChip: {
+    backgroundColor: "#e2f1e4",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 15,
+    marginRight: 5,
+    marginBottom: 5,
   },
 
   chipText: {
-    fontSize: 12,
-    color: "#15803D",
-    marginRight: 6,
+    fontSize: 13,
+    fontWeight:500,
+    color: "#27AE60",
   },
 
-  chipRemove: {
-    fontSize: 12,
-    color: "#15803D",
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)", 
+    justifyContent: "center",
+    paddingHorizontal:7,
   },
 
-  dropdown: {
-    marginTop: 8,
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
-    borderRadius: 8,
+  modalWrapper: {
+    flex: 1,
+    justifyContent: "center",
+  },
+
+  modalContainer: {
     backgroundColor: "#fff",
-    maxHeight: 220,
+    borderRadius: 20,
+    maxHeight: "85%",
+    padding: 12,
   },
 
-  grid: {
+  modalHeader: {
     flexDirection: "row",
-    flexWrap: "wrap",
-    padding: 8,
     justifyContent: "space-between",
-  },
-
-  option: {
-    width: "48%",
-    flexDirection: "row",
     alignItems: "center",
-    padding: 6,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
-    marginBottom: 8,
+    marginBottom: 15,
   },
 
-  optionChecked: {
-    borderColor: "#22C55E",
-    backgroundColor: "#ECFDF5",
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "600",
   },
 
-  checkbox: {
-    width: 15,
-    height: 15,
-    borderRadius: 4,
+  selectedCount: {
+    color: "#666",
+    marginTop: 2,
+  },
+
+  close: {
+    fontSize: 22,
+    color: "#777",
+  },
+
+  category: {
+    fontWeight: "600",
+    marginBottom: 10,
+  },
+
+  amenityCard: {
+    width: 100,
+    height: 80,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: "#9CA3AF",
-    marginRight: 8,
     alignItems: "center",
+    justifyContent: "center",
+    marginRight:10 ,
+    marginBottom:10,
+    paddingVertical: 4,
+    paddingHorizontal: 5,
   },
 
-  checkboxChecked: {
-    backgroundColor: "#22C55E",
-    borderColor: "#22C55E",
+  selectedAmenity: {
+    borderColor: "#27AE60",
+    backgroundColor: "#ecfdf5",
   },
 
-  optionText: {
+  unselectedAmenity: {
+    borderColor: "#ddd",
+    backgroundColor: "#fff",
+  },
+
+  amenityText: {
+    fontSize: 11,
+    textAlign: "center",
+    marginTop: 8,
+  },
+
+  selectedText: {
+    color: "green",
+  },
+
+  error: {
+    color: "red",
     fontSize: 12,
-    color: "#374151",
-  },
-
-  errorText: {
-    fontSize: 12,
-    color: "#EF4444",
-    marginTop: 4,
+    marginTop: 5,
   },
 });

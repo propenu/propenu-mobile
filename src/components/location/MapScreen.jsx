@@ -28,7 +28,7 @@ export default function MapScreen() {
   return (
     <View style={{ flex: 1 }}>
       <WebView
-        ref={webRef} // ✅ REQUIRED
+        ref={webRef} 
         source={require("../../../assets/map.html")}
         javaScriptEnabled
         domStorageEnabled

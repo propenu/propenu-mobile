@@ -403,7 +403,7 @@ const PropertyDetailsScreen = ({ route }) => {
                 />
                 {/* <Text style={styles.overlayText}>Why Choose Us</Text> */}
               </View>
-              <View>
+              <View style={{marginTop:15}}>
                 <RenderHTML
                   contentWidth={width * 0.9}
                   source={{ html: item?.rightContent }}
@@ -438,7 +438,7 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   imageWrapper: {
-    position: "relative", // 🔥 IMPORTANT
+    position: "relative", 
   },
 
   image: {
