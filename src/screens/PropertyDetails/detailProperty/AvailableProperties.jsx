@@ -10,7 +10,7 @@ import {
   useWindowDimensions,
 } from "react-native";
 import HomePage from "../../../../assets/HomePage.png";
-import defaultImage from "../../../../assets/defaultImage.png"
+import defaultImage from "../../../../assets/defaultImage.png";
 
 /** INR formatter */
 function formatINR(v) {
@@ -22,7 +22,7 @@ function formatINR(v) {
   });
 }
 
-const AvailableProperties = ({ bhk }) => {
+const AvailableProperties = ({ bhk, bookAppointment }) => {
   const items = Array.isArray(bhk?.bhkSummary) ? bhk.bhkSummary : [];
   const color = bhk?.color || "#F59E0B";
 
@@ -41,18 +41,15 @@ const AvailableProperties = ({ bhk }) => {
     setActiveUnitIndex(0);
   }, [activeBhkIndex]);
 
-  const handlePress = () =>{
-    console.log("Sucessfully book a consultaion")
-  }
   const activeBhk = items[activeBhkIndex];
   const units = Array.isArray(activeBhk?.units) ? activeBhk.units : [];
 
   const sqftLabels = useMemo(
     () =>
       units.map((u) =>
-        u.minSqft ? `${u.minSqft} sqft` : u.plan?.url ? "Plan" : "—"
+        u.minSqft ? `${u.minSqft} sqft` : u.plan?.url ? "Plan" : "—",
       ),
-    [units]
+    [units],
   );
 
   const activeUnit = units[activeUnitIndex];
@@ -62,7 +59,11 @@ const AvailableProperties = ({ bhk }) => {
       {/* Header */}
 
       <View>
-        <Text style={[styles.title,{color : bhk?.color ? bhk?.color : "#000" }]}>Available Properties</Text>
+        <Text
+          style={[styles.title, { color: bhk?.color ? bhk?.color : "#000" }]}
+        >
+          Available Properties
+        </Text>
         <Text style={styles.subtitle}>Building excellence in Hyderabad</Text>
       </View>
 
@@ -130,7 +131,9 @@ const AvailableProperties = ({ bhk }) => {
           <View style={styles.imageBox}>
             <Image
               source={
-                activeUnit?.plan?.url ? { uri: activeUnit.plan.url } : defaultImage
+                activeUnit?.plan?.url
+                  ? { uri: activeUnit.plan.url }
+                  : defaultImage
               }
               style={styles.image}
               //   resizeMode="cover"
@@ -160,7 +163,10 @@ const AvailableProperties = ({ bhk }) => {
               </Text>
             </View>
 
-            <Pressable style={[styles.cta, { backgroundColor: color }]} onPress={handlePress}>
+            <Pressable
+              style={[styles.cta, { backgroundColor: color }]}
+              onPress={bookAppointment}
+            >
               <Text style={styles.ctaText}>Book a Consultation</Text>
             </Pressable>
           </View>
@@ -171,7 +177,7 @@ const AvailableProperties = ({ bhk }) => {
 };
 const styles = StyleSheet.create({
   container: {
-    marginTop:10,
+    marginTop: 10,
     paddingHorizontal: 10,
     // marginVertical: 6,
   },
@@ -187,7 +193,7 @@ const styles = StyleSheet.create({
     marginBottom: 7,
   },
   card: {
-    marginTop:10,
+    marginTop: 10,
     borderRadius: 12,
     padding: 12,
   },
@@ -227,7 +233,7 @@ const styles = StyleSheet.create({
   details: {
     flex: 1,
     paddingTop: 15,
-    paddingBottom:6,
+    paddingBottom: 6,
     paddingHorizontal: 10,
   },
   label: {

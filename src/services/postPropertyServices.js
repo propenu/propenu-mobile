@@ -68,7 +68,6 @@ export const postPropertyServices = {
 
   BasicDetailsStep: async (category, id, step, payload) => {
     const token = await getToken();
-    console.log("@@@@@@@@", category, id, step, payload);
 
     try {
       const response = await fetch(

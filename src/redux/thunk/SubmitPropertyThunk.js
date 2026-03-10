@@ -19,7 +19,6 @@ export const createDraftThunk = createAsyncThunk(
 export const getMyDraftThunk = createAsyncThunk(
   "postProperty/getMyDraft",
   async (category) => {
-    console.log("Category :", category)
     return await postPropertyServices.getMyDraftId(category);
   },
 );
@@ -27,7 +26,7 @@ export const getMyDraftThunk = createAsyncThunk(
 export const submitBasicThunk = createAsyncThunk(
   "postProperty/basic",
   async ({ category, id, data }) => {
-    console.log("📦 [BASIC] category:", category, "id:", id);
+    // console.log("📦 [BASIC] category:", category, "id:", id);
     // console.log("📦 [BASIC] payload:", data);
     return await postPropertyServices.BasicDetailsStep(category, id,"basic", data);
   },
@@ -36,7 +35,7 @@ export const submitBasicThunk = createAsyncThunk(
 export const submitLocationThunk = createAsyncThunk(
   "postProperty/location",
   async ({ category, id, data }) => {
-    console.log("📍 [LOCATION] payload:",category, data);
+    // console.log("📍 [LOCATION] payload:",category, data);
     return await postPropertyServices.BasicDetailsStep(category, id, "location", data);
   },
 );

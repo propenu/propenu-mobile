@@ -51,7 +51,12 @@ const EnquiryModal = ({ showEnquiry, setShowEnquiry, propertyId }) => {
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <TouchableWithoutFeedback
+          onPress={() => {
+            Keyboard.dismiss();
+            setShowEnquiry(false);
+          }}
+        >
           <View style={styles.overlay}>
             <View style={styles.modalContainer}>
               <Text style={styles.title}>Enquiry Now</Text>

@@ -61,7 +61,6 @@ const PropertyDetailsScreen = ({ route }) => {
     try {
       setIsLoadiing(true);
       const res = await apiService.featuredProjectById(propertyId);
-      // console.log("response :", res.data);
       setProperty(res.data);
     } catch (error) {
       console.error(error);
@@ -180,7 +179,7 @@ const PropertyDetailsScreen = ({ route }) => {
           )}
 
           <Pressable
-            style={styles.enquirybtn}
+            style={[styles.enquirybtn,{backgroundColor : property?.color ? property?.color : "#27AE60"  }]}
             onPress={() => setShowEnquiryModal(true)}
           >
             <Text style={{ color: "#fff", fontSize: 12, fontWeight: "500" }}>
@@ -315,7 +314,7 @@ const PropertyDetailsScreen = ({ route }) => {
             sectionPositions.current.properties = e.nativeEvent.layout.y;
           }}
         >
-          <AvailableProperties bhk={property} />
+          <AvailableProperties bhk={property}   bookAppointment={() => setShowEnquiryModal(true)}/>
         </View>
 
         <View
@@ -451,7 +450,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 12,
     right: 10,
-    backgroundColor: "#27AE60",
+    // backgroundColor: "#27AE60",
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 5,
