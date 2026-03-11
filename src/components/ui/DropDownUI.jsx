@@ -19,9 +19,9 @@ const Dropdownui = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const selectedOption = options.find(
-    (o) => o.value?.toLowerCase() === value?.toLowerCase(),
-  );
+  const selectedOption = options?.find(
+  (o) => String(o?.value).toLowerCase() === String(value).toLowerCase()
+);
   return (
     <View style={styles.container}>
       {/* Label */}

@@ -74,7 +74,7 @@ const HomeScreen = ({ navigation }) => {
           </View>
         </Pressable>
 
-       {/* Bell icon */}
+        {/* Bell icon */}
         <Pressable
           onPress={() => console.log("Pressed on Notifications...")}
           style={styles.bellIcon}

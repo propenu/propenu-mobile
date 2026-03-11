@@ -39,14 +39,14 @@ const AgentCard = ({ details }) => {
         >
           {details.agencyName}
         </Text>
-        <Text style={styles.subtitle} numberOfLines={2}>
+        <Text style={styles.subtitle} numberOfLines={1}>
           {details.bio}
         </Text>
 
         <View
           style={{ flexDirection: "row", alignItems: "center", marginTop: 3 }}
         >
-          <LocationIcon width={17} height={17} />
+          <LocationIcon width={15} height={15} />
           <Text style={styles.area}> {details?.areasServed?.join(", ")}</Text>
         </View>
       </View>
@@ -72,7 +72,7 @@ const AgentCard = ({ details }) => {
 
 const styles = StyleSheet.create({
   card: {
-    width: 280,
+    width: 270,
     backgroundColor: "#fff",
     borderRadius: 8,
     marginVertical: 10,
@@ -107,6 +107,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
+    // marginTop:5,
     alignSelf: "center",
     backgroundColor: "#eee",
     width: 250,
@@ -129,9 +130,10 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 12,
+    marginVertical: 5,
     // color: "#000",
-    marginBottom: 6,
-    marginTop: 2,
+    // marginBottom: 7,
+    // marginTop: 5,
     lineHeight: 18,
   },
   imageWrapper: {
@@ -139,11 +141,12 @@ const styles = StyleSheet.create({
   },
   propertyDetails: {
     paddingHorizontal: 12,
-    paddingTop: 40,
+    paddingTop: 35,
+    marginBottom: 5,
   },
   image: {
     width: "100%",
-    height: 140,
+    height: 120,
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
   },

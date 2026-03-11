@@ -28,14 +28,14 @@ const PropertyListScreen = ({ navigation }) => {
   const insets = useSafeAreaInsets();
   const { category } = useAppSelector((s) => s.filters);
   const filtersState = useSelector((state) => state.filters);
-  const { residential, commercial, land, agricultural,listingTypeValue } = filtersState;
+  const { residential, commercial, land, agricultural, listingTypeValue } =
+    filtersState;
 
   const [details, setDetails] = useState([]);
   const [loading, setLoading] = useState(true);
   const { selectedCity } = useCity();
   const [value, setValue] = useState("");
-  const [type, setType] =  useState("sale")
-  
+  const [type, setType] = useState("sale");
 
   // const fetchData = async () => {
   //   try {
@@ -54,10 +54,9 @@ const PropertyListScreen = ({ navigation }) => {
   const buildSearchParams = (category, filters) => {
     const params = { category };
 
-    if(listingTypeValue === "buy"){
-      params.listingType = "sale"
-    }
-    else params.listingType = "rent";
+    if (listingTypeValue === "buy") {
+      params.listingType = "sale";
+    } else params.listingType = "rent";
 
     if (filters && Object.keys(filters).length > 0) {
       Object.entries(filters).forEach(([key, value]) => {
@@ -93,7 +92,7 @@ const PropertyListScreen = ({ navigation }) => {
 
       const params = buildSearchParams(category, filters);
       console.log("Search Params :", params, filters);
-      setType(params?.listingType)
+      setType(params?.listingType);
 
       const result = await apiService.category_search(params);
       setDetails(Array.isArray(result) ? result : []);
@@ -105,8 +104,8 @@ const PropertyListScreen = ({ navigation }) => {
   };
 
   const total = details?.[0]?.__meta?.total;
-  const properties = details?.filter(item => !item.__meta);
-  console.log("properties :",total, properties)
+  const properties = details?.filter((item) => !item.__meta);
+  // console.log("properties :",total, properties)
 
   useEffect(() => {
     fetchData();

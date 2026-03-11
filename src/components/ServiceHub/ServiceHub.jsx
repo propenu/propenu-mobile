@@ -1,9 +1,15 @@
-import { View, Text, Pressable, StyleSheet, Image } from "react-native";
+import {
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+  Image,
+  ScrollView,
+} from "react-native";
 import {
   HomeCare,
   HomeLoans,
   HomeInterior,
-  ArrowIcon,
   TopRightArrow,
 } from "../../../assets/svg/Logo";
 import useCity from "../CustomHooks/useCity";
@@ -18,14 +24,6 @@ const ServiceHub = () => {
     navigation.navigate("upComingScreen");
   };
 
-  const UpComingPageWithImage = () => {
-    return (
-      <View style={styles.upcomingPage}>
-        <Image source={upcomingPage} style={{ height: 200, width: "100%" }} />
-      </View>
-    );
-  };
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Explore Our Services</Text>
@@ -33,171 +31,164 @@ const ServiceHub = () => {
         Services tailored for {selectedCity?.city ?? "Hyderabad"} residents
       </Text>
 
-      <View style={styles.subContainer}>
-        <Pressable style={styles.homeLoans} onPress={handleClick}>
-          {/* <HomeLoans width={30} height={30} /> */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContainer}
+      >
+        {/* Home Loans */}
+        <Pressable style={styles.card} onPress={handleClick}>
           <View style={styles.row}>
             <HomeLoans width={32} height={32} />
 
-            <TopRightArrow
-              width={30}
-              height={30}
-              color="#AE276B"
-              style={styles.arrowIcon}
-            />
+            <View
+              style={[styles.arrowContainer, { backgroundColor: "#FCE6F1" }]}
+            >
+              <TopRightArrow
+                width={10}
+                height={10}
+                color="#AE276B"
+                style={{ alignSelf: "center" }}
+              />
+            </View>
           </View>
-
-          <Text style={[styles.bodyTitle]}>
+          <Text style={styles.bodyTitle} numberOfLines={1}>
             Easy Home Loans with Expert Support
           </Text>
           <Text style={styles.bodyText}>
             Quick approvals, low interest, zero hassle.
           </Text>
-          {/* <Pressable
-            style={styles.knowButton}
-            onPress={() => navigation.navigate("upComingScreen")}
-          >
-            <Text style={{ color: "#AE276B", fontWeight: 500, lineHeight: 18 }}>
-              Know More{" "}
-            </Text> */}
-          {/* <View style={styles.arrowIcon}>
-              <ArrowIcon width={24} height={24} />
-            </View> 
-          </Pressable>*/}
         </Pressable>
 
-        <View style={styles.devider}>
-          <Pressable style={styles.homeCare} onPress={handleClick}>
-            <View style={styles.row}>
-              <HomeCare width={35} height={35} />
-
-              <TopRightArrow width={30} height={30} style={styles.arrowIcon} />
-            </View>
-
-            <Text style={styles.bodyTitle}>Professional Home Care</Text>
-            <Text style={styles.bodyText}>
-              Reliable cleaning, repairs and maintenance
-            </Text>
-          </Pressable>
-
-          <Pressable style={styles.interior} onPress={handleClick}>
-            <View style={styles.row}>
-              <HomeInterior width={30} height={30} />
+        {/* Home Care */}
+        <Pressable
+          style={[
+            styles.card,
+            // { backgroundColor: "#fafbf6" }
+          ]}
+          onPress={handleClick}
+        >
+          <View style={styles.row}>
+            <HomeCare width={32} height={32} />
+            <View
+              style={[styles.arrowContainer, { backgroundColor: "#FFF6E3" }]}
+            >
               <TopRightArrow
-                width={30}
-                height={30}
-                color="#8F3AFF"
-                style={styles.arrowIcon}
+                width={10}
+                height={10}
+                style={{ alignSelf: "center" }}
               />
             </View>
-            <Text style={styles.bodyTitle}>Modern Interior Designers</Text>
-            <Text style={styles.bodyText}>
-              Transforming your space with expert creativity.
-            </Text>
-          </Pressable>
-        </View>
-      </View>
+          </View>
+
+          <Text style={styles.bodyTitle}>Professional Home Care</Text>
+          <Text style={styles.bodyText}>
+            Reliable cleaning, repairs and maintenance
+          </Text>
+        </Pressable>
+
+        {/* Interior */}
+        <Pressable
+          style={[
+            styles.card,
+            // { backgroundColor: "#fbf8fb" }
+          ]}
+          onPress={handleClick}
+        >
+          <View style={styles.row}>
+            <HomeInterior width={30} height={30} />
+            <View
+              style={[styles.arrowContainer, { backgroundColor: "#F6EFFF" }]}
+            >
+              <TopRightArrow width={10} height={10} color="#8F3AFF" />
+            </View>
+          </View>
+
+          <Text style={styles.bodyTitle}>Modern Interior Designers</Text>
+          <Text style={styles.bodyText}>
+            Transforming your space with expert creativity.
+          </Text>
+        </Pressable>
+      </ScrollView>
     </View>
   );
 };
+
 export default ServiceHub;
+
 const styles = StyleSheet.create({
   container: {
-    // width: "100%",
     margin: 10,
-    marginBottom: 25,
+    marginBottom: 30,
   },
 
-  upcomingPage: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
   title: {
     fontSize: 16,
     fontWeight: "600",
   },
+
   subtitle: {
     fontSize: 12,
     color: "#8f8d87ff",
-    marginBottom: 7,
+    marginBottom: 10,
     marginTop: 4,
   },
-  subContainer: {
-    position: "relative",
-    marginVertical: 10,
-    // width: "100%",
-    // flexDirection: "row",
+
+  scrollContainer: {
+    paddingVertical: 10,
   },
-  homeLoans: {
-    // width: "92%",
-    // marginHorizontal:10,
-    backgroundColor: "#faf6f8",
+
+  card: {
+    width: 250,
+    marginRight: 12,
+    backgroundColor: "#fff",
     borderRadius: 8,
-    padding: 10,
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-    shadowOffset: { width: 0, height: 2 },
+    padding: 12,
+    marginLeft: 3,
     shadowColor: "#000",
-    marginBottom: 12,
-  },
-  devider: {
-    //  width: "92%",
-    marginBottom: 12,
-  },
-  homeCare: {
-    backgroundColor: "#fafbf6",
-    padding: 10,
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+
     elevation: 2,
-    shadowOffset: { width: 0, height: 2 },
-    shadowColor: "#000",
-    borderRadius: 8,
-    marginBottom: 10,
   },
-  interior: {
-    backgroundColor: "#fbf8fb",
-    padding: 10,
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-    shadowOffset: { width: 0, height: 2 },
-    shadowColor: "#000",
-    borderRadius: 8,
-    // marginBottom:10
-  },
+  // card: {
+  //   width: 250,
+  //   marginRight: 12,
+  //   backgroundColor: "#FFFEFC",
+  //   borderRadius: 8,
+  //   padding: 12,
+  //   marginLeft: 3,
+  //   shadowOpacity: 0.1,
+  //   shadowRadius: 4,
+  //   elevation: 1,
+  //   shadowOffset: { width: 0, height: 2 },
+  //   shadowColor: "#000",
+  // },
+
   bodyTitle: {
-    paddingVertical: 4,
+    paddingVertical: 7,
     color: "#000",
     fontSize: 13,
     lineHeight: 20,
-    fontWeight: 600,
+    fontWeight: "600",
+    minHeight: 30, // keeps spacing same
   },
+  arrowContainer: {
+    height: 24,
+    width: 24,
+    borderRadius: 12,
+    // backgroundColor: "#FCE6F1",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
   bodyText: {
     color: "#8C8989",
     fontSize: 12,
-    fontWeight: 400,
-    lineHeight: 20,
+    lineHeight: 18,
   },
-  knowButton: {
-    position: "absolute",
-    bottom: 6,
-    alignSelf: "center",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 6,
-    gap: 6,
-  },
-  arrowIcon: {
-    top: 7,
-    alignItems: "center",
-    justifyContent: "center",
-  },
+
   row: {
     flexDirection: "row",
     justifyContent: "space-between",

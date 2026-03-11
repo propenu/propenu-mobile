@@ -108,21 +108,28 @@ export const HomeLoans = ({ width = 16, height = 16, ...props }) => (
   </Svg>
 );
 export const HomeCare = ({ width = 16, height = 16, ...props }) => (
-  <Svg width={width} height={height} viewBox="0 0 24 24" fill="none" {...props}>
+    <Svg
+viewBox="0 0 24 24"    width={width}
+    height={height}
+    fill="none"
+    {...props}
+  >
+    <Rect width={24} height={24} fill="#FFF6E3" rx={12} />
     <Mask
-      width={width}
-      height={height}
-      x={0}
-      y={0}
+      id="a"
+      width={18}
+      height={18}
+      x={3}
+      y={3}
       maskUnits="userSpaceOnUse"
       style={{
         maskType: "alpha",
       }}
     >
-      <Path fill="#e1e6b9ff" d="M0 0h18v18H0z" />
+      <Path fill="#D9D9D9" d="M3 3h18v18H3z" />
     </Mask>
     <G mask="url(#a)">
-      <Path fill="#FFB625" d="M3 15.75v-9l6-4.5 6 4.5v9h-4.5V10.5h-3v5.25H3Z" />
+      <Path fill="#FFB625" d="M6 18.75v-9l6-4.5 6 4.5v9h-4.5V13.5h-3v5.25H6Z" />
     </G>
   </Svg>
 );
@@ -145,7 +152,7 @@ export const ArrowIcon = ({ width =18, height = 18, ...props }) => (
 );
 export const TopRightArrow = ({width =20, height = 20,color="#FFB625", ...props }) => (
    <Svg
-    viewBox="0 0 24 24"
+    viewBox="0 0 12 12"
     width={width}
     height={height}
     fill="none"
