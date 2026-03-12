@@ -34,9 +34,9 @@ const FeaturedCard = ({ navigation }) => {
   }, [selectedCity]);
   return (
     <View style={styles.card}>
-      <Text style={styles.title}>Prime Properties</Text>
+      <Text style={styles.title}>Prime Projects</Text>
       <Text style={styles.subtitle}>
-        Exceptional properties {selectedCity?.city ?? "Hyderabad"}
+        Stand out for the lifestyle they offer in {selectedCity?.city ?? "Hyderabad"}
       </Text>
 
       {details?.length > 0 ? (

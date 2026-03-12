@@ -17,7 +17,7 @@ import { useAuth } from "../../../context/AuthContext";
 const CommercialCard = ({ item }) => {
   const { width } = useDimensions();
   const navigation = useNavigation();
-  const { isLoggedIn,userDetails } = useAuth();
+  const { isLoggedIn, userDetails } = useAuth();
 
   const handlePress = async () => {
     console.log("Checking property id : ", item?.slug);
@@ -26,28 +26,32 @@ const CommercialCard = ({ item }) => {
     });
   };
 
-const handleContact = async () => {
-  if (!isLoggedIn) {
-    ToastInfo("User not authenticated");
-  } else {
-    ToastSuccess("Owner will contact you shortly");
-  }
-};
+  const handleContact = async () => {
+    if (!isLoggedIn) {
+      ToastInfo("User not authenticated");
+    } else {
+      ToastSuccess("Owner will contact you shortly");
+    }
+  };
   const horizontalSpace = 2 * 2 + 10 * 4; //marginHorizontal is 2, padding is 10 here and parent component is 10, total : 44
 
   return (
     <Pressable style={styles.card} onPress={handlePress}>
       {/* Image slider */}
-       <View style={styles.imageWrapper}>
-      <AutoImageSlider
-        // images={item.gallery.map((img) => ({ uri: img.url }))}
+      <View style={styles.imageWrapper}>
+        <AutoImageSlider
+          // images={item.gallery.map((img) => ({ uri: img.url }))}
           images={item?.gallery?.map((img) => ({ uri: img.url }))}
-        height={180}
-        width={width - horizontalSpace }
-      />
-       {/* Top-right like icon */}
+          height={180}
+          width={width - horizontalSpace}
+        />
+        {/* Top-right like icon */}
         <View style={styles.likeIcon}>
-          <LikedIconContainer id={item?.id} slug={item?.slug} type={item?.type} />
+          <LikedIconContainer
+            id={item?.id}
+            slug={item?.slug}
+            type={item?.type}
+          />
         </View>
       </View>
 
@@ -95,7 +99,9 @@ const handleContact = async () => {
       <View style={styles.priceBox}>
         <View>
           <Text style={styles.price}>{formatINR(item?.price)}</Text>
-         {item?.pricePerSqft ?   <Text style={styles.priceSub}>₹ {item?.pricePerSqft } / sqft</Text> :null }
+          {item?.pricePerSqft ? (
+            <Text style={styles.priceSub}>₹ {item?.pricePerSqft} / sqft</Text>
+          ) : null}
         </View>
 
         <Pressable style={styles.button} onPress={handleContact}>
@@ -133,7 +139,7 @@ const styles = StyleSheet.create({
     height: 180,
     borderRadius: 10,
   },
-   imageWrapper: {
+  imageWrapper: {
     position: "relative",
   },
 

@@ -45,6 +45,7 @@ import OwnerSellPlans from "../screens/Plans/OwnerSellPlans";
 import OwnerRentPlans from "../screens/Plans/OwnerRentPlans";
 import RentViewPlans from "../screens/Plans/RentViewPlans";
 import BuyViewPlans from "../screens/Plans/BuyViewPlans";
+import HighLightedProperties from "../screens/ViewAll/HighLightedProperties";
 
 const Stack = createNativeStackNavigator();
 
@@ -178,6 +179,11 @@ export default function StackNavigator() {
       name: "OTPLogin",
       component: OTPLoginModal,
       headerType: HEADER_TYPES.NONE,
+    },
+    {
+      name: "HighLightedProperties",
+      component: HighLightedProperties,
+      headerType: HEADER_TYPES.HOME,
     },
 
     {

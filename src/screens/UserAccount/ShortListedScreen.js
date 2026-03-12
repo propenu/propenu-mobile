@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -8,7 +8,6 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { userServices } from "../../services/userServices";
-import * as Keychain from "react-native-keychain";
 import ResidentialCard from "../PropertyListScreen/Cards/ResidentialCard";
 import LandCard from "../PropertyListScreen/Cards/LandCard";
 import AgriculturalCard from "../PropertyListScreen/Cards/AgriculturalCard";
@@ -37,13 +36,15 @@ const ShortListedScreen = () => {
     queryFn: userServices.getShortlistedProperties,
   });
 
-  console.log("Shortlisted properties checking :", data);
+  // console.log("Shortlisted properties checking :", data);
 
   if (isLoading)
     return <ActivityIndicator size="large" style={{ color: "#27AE60" }} />;
 
-  if (error) return console.log("failed to get shortlisted :", error);
-
+if (error) {
+  console.log("failed to get shortlisted :", error);
+  return null;
+}
   const likedProperties = data?.data ?? [];
 
   const CARD_COMPONENT = {
@@ -54,10 +55,12 @@ const ShortListedScreen = () => {
   };
 
   const filteredProperties =
-    likedProperties?.filter((item) => item.propertyType === selected) || [];
+    likedProperties?.filter((item) => item?.propertyType === selected) || [];
+
+  console.log(" SHORTLISTED LENGTH :::::", filteredProperties?.length);
 
   return (
-    <ScrollView style={[styles.mainContainer]}>
+    <ScrollView style={[styles.mainContainer]} contentContainerStyle={{paddingBottom:insets.bottom +5}}>
       <>
         <Text style={styles.label}>Property Type</Text>
         <View style={styles.container}>
@@ -80,7 +83,6 @@ const ShortListedScreen = () => {
 
         {filteredProperties.length > 0 ? (
           filteredProperties.map((item) => {
-            console.log("hhhhhhhhhhhhhhhhhhh0", item)
             const Card = CARD_COMPONENT[selected];
             return <Card key={item?._id} item={item?.property} />;
           })

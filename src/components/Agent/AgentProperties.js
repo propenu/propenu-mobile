@@ -43,8 +43,8 @@ const AgentProperties = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Agent Connect</Text>
-      <Text style={styles.subtitle}>
-        Trusted professionals guiding your property journey
+      <Text style={styles.subtitle}>Expert help, simplified
+        {/* Trusted professionals guiding your property journey */}
       </Text>
       {filteredData?.length > 0 ? (
         <FlatList

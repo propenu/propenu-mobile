@@ -244,7 +244,7 @@ const CustomDrawerContent = ({ navigation, state }) => {
           <View style={{ flexDirection: "row", gap: 10, alignItems: "center" }}>
             <FontAwesome name="user-circle" size={30} color="#585858" />
             <Text style={[styles.userName]}>
-              Sign in to get more{"\n"}personalised feed!
+              Sign up to explore more {"\n"}on Propenu
             </Text>
           </View>
 

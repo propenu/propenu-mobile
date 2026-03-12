@@ -1,12 +1,14 @@
-import { View, Text, FlatList, StyleSheet } from "react-native";
+import { View, Text, FlatList, StyleSheet, Pressable } from "react-native";
 import React, { useEffect, useState } from "react";
 import { apiService } from "../../services/apiService";
 import HighLightCard from "./HighLightCard";
 import useCity from "../CustomHooks/useCity";
+import { useNavigation } from "@react-navigation/native";
 
 const HighLightProjects = () => {
   const [projects, setProjects] = useState([]);
   const { selectedCity } = useCity();
+  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -20,9 +22,9 @@ const HighLightProjects = () => {
           // );
           const filteredData = selectedCity?.city
             ? data.filter(
-                (item) =>
-                  item.city?.toLowerCase() === selectedCity.city.toLowerCase(),
-              )
+              (item) =>
+                item.city?.toLowerCase() === selectedCity.city.toLowerCase(),
+            )
             : data;
           setProjects(filteredData);
         }
@@ -36,8 +38,13 @@ const HighLightProjects = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Highlight Projects</Text>
-      <Text style={styles.subtitle}>Explore properties across locations</Text>
+      <Text style={styles.title}>Top Selling Properties</Text>
+      <View style={styles.row}>
+        <Text style={styles.subtitle}>Investment-worthy in {selectedCity?.city ?? "Hyderabad"}</Text>
+        <Pressable onPress={()=> navigation.navigate("HighLightedProperties")}>
+        <Text style={styles.viewAll}>View All</Text>
+        </Pressable>
+      </View>
 
       {projects?.length > 0 ? (
         <FlatList
@@ -64,6 +71,19 @@ const styles = StyleSheet.create({
     padding: 10,
     // backgroundColor: "#f9f9f9",
   },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    // borderWidth:1,
+    marginTop: 4,
+    marginBottom: 10
+  },
+  viewAll: {
+    fontSize: 13,
+    color: "#27AE60",
+    fontWeight: 500
+  },
   title: {
     fontSize: 16,
     fontWeight: "600",
@@ -72,8 +92,8 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 12,
     color: "#8f8d87ff",
-    marginBottom: 8,
-    marginTop: 2,
+    // marginBottom: 8,
+    // marginTop: 2,
   },
   emptyText: {
     textAlign: "center",

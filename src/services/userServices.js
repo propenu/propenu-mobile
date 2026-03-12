@@ -85,6 +85,7 @@ export const userServices = {
           },
         },
       );
+      // console.log("RESPONSE WHEN REMOVE SHORTLIST", response)
 
       if (!response.ok) {
         throw new Error("Failed to delete shortlisted property");

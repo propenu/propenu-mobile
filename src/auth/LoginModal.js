@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -18,6 +18,9 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import CountryPicker from "react-native-country-picker-modal";
 import { ToastError, ToastSuccess } from "../utils/Toast";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { getItem, setItem } from "../utils/Storage";
+import { userServices } from "../services/userServices";
+
 
 export default function LoginModal({ navigation }) {
   const [email, setEmail] = useState("");
@@ -59,6 +62,26 @@ export default function LoginModal({ navigation }) {
     setCallingCode(country.callingCode[0]);
   };
 
+  const syncGuestShortlist = async () => {
+  try {
+    const stored = await getItem("guest_shortlist");
+    const parsed = stored ? JSON.parse(stored) : [];
+
+    if (!parsed.length) return;
+
+    for (const item of parsed) {
+      await userServices.postShortlistedProperties(item);
+    }
+
+    // clear guest shortlist
+    await setItem("guest_shortlist", JSON.stringify([]));
+
+    console.log("Guest shortlist synced successfully");
+  } catch (error) {
+    console.log("Error syncing guest shortlist:", error);
+  }
+};
+
   const handleLogin = async () => {
     try {
       if (phone.length !== 10) {
@@ -75,6 +98,7 @@ export default function LoginModal({ navigation }) {
       });
 
       if (res?.status === 200) {
+        await syncGuestShortlist();
         ToastSuccess("OTP sent successfully");
         navigation.navigate("OTPLogin", { phone: fullNumber });
         // onOtpSuccess({

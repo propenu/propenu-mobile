@@ -1,18 +1,9 @@
 import { View, Text, StyleSheet, Image, Pressable } from "react-native";
-import React from "react";
-import HomePageImage from "../../../assets/HomePageImage.png";
 import LikedIconContainer from "../ui/LikedIconContainer";
-import EvilIcons from "@expo/vector-icons/EvilIcons";
 import { useNavigation } from "@react-navigation/native";
-import {
-  AreaIcon,
-  BedIcon,
-  ReadyToMoveIcon,
-  PhoneIcon,
-} from "../../../assets/svg/Logo";
+import { AreaIcon, BedIcon, ReadyToMoveIcon } from "../../../assets/svg/Logo";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import formatINR from "../../utils/FormatINR";
-import { getItem } from "../../utils/Storage";
 import AutoImageSlider from "../ui/AutoImageSlider";
 import useDimensions from "../CustomHooks/UseDimension";
 import { ToastInfo, ToastSuccess } from "../../utils/Toast";
@@ -62,7 +53,7 @@ const OwnerPropertyCard = ({ details }) => {
     const screenName = screenMap[details?.type];
 
     if (screenName) {
-      navigation.navigate(screenName, { id: details?._id });
+      navigation.navigate(screenName, { slug: details?.slug });
     } else {
       console.log("Invalid category");
     }
@@ -95,9 +86,8 @@ const OwnerPropertyCard = ({ details }) => {
             width={cardWidth - 20}
           />
         )}
-
         <View style={styles.likeIcon}>
-          <LikedIconContainer id={details?._id} type={details?.type} />
+          <LikedIconContainer id={details?._id} slug={details?.slug} type={details?.type} />
         </View>
       </View>
       <View style={styles.detailsSection}>
