@@ -140,7 +140,6 @@ const CommercialProfile = () => {
     const assets = result.assets || [];
 
     setFileStoreFiles("postProperty", assets);
-    console.log("SETTING FILES");
     setFiles([...assets]);
 
     dispatch(
@@ -155,60 +154,60 @@ const CommercialProfile = () => {
     );
   };
 
-    const handleRemoveImage = async (img, index) => {
-      if (img?.uri) {
-        const updatedFiles = files.filter((_, i) => i !== index);
-        setFiles(updatedFiles);
-        return;
-      }
-  
-      if (!draftId) {
-        ToastError("Please refresh and try again.");
-        return;
-      }
-  
-      const serverIndex =
-        commercial.gallery
-          .slice(0, index + 1)
-          .filter((f) => f.source === "server").length - 1;
-  
-      if (serverIndex < 0) {
-        ToastError("Invalid image index.");
-        return;
-      }
-  
-      try {
-        const res = await postPropertyServices.deleteGalleryImageApi(
-          "commercial",
-          draftId,
-          serverIndex,
-        );
-      
-        const updatedGallery = commercial.gallery.filter(
-        (_, i) => i !== serverIndex
+  const handleRemoveImage = async (img, index) => {
+    if (img?.uri) {
+      const updatedFiles = files.filter((_, i) => i !== index);
+      setFiles(updatedFiles);
+      return;
+    }
+
+    if (!draftId) {
+      ToastError("Please refresh and try again.");
+      return;
+    }
+
+    const serverIndex =
+      commercial.gallery
+        .slice(0, index + 1)
+        .filter((f) => f.source === "server").length - 1;
+
+    if (serverIndex < 0) {
+      ToastError("Invalid image index.");
+      return;
+    }
+
+    try {
+      const res = await postPropertyServices.deleteGalleryImageApi(
+        "commercial",
+        draftId,
+        serverIndex,
       );
-  
-      console.log(updatedGallery.length,"updatedGallery")
-  
-        if (res?.success) {
-          dispatch(
-            setProfileField({
-              propertyType: "commercial",
-              key: "gallery",
-              value: updatedGallery,
-            }),
-          );
-        }
-      } catch (err) {
-        const message =
-          err?.message ||
-          err?.response?.data?.message ||
-          "Failed to delete image from server";
-          console.log("Error when deleting image :", err)
-  
-        // ToastError(message);
+
+      const updatedGallery = commercial?.gallery?.filter(
+        (_, i) => i !== serverIndex,
+      );
+
+      console.log(updatedGallery?.length, "updatedGallery");
+
+      if (res?.success) {
+        dispatch(
+          setProfileField({
+            propertyType: "commercial",
+            key: "gallery",
+            value: updatedGallery,
+          }),
+        );
       }
-    };
+    } catch (err) {
+      const message =
+        err?.message ||
+        err?.response?.data?.message ||
+        "Failed to delete image from server";
+      console.log("Error when deleting image :", err);
+
+      // ToastError(message);
+    }
+  };
 
   const handleCommercialDetials = () => {
     setShowErrors(true);
@@ -222,14 +221,18 @@ const CommercialProfile = () => {
             .filter(Boolean)
         : [],
     };
+    const allImages = [...(commercial?.gallery || []), ...(files || [])];
 
-
-            const allImages = [...(commercial?.gallery || []), ...(files || [])]
-            
+    const normalizedImages = allImages.map((img) => ({
+      uri: img.uri,
+      name: img.name || img.fileName,
+      type: img.type || img.mimeType,
+      url: img.url,
+    }));
 
     const validationResult = validateCommercialProfile(
       payloadForValidation,
-      allImages.map((f) => f),
+      normalizedImages,
     );
 
     const ZodErrors = !validationResult.success
@@ -239,9 +242,16 @@ const CommercialProfile = () => {
 
     const isFormValid = validationResult.success;
 
-    console.log("validation result commercial", validationResult);
+    console.log("validation result commercial", propertyType, validationResult);
 
     if (isFormValid) {
+      dispatch(
+        setProfileField({
+          propertyType: "commercial",
+          key: "gallery",
+          value: normalizedImages,
+        }),
+      );
       dispatch(
         submitDetailsThunk({
           category: propertyType,
@@ -263,7 +273,7 @@ const CommercialProfile = () => {
   };
   useEffect(() => {}, [files]);
 
-   const allImages = [...(commercial?.gallery || []), ...(files || [])];
+  const allImages = [...(commercial?.gallery || []), ...(files || [])];
 
   const OptionButtons = ({ title, options, value, onSelect }) => (
     <View style={styles.section}>
@@ -730,7 +740,7 @@ const CommercialProfile = () => {
         </View>
         {/* Preview images after upload */}
         <Text style={styles.label}>Add photos of your property</Text>
-               <View style={styles.previewContainer}>
+        <View style={styles.previewContainer}>
           {/* Existing gallery images */}
           {allImages.map((img, index) => (
             <View key={index} style={styles.imageWrapper}>
@@ -951,7 +961,7 @@ const styles = StyleSheet.create({
     height: 10,
     backgroundColor: "#fff",
   },
-   previewImage: {
+  previewImage: {
     width: "100%",
     borderRadius: 8,
     height: "100%",

@@ -46,6 +46,8 @@ import OwnerRentPlans from "../screens/Plans/OwnerRentPlans";
 import RentViewPlans from "../screens/Plans/RentViewPlans";
 import BuyViewPlans from "../screens/Plans/BuyViewPlans";
 import HighLightedProperties from "../screens/ViewAll/HighLightedProperties";
+import ViewAllOwnerProperties from "../screens/ViewAll/ViewAllOwnerProperties";
+import AllAgents from "../screens/ViewAll/AllAgents";
 
 const Stack = createNativeStackNavigator();
 
@@ -55,7 +57,6 @@ const HEADER_TYPES = {
   NONE: "NONE",
 };
 export default function StackNavigator() {
-  
   const dispatch = useDispatch();
   const isOpen = useSelector((state) => state.dropdown.isOpen);
   const { selectedCity } = useCity();
@@ -185,6 +186,16 @@ export default function StackNavigator() {
       component: HighLightedProperties,
       headerType: HEADER_TYPES.HOME,
     },
+    {
+      name: "ViewAllOwnerProperties",
+      component: ViewAllOwnerProperties,
+      headerType: HEADER_TYPES.HOME,
+    },
+    {
+      name: "AllAgents",
+      component: AllAgents,
+      headerType: HEADER_TYPES.HOME,
+    },
 
     {
       name: "PropertyDetails",
@@ -226,7 +237,7 @@ export default function StackNavigator() {
     {
       name: "MoreAgentDetails",
       component: MoreAgentDetails,
-      headerType: HEADER_TYPES.INNER,
+      headerType: HEADER_TYPES.NONE,
       title: "Agent Details",
     },
 
@@ -346,7 +357,7 @@ export default function StackNavigator() {
       name: "HelpCenter",
       component: HelpCenter,
       headerType: HEADER_TYPES.INNER,
-      title: "Help Center"
+      title: "Help Center",
     },
 
     {
@@ -389,7 +400,6 @@ export default function StackNavigator() {
         />
       ))}
     </Stack.Navigator>
-
   );
 }
 const styles = StyleSheet.create({

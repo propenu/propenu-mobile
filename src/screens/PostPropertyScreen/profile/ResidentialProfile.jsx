@@ -157,6 +157,7 @@ const ResidentialProfile = () => {
       setBaseField({
         key: "galleryFiles",
         value: assets.map((img) => ({
+          
           uri: img.uri,
           name: img.fileName || "image.jpg",
           type: img.type,
@@ -236,7 +237,7 @@ const ResidentialProfile = () => {
     }
 
     const serverIndex =
-      residential.gallery
+      residential?.gallery
         .slice(0, index + 1)
         .filter((f) => f.source === "server").length - 1;
 
@@ -255,8 +256,6 @@ const ResidentialProfile = () => {
       const updatedGallery = residential.gallery.filter(
         (_, i) => i !== serverIndex,
       );
-
-      console.log(updatedGallery.length, "updatedGallery");
 
       if (res?.success) {
         dispatch(
@@ -283,9 +282,16 @@ const ResidentialProfile = () => {
 
     const allImages = [...(residential?.gallery || []), ...(files || [])];
 
+    const normalizedImages = allImages.map((img) => ({
+      uri: img.uri,
+      name: img.name || img.fileName,
+      type: img.type || img.mimeType,
+      url: img.url,
+    }));
+
     const validationResult = validateResidentialProfile(
       residential,
-      allImages.map((f) => f),
+      normalizedImages,
     );
 
     // const validationResult = validateResidentialProfile(
@@ -310,12 +316,16 @@ const ResidentialProfile = () => {
         : [],
     };
 
-    const result = validateResidentialProfile(
-      payloadForValidation,
-      files.map((f) => f.file),
-    );
-
     if (isFormValid) {
+        dispatch(
+          setProfileField({
+            propertyType: "residential",
+            key: "gallery",
+            value: normalizedImages,
+          }),
+        );
+      
+    
       dispatch(
         submitDetailsThunk({
           category: propertyType,
@@ -336,19 +346,17 @@ const ResidentialProfile = () => {
     }
   };
   useEffect(() => {
-    console.log(files.length, "JJJJ");
+    // console.log(files?.length, "JJJJ");
   }, [files]);
 
   const allImages = [...(residential?.gallery || []), ...(files || [])];
 
   const isChecked = residential?.isModularKitchen || false;
-  console.log(
-    "residentialresidentialresidential",
-    allImages.length,
-    residential.gallery.length,
-  );
-  console.log("gallery:", residential?.gallery);
-  console.log("files:", files);
+  // console.log(
+  //   "residentialresidentialresidential",
+  //   allImages?.length,
+  //   residential?.gallery?.length,
+  // );
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -564,7 +572,7 @@ const ResidentialProfile = () => {
         <Pressable style={styles.uploadBox} onPress={pickImages}>
           <ImageListIcon width={50} height={40} color="#82D1A3" />
 
-          {residential?.gallery?.length > 0 || files.length > 0 ? (
+          {residential?.gallery?.length > 0 || files?.length > 0 ? (
             <Text style={styles.uploadText}>
               {allImages?.length} image(s) selected
             </Text>

@@ -22,16 +22,6 @@ const OwnerSellPlans = ({ navigation }) => {
   const { userDetails } = useAuth();
   const flatListRef = useRef(null);
 
-  useEffect(() => {
-    if (plans.length > 1) {
-      setTimeout(() => {
-        flatListRef.current?.scrollToOffset({
-          offset: 250,
-          animated: false,
-        });
-      }, 0);
-    }
-  }, [plans]);
   const { data: plans, isLoading } = useQuery({
     queryKey: ["owner_seller"],
     queryFn: () =>
@@ -40,7 +30,18 @@ const OwnerSellPlans = ({ navigation }) => {
         category: "sell",
       }),
   });
-  console.log("PLANSSSSSSSSSSSSSSSSSSSSSSSS:", plans);
+
+  useEffect(() => {
+    if (plans?.length > 1) {
+      setTimeout(() => {
+        flatListRef.current?.scrollToOffset({
+          offset: 250,
+          animated: false,
+        });
+      }, 0);
+    }
+  }, [plans]);
+
 
   if (isLoading) {
     return (
@@ -55,13 +56,13 @@ const OwnerSellPlans = ({ navigation }) => {
     const handleSubscribe = async (plan) => {
       try {
         const order = await agentServices.createPaymentOrder({
-          planId: plan._id,
+          planId: plan?._id,
           userType: "agent",
         });
 
         if (order?.free) {
           ToastSuccess("Plan activated successfully");
-          navigation.navigate("Membership");
+           navigation.goBack();
           return;
         }
 
@@ -88,8 +89,8 @@ const OwnerSellPlans = ({ navigation }) => {
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
             });
-
-            navigation.navigate("Membership");
+               navigation.goBack();
+            // navigation.navigate("Membership");
           })
           .catch((error) => {
             console.log("Payment Error:", error);

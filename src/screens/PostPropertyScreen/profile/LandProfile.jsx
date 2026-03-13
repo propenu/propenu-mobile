@@ -9,7 +9,7 @@ import {
   Keyboard,
   Platform,
   StyleSheet,
-  Image
+  Image,
 } from "react-native";
 import { useSelector } from "react-redux";
 import Entypo from "@expo/vector-icons/Entypo";
@@ -29,7 +29,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { setFiles as setFileStoreFiles } from "../../../lib/FileStore";
 import { ImageListIcon } from "../../../../assets/svg/Logo";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import {validateLandProfile} from "../../../zod/detailsZod/landProfileZod";
+import { validateLandProfile } from "../../../zod/detailsZod/landProfileZod";
 import * as ImagePicker from "expo-image-picker";
 import {
   setBaseField,
@@ -59,7 +59,9 @@ const LAND_APPROVAL_AUTHORITIES = ["dtcp", "hmda", "cmda", "bda", "panchayat"];
 
 const LandProfile = () => {
   const [keyboardOpen, setKeyboardOpen] = useState(false);
-  const { land,propertyType, draftId, base } = useSelector((state) => state.postProperty);
+  const { land, propertyType, draftId, base } = useSelector(
+    (state) => state.postProperty,
+  );
   const [showErrors, setShowErrors] = useState(false);
   const dispatch = useAppDispatch();
   const navigation = useNavigation();
@@ -91,7 +93,7 @@ const LandProfile = () => {
   //     });
   // };
 
- const pickImages = async () => {
+  const pickImages = async () => {
     // Need user permission to get images
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
@@ -126,113 +128,121 @@ const LandProfile = () => {
     );
   };
 
-    const handleRemoveImage = async (img, index) => {
-      if (img?.uri) {
-        const updatedFiles = files.filter((_, i) => i !== index);
-        setFiles(updatedFiles);
-        return;
-      }
-  
-      if (!draftId) {
-        ToastError("Please refresh and try again.");
-        return;
-      }
-  
-      const serverIndex =
-        land.gallery
-          .slice(0, index + 1)
-          .filter((f) => f.source === "server").length - 1;
-  
-      if (serverIndex < 0) {
-        ToastError("Invalid image index.");
-        return;
-      }
-  
-      try {
-        const res = await postPropertyServices.deleteGalleryImageApi(
-          "land",
-          draftId,
-          serverIndex,
-        );
-      
-        const updatedGallery = land.gallery.filter(
-        (_, i) => i !== serverIndex
-      );
-  
-      console.log(updatedGallery.length,"updatedGallery")
-  
-        if (res?.success) {
-          dispatch(
-            setProfileField({
-              propertyType: "land",
-              key: "gallery",
-              value: updatedGallery,
-            }),
-          );
-        }
-      } catch (err) {
-        const message =
-          err?.message ||
-          err?.response?.data?.message ||
-          "Failed to delete image from server";
-          console.log("Error when deleting image :", err)
-  
-        // ToastError(message);
-      }
-    };
+  const handleRemoveImage = async (img, index) => {
+    if (img?.uri) {
+      const updatedFiles = files.filter((_, i) => i !== index);
+      setFiles(updatedFiles);
+      return;
+    }
 
+    if (!draftId) {
+      ToastError("Please refresh and try again.");
+      return;
+    }
+
+    const serverIndex =
+      land.gallery.slice(0, index + 1).filter((f) => f.source === "server")
+        .length - 1;
+
+    if (serverIndex < 0) {
+      ToastError("Invalid image index.");
+      return;
+    }
+
+    try {
+      const res = await postPropertyServices.deleteGalleryImageApi(
+        "land",
+        draftId,
+        serverIndex,
+      );
+
+      const updatedGallery = land.gallery.filter((_, i) => i !== serverIndex);
+
+      console.log(updatedGallery.length, "updatedGallery");
+
+      if (res?.success) {
+        dispatch(
+          setProfileField({
+            propertyType: "land",
+            key: "gallery",
+            value: updatedGallery,
+          }),
+        );
+      }
+    } catch (err) {
+      const message =
+        err?.message ||
+        err?.response?.data?.message ||
+        "Failed to delete image from server";
+      console.log("Error when deleting image :", err);
+
+      // ToastError(message);
+    }
+  };
 
   const handleLandSubmitDetails = () => {
-     setShowErrors(true);
- 
-     // Convert amenities → string[] ONLY for validation
-     const payloadForValidation = {
-       ...land,
-       amenities: Array.isArray(land?.amenities)
-         ? land.amenities
-             .map((a) => (typeof a === "string" ? a : a?.title))
-             .filter(Boolean)
-         : [],
-     };
- 
+    setShowErrors(true);
 
-       const allImages = [...(land?.gallery || []), ...(files || [])];
-     
-     const validationResult = validateLandProfile(
-       payloadForValidation,
-        allImages.map((f) => f),
+    // Convert amenities → string[] ONLY for validation
+    const payloadForValidation = {
+      ...land,
+      amenities: Array.isArray(land?.amenities)
+        ? land.amenities
+            .map((a) => (typeof a === "string" ? a : a?.title))
+            .filter(Boolean)
+        : [],
+    };
 
-     );
- 
-     const ZodErrors = !validationResult.success
-       ? validationResult.error.flatten().fieldErrors
-       : {};
-     setFieldErrors(ZodErrors);
- 
-     const isFormValid = validationResult.success;
- 
-     console.log("validation result land", validationResult);
- 
-     if (isFormValid) {
-       dispatch(
-         submitDetailsThunk({
-           category: propertyType,
-           id: draftId,
-           payload: land,
-         }),
-       )
-         .unwrap()
-         .then((res) => {
+    const allImages = [...(land?.gallery || []), ...(files || [])];
+
+    const normalizedImages = allImages.map((img) => ({
+      uri: img.uri,
+      name: img.name || img.fileName,
+      type: img.type || img.mimeType,
+      url: img.url,
+    }));
+
+    const validationResult = validateLandProfile(
+      payloadForValidation,
+      normalizedImages,
+    );
+
+    const ZodErrors = !validationResult.success
+      ? validationResult.error.flatten().fieldErrors
+      : {};
+    setFieldErrors(ZodErrors);
+
+    const isFormValid = validationResult.success;
+
+    console.log("validation result land", validationResult);
+
+    if (isFormValid) {
+      dispatch(
+        setProfileField({
+          propertyType: "land",
+          key: "gallery",
+          value: normalizedImages,
+        }),
+      );
+      dispatch(
+        submitDetailsThunk({
+          category: propertyType,
+          id: draftId,
+          payload: land,
+        }),
+      )
+        .unwrap()
+        .then((res) => {
           //  console.log("Result :", res);
-           dispatch(setPercentage(res?.data?.completion?.percent));
-           ToastSuccess("Profile details submitted successfully");
-           dispatch(nextStep());
-         })
-         .catch((error) => {
-           console.log("🔥 FULL ERROR FROM API:", error);
-         });
-     }
-   };
+          dispatch(setPercentage(res?.data?.completion?.percent));
+          ToastSuccess("Profile details submitted successfully");
+          dispatch(nextStep());
+        })
+        .catch((error) => {
+          console.log("🔥 FULL ERROR FROM API:", error);
+        });
+    }
+  };
 
   useEffect(() => {
     dispatch(
@@ -262,7 +272,7 @@ const LandProfile = () => {
     };
   }, []);
 
-   const allImages = [...(land?.gallery || []), ...(files || [])];
+  const allImages = [...(land?.gallery || []), ...(files || [])];
 
   const SwitchRow = ({ label, value, onChange }) => (
     <View
@@ -333,8 +343,8 @@ const LandProfile = () => {
               })}
             </View>
             {showErrors && fieldErrors?.layoutType?.[0] && (
-            <Text style={styles.errorText}>{fieldErrors.layoutType[0]}</Text>
-          )}
+              <Text style={styles.errorText}>{fieldErrors.layoutType[0]}</Text>
+            )}
           </View>
 
           {/* Facing & Approval */}
@@ -487,9 +497,9 @@ const LandProfile = () => {
           })}
         </View>
 
-  {/* Preview images after upload */}
+        {/* Preview images after upload */}
         <Text style={styles.label}>Add photos of your property</Text>
-               <View style={styles.previewContainer}>
+        <View style={styles.previewContainer}>
           {/* Existing gallery images */}
           {allImages.map((img, index) => (
             <View key={index} style={styles.imageWrapper}>
@@ -538,9 +548,6 @@ const LandProfile = () => {
           </Text>
         </View>
 
-
-       
-
         <View style={styles.negotiableContainer}>
           <View>
             <Text style={styles.label}>Is the price negotiable?</Text>
@@ -586,9 +593,9 @@ const LandProfile = () => {
             )
           }
         />
-          {showErrors && fieldErrors?.description && (
-            <Text style={styles.errorText}>{fieldErrors.description}</Text>
-          )}
+        {showErrors && fieldErrors?.description && (
+          <Text style={styles.errorText}>{fieldErrors.description}</Text>
+        )}
 
         {/* Buttons */}
         <View style={styles.btnOptions}>
@@ -811,7 +818,7 @@ const styles = StyleSheet.create({
     marginBottom: 7,
     color: "#374151",
   },
-   errorText: {
+  errorText: {
     color: "#DC2626",
     marginLeft: 3,
     marginTop: 2,

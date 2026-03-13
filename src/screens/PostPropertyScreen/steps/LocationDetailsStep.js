@@ -7,7 +7,7 @@ import {
   ScrollView,
   Platform,
   Keyboard,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -32,9 +32,15 @@ import { ToastSuccess } from "../../../utils/Toast";
 import { search } from "india-pincode-search";
 
 const LocationDetailsStep = () => {
-  const { propertyType, base, draftId, residential, commercial, land, agricultural } = useSelector(
-    (state) => state.postProperty,
-  );
+  const {
+    propertyType,
+    base,
+    draftId,
+    residential,
+    commercial,
+    land,
+    agricultural,
+  } = useSelector((state) => state.postProperty);
 
   const dispatch = useDispatch();
   const [showErrors, setShowErrors] = useState(false);
@@ -48,7 +54,6 @@ const LocationDetailsStep = () => {
       ? validationResult.error.flatten().fieldErrors
       : {};
 
-
   const profileData =
     propertyType === "residential"
       ? residential
@@ -56,7 +61,9 @@ const LocationDetailsStep = () => {
         ? commercial
         : propertyType === "land"
           ? land
-          : propertyType === "agricultural" ? agricultural : null;
+          : propertyType === "agricultural"
+            ? agricultural
+            : null;
 
   /* ---------------- Helpers ---------------- */
 
@@ -87,8 +94,8 @@ const LocationDetailsStep = () => {
     const data = search(numericValue);
     if (!data || !data.length) return;
     const pin = data[0];
-    console.log("PIN :", pin)
-     dispatch(
+    console.log("PIN :", pin);
+    dispatch(
       setBaseField({
         key: "state",
         value: formatToTitleCase(pin.state),
@@ -117,18 +124,17 @@ const LocationDetailsStep = () => {
     setShowErrors(true);
 
     if (!isFormValid || !draftId) return;
-      console.log("BASE :", base)
+    console.log("BASE :", base);
     dispatch(
       submitLocationThunk({
         category: propertyType,
         id: draftId,
-        data: base
-      
+        data: base,
       }),
     )
       .unwrap()
       .then((result) => {
-        console.log("REsult :", result)
+        console.log("REsult :", result);
         dispatch(setPercentage(result?.data?.completion?.percent));
         ToastSuccess("Location details submitted successfully");
         dispatch(nextStep());
@@ -164,10 +170,10 @@ const LocationDetailsStep = () => {
 
   return (
     <KeyboardAvoidingView
-         style={{ flex: 1 }}
-         behavior={Platform.OS === "ios" ? "padding" : "height"}
-         keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
-       >
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
+    >
       <ScrollView
         style={[styles.container]}
         // contentContainerStyle={{ paddingBottom: keyboardOpen ? 100 : 0 }}
@@ -183,12 +189,12 @@ const LocationDetailsStep = () => {
           rows={4}
           maxLength={500}
           onChange={(value) =>
-          dispatch(
-            setBaseField({
-              key: "address",
-              value: formatToTitleCase(value),
-            }),
-          )
+            dispatch(
+              setBaseField({
+                key: "address",
+                value: formatToTitleCase(value),
+              }),
+            )
           }
           error={getCustomError("address", "Enter property address")}
         />
@@ -201,7 +207,7 @@ const LocationDetailsStep = () => {
                 ? "Land Name / Layout Name"
                 : "Building / Society Name"
             }
-            value={base.buildingName || ""}
+            value={isLandOrAgri ? base.landName || "" : base.buildingName || ""}
             placeholder={
               isLandOrAgri
                 ? "Enter Land or Layout name"
@@ -210,12 +216,12 @@ const LocationDetailsStep = () => {
             onChange={(value) =>
               dispatch(
                 setBaseField({
-                  key: "buildingName",
+                  key: isLandOrAgri ? "landName" : "buildingName",
                   value: formatToTitleCase(value),
                 }),
               )
             }
-            error={getCustomError("buildingName", "Enter name")}
+            error={getCustomError(isLandOrAgri ? "landName" : "buildingName")}
           />
 
           <InputField

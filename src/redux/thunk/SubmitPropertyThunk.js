@@ -129,7 +129,7 @@ export const submitVerificationThunk = createAsyncThunk(
     } catch (err) {
       console.log("SUBMIT THUNK ERROR:", err);
 
-      return rejectWithValue(err.message || "Something went wrong");
+      return rejectWithValue(err || "Something went wrong");
     }
   }
 );

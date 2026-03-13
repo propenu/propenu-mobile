@@ -1,13 +1,15 @@
-import { View, Text, StyleSheet, FlatList } from "react-native";
+import { View, Text, StyleSheet, FlatList, Pressable } from "react-native";
 import React, { useEffect, useState } from "react";
 import { apiService } from "../../services/apiService";
 import OwnerPropertyCard from "./OwnerPropertyCard";
 import { useQuery } from "@tanstack/react-query";
 import useCity from "../CustomHooks/useCity";
+import { useNavigation } from "@react-navigation/native";
 
 const OwnerProperties = () => {
   const [properties, setProperties] = useState([]);
   const { selectedCity } = useCity();
+  const navigation = useNavigation();
 
   const fetchOwnerProperties = async () => {
     const res = await apiService.ownersProperties();
@@ -45,9 +47,16 @@ const OwnerProperties = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Owner Properties</Text>
-      <Text style={styles.subTitle}>
-        Simplify your home search in {selectedCity?.city ?? "Hyderabad"}
-      </Text>
+      <View style={styles.flex}>
+        <Text style={styles.subTitle}>
+          Simplify your home search in {selectedCity?.city ?? "Hyderabad"}
+        </Text>
+        <Pressable
+          onPress={() => navigation.navigate("ViewAllOwnerProperties")}
+        >
+          <Text style={styles.viewAll}>View All</Text>
+        </Pressable>
+      </View>
       {properties?.length > 0 ? (
         <FlatList
           data={properties}
@@ -80,14 +89,26 @@ const styles = StyleSheet.create({
   subTitle: {
     fontSize: 12,
     color: "#8f8d87ff",
-    marginBottom: 10,
-    marginTop: 2,
+    // marginBottom: 10,
+    // marginTop: 2,
   },
   emptyText: {
     textAlign: "center",
     marginVertical: 20,
     color: "#666",
     fontSize: 14,
+  },
+  flex: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+    marginTop: 2,
+  },
+  viewAll: {
+    fontSize: 13,
+    color: "#27AE60",
+    fontWeight: 500,
   },
 });
 export default OwnerProperties;

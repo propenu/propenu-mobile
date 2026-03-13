@@ -128,18 +128,20 @@ export const postPropertyServices = {
           method: "PATCH",
           headers: {
             Authorization: `Bearer ${token}`,
+            Accept: "application/json",
           },
           body: formData,
         },
       );
+
       const data = await res.json();
       console.log("RESSSSSSSSS", data);
 
       if (!res.ok) {
-        throw new Error(data || "Something went wrong");
-      }
+      throw data; 
+    }
 
-      return await data;
+      return data;
     } catch (error) {
       console.log("🔥 VERIFY API ERROR:", error);
       throw error;

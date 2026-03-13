@@ -1,28 +1,29 @@
 import { useEffect, useState, useMemo } from "react";
-import { View, Text, StyleSheet, FlatList } from "react-native";
+import { View, Text, StyleSheet, FlatList, Pressable } from "react-native";
 import { apiService } from "../../services/apiService";
 import AgentCard from "./AgentCard";
 import { useQuery } from "@tanstack/react-query";
 import useCity from "../CustomHooks/useCity";
+import { useNavigation } from "@react-navigation/native";
 
 export const fetchAgents = async () => {
   const res = await apiService.agent();
   return res.data.items;
 };
 const AgentProperties = () => {
-   const { selectedCity } = useCity();
+  const { selectedCity } = useCity();
   const { data, isLoading, isError, error } = useQuery(["agents"], fetchAgents);
+  const navigation = useNavigation();
 
   const filteredData = useMemo(() => {
-  if (!data) return [];
+    if (!data) return [];
 
-  if (!selectedCity?.city) return data;
+    if (!selectedCity?.city) return data;
 
-  return data.filter(
-    (item) =>
-      item.city?.toLowerCase() === selectedCity.city.toLowerCase()
-  );
-}, [data, selectedCity]);
+    return data.filter(
+      (item) => item.city?.toLowerCase() === selectedCity.city.toLowerCase(),
+    );
+  }, [data, selectedCity]);
   if (isError) console.log("Agent api error :", error);
 
   // const [details, setDetails] = useState([]);
@@ -43,9 +44,16 @@ const AgentProperties = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Agent Connect</Text>
-      <Text style={styles.subtitle}>Expert help, simplified
-        {/* Trusted professionals guiding your property journey */}
-      </Text>
+      <View style={styles.flex}>
+        <Text style={styles.subtitle}>
+          Expert help, simplified
+          {/* Trusted professionals guiding your property journey */}
+        </Text>
+        <Pressable onPress={() => navigation.navigate("AllAgents")}>
+          <Text style={styles.viewAll}>View All</Text>
+        </Pressable>
+      </View>
+
       {filteredData?.length > 0 ? (
         <FlatList
           data={filteredData}
@@ -74,8 +82,17 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 12,
     color: "#8f8d87ff",
+  },
+  flex: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 8,
     marginTop: 2,
+  },
+  viewAll: {
+    color: "#27AE60",
+    fontWeight: 500,
+    fontSize: 13,
   },
   emptyText: {
     textAlign: "center",

@@ -77,12 +77,12 @@ const OwnerPropertyCard = ({ details }) => {
         {details?.gallery?.length === 0 ? (
           <Image
             source={defaultImage}
-            style={{ height: 200, width: cardWidth - 20, borderRadius: 10 }}
+            style={{ height: 160, width: cardWidth - 20, borderRadius: 10 }}
           />
         ) : (
           <AutoImageSlider
             images={details?.gallery?.map((img) => ({ uri: img.url }))}
-            height={180}
+            height={160}
             width={cardWidth - 20}
           />
         )}

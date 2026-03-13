@@ -79,6 +79,7 @@ const VerificationStep = () => {
         : propertyType === "land"
           ? land
           : agricultural;
+      console.log("propertyProfilepropertyProfilepropertyProfile", propertyProfile)
 
   const navigation = useNavigation();
 
@@ -96,8 +97,6 @@ const VerificationStep = () => {
 
     const f = result.assets?.[0];
     if (!f) return;
-
-    console.log("MMMMMMMMMMMM", f.uri, f.name, f.mimeType);
 
     setFiles({
       uri: f.uri,
@@ -193,9 +192,9 @@ const VerificationStep = () => {
         const errObj =
           error?.response?.data ??
           (typeof error === "string" ? { message: error } : error);
-
-        if (errObj?.code === "NO_VALID_PLAN") {
-          ToastError(errObj.message || "Please subscribe to a plan");
+        if (error?.code === "NO_VALID_PLAN") {
+          ToastError("Please subscribe to a plan");
+              console.log("propertyProfile", propertyProfile)
 
           const listingType = propertyProfile?.listingType || "sale";
 
@@ -207,7 +206,7 @@ const VerificationStep = () => {
           return;
         }
 
-        if (errObj?.code === "PLAN_LIMIT_REACHED") {
+        if (error?.code === "PLAN_LIMIT_REACHED") {
           const listingType = propertyProfile?.listingType || "sale";
 
           const redirectScreen =
@@ -237,6 +236,7 @@ const VerificationStep = () => {
           and tenants are verified too.
         </Text>
       </View>
+
 
       <Text style={styles.heading}>
         Select any one of the required documents below to verify your property

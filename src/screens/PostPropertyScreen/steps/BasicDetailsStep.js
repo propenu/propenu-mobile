@@ -80,7 +80,8 @@ export default function BasicDetailsStep() {
     "cement-block-walls",
     "plastered-walls",
   ];
-  const property = ["residential", "commercial", "land", "agricultural"];
+  const PROPERTY_TYPES = ["residential", "commercial", "land", "agricultural"];
+
   const FACING_TYPES = ["North", "South", "East", "West"];
   const categoryState =
     propertyType === "residential"
@@ -121,7 +122,9 @@ export default function BasicDetailsStep() {
       : {};
 
   const handleSelect = (type) => {
-    dispatch(setPropertyType(type));
+    if (type !== propertyType) {
+      dispatch(setPropertyType(type));
+    }
   };
 
   useEffect(() => {
@@ -326,7 +329,7 @@ export default function BasicDetailsStep() {
         <Text style={styles.label}>Select your property type</Text>
 
         <View style={styles.rowWrap}>
-          {property.map((type) => {
+          {PROPERTY_TYPES.map((type) => {
             const selected = propertyType === type;
 
             return (
@@ -553,6 +556,7 @@ export default function BasicDetailsStep() {
                     ),
                       setShowFurnishingFacing(true));
                   }}
+                  error={fieldErrors?.bedrooms}
                 />
               </View>
 
@@ -571,6 +575,7 @@ export default function BasicDetailsStep() {
                     ),
                       setShowFurnishingFacing(true));
                   }}
+                  error={fieldErrors?.bathrooms}
                 />
               </View>
 
@@ -589,6 +594,7 @@ export default function BasicDetailsStep() {
                     ),
                       setShowFurnishingFacing(true));
                   }}
+                  error={fieldErrors?.balconies}
                 />
               </View>
             </View>
@@ -701,12 +707,12 @@ export default function BasicDetailsStep() {
                       <OptionButton
                         key={item.value}
                         label={item.label}
-                        active={commercial.furnishing === item.value}
+                        active={commercial.furnishedStatus === item.value}
                         onPress={() =>
                           dispatch(
                             setProfileField({
                               propertyType: "commercial",
-                              key: "furnishing",
+                              key: "furnishedStatus",
                               value: item.value,
                             }),
                           )

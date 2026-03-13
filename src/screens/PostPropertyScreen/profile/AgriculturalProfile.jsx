@@ -182,70 +182,75 @@ const AgriculturalProfile = () => {
     );
   };
 
+  const handleRemoveImage = async (img, index) => {
+    if (img?.uri) {
+      const updatedFiles = files.filter((_, i) => i !== index);
+      setFiles(updatedFiles);
+      return;
+    }
 
-    const handleRemoveImage = async (img, index) => {
-      if (img?.uri) {
-        const updatedFiles = files.filter((_, i) => i !== index);
-        setFiles(updatedFiles);
-        return;
-      }
-  
-      if (!draftId) {
-        ToastError("Please refresh and try again.");
-        return;
-      }
-  
-      const serverIndex =
-        agricultural.gallery
-          .slice(0, index + 1)
-          .filter((f) => f.source === "server").length - 1;
-  
-      if (serverIndex < 0) {
-        ToastError("Invalid image index.");
-        return;
-      }
-  
-      try {
-        const res = await postPropertyServices.deleteGalleryImageApi(
-          "agricultural",
-          draftId,
-          serverIndex,
-        );
-      
-        const updatedGallery = agricultural.gallery.filter(
-        (_, i) => i !== serverIndex
+    if (!draftId) {
+      ToastError("Please refresh and try again.");
+      return;
+    }
+
+    const serverIndex =
+      agricultural.gallery
+        .slice(0, index + 1)
+        .filter((f) => f.source === "server").length - 1;
+
+    if (serverIndex < 0) {
+      ToastError("Invalid image index.");
+      return;
+    }
+
+    try {
+      const res = await postPropertyServices.deleteGalleryImageApi(
+        "agricultural",
+        draftId,
+        serverIndex,
       );
-  
-      console.log(updatedGallery.length,"updatedGallery")
-  
-        if (res?.success) {
-          dispatch(
-            setProfileField({
-              propertyType: "agricultural",
-              key: "gallery",
-              value: updatedGallery,
-            }),
-          );
-        }
-      } catch (err) {
-        const message =
-          err?.message ||
-          err?.response?.data?.message ||
-          "Failed to delete image from server";
-          console.log("Error when deleting image :", err)
-  
-        // ToastError(message);
+
+      const updatedGallery = agricultural.gallery.filter(
+        (_, i) => i !== serverIndex,
+      );
+
+      console.log(updatedGallery.length, "updatedGallery");
+
+      if (res?.success) {
+        dispatch(
+          setProfileField({
+            propertyType: "agricultural",
+            key: "gallery",
+            value: updatedGallery,
+          }),
+        );
       }
-    };
+    } catch (err) {
+      const message =
+        err?.message ||
+        err?.response?.data?.message ||
+        "Failed to delete image from server";
+      console.log("Error when deleting image :", err);
+
+      // ToastError(message);
+    }
+  };
 
   const handleAgriculturalSubmitDetails = () => {
     setShowErrors(true);
 
     const allImages = [...(agricultural?.gallery || []), ...(files || [])];
-    
+
+    const normalizedImages = allImages.map((img) => ({
+      uri: img.uri,
+      name: img.name || img.fileName,
+      type: img.type || img.mimeType,
+      url: img.url,
+    }));
     const validationResult = validateAgriculturalProfile(
       agricultural,
-      allImages.map((f) => f),
+      normalizedImages,
     );
 
     const ZodErrors = !validationResult.success
@@ -261,27 +266,37 @@ const AgriculturalProfile = () => {
       ToastError("Something went wrong");
       return;
     }
-    dispatch(
-      submitDetailsThunk({
-        category: propertyType,
-        id: draftId,
-        payload: agricultural,
-      }),
-    )
-      .unwrap()
-      .then((res) => {
-        // console.log("Result :", res);
-        dispatch(setPercentage(res?.data?.completion?.percent));
-        ToastSuccess("Profile details submitted successfully");
-        dispatch(nextStep());
-      })
-      .catch((error) => {
-        console.log("🔥 FULL ERROR FROM API:", error);
-      });
+
+    if (isFormValid) {
+      dispatch(
+        setProfileField({
+          propertyType: "agricultural",
+          key: "gallery",
+          value: normalizedImages,
+        }),
+      );
+      dispatch(
+        submitDetailsThunk({
+          category: propertyType,
+          id: draftId,
+          payload: agricultural,
+        }),
+      )
+        .unwrap()
+        .then((res) => {
+          // console.log("Result :", res);
+          dispatch(setPercentage(res?.data?.completion?.percent));
+          ToastSuccess("Profile details submitted successfully");
+          dispatch(nextStep());
+        })
+        .catch((error) => {
+          console.log("🔥 FULL ERROR FROM API:", error);
+        });
+    }
   };
 
-   const allImages = [...(agricultural?.gallery || []), ...(files || [])];
-   console.log(allImages,"allImages")
+  const allImages = [...(agricultural?.gallery || []), ...(files || [])];
+  console.log(allImages, "allImages");
 
   const Section = ({ title, subtitle, children }) => (
     <View style={styles.section}>
@@ -653,7 +668,7 @@ const AgriculturalProfile = () => {
 
         {/* Preview images after upload */}
         <Text style={styles.label}>Add photos of your property</Text>
-               <View style={styles.previewContainer}>
+        <View style={styles.previewContainer}>
           {/* Existing gallery images */}
           {allImages.map((img, index) => (
             <View key={index} style={styles.imageWrapper}>
@@ -913,7 +928,7 @@ const styles = StyleSheet.create({
     marginBottom: 7,
     color: "#374151",
   },
-   previewImage: {
+  previewImage: {
     width: "100%",
     borderRadius: 8,
     height: "100%",
