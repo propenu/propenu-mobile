@@ -276,37 +276,38 @@ const SettingsScreen = () => {
           </View>
         </View>
       </View>
-
-      <ScrollView style={styles.membership}>
-        <Text style={[styles.cardTitle, { paddingTop: 5, paddingLeft: 5 }]}>
-          Membership History
-        </Text>
-        {data?.history?.map((item, index) => (
-          <View key={index} style={styles.membershipRow}>
-            <View style={styles.history}>
-              <Text style={styles.planName}>
-                {item.planName}
-                <Text style={styles.smallText}> ({item.category})</Text>
-              </Text>
-              <StatusBadge status={item.status} />
+      {data?.history > 0 && (
+        <ScrollView style={styles.membership}>
+          <Text style={[styles.cardTitle, { paddingTop: 5, paddingLeft: 5 }]}>
+            Membership History
+          </Text>
+          {data?.history?.map((item, index) => (
+            <View key={index} style={styles.membershipRow}>
+              <View style={styles.history}>
+                <Text style={styles.planName}>
+                  {item.planName}
+                  <Text style={styles.smallText}> ({item.category})</Text>
+                </Text>
+                <StatusBadge status={item.status} />
+              </View>
+              <View style={[styles.history, { paddingTop: 3 }]}>
+                <Text style={styles.date}>
+                  Acivated on : {formatDate(item.startDate)} -{" "}
+                  {formatDate(item.endDate)}{" "}
+                </Text>
+                <Text style={styles.detailValue}>₹{item.price}/-</Text>
+              </View>
+              <Pressable
+                style={styles.download}
+                onPress={() => handleOpenInvoice(item?.invoiceUrl)}
+              >
+                <AntDesign name="cloud-download" size={16} color="#27AE60" />
+                <Text style={styles.invoiceText}>Invoice</Text>
+              </Pressable>
             </View>
-            <View style={[styles.history, { paddingTop: 3 }]}>
-              <Text style={styles.date}>
-                Acivated on : {formatDate(item.startDate)} -{" "}
-                {formatDate(item.endDate)}{" "}
-              </Text>
-              <Text style={styles.detailValue}>₹{item.price}/-</Text>
-            </View>
-            <Pressable
-              style={styles.download}
-              onPress={() => handleOpenInvoice(item?.invoiceUrl)}
-            >
-              <AntDesign name="cloud-download" size={16} color="#27AE60" />
-              <Text style={styles.invoiceText}>Invoice</Text>
-            </Pressable>
-          </View>
-        ))}
-      </ScrollView>
+          ))}
+        </ScrollView>
+      )}
       {/* LOGOUT BUTTON */}
       {/* <Pressable onPress={handleLogout} style={[styles.menuItem]}>
         <AntDesign name="logout" size={19} color="#E53935" />

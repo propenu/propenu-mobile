@@ -36,6 +36,8 @@ const AmenitiesWithModal = ({ amenities, color }) => {
           </Pressable>
         )}
       </View>
+              <Text style={styles.subtitle}>Facilities designed for comfortable living</Text>
+
 
       <View style={styles.amenitiesGrid}>
         {amenities?.length === 0 && (
@@ -124,6 +126,14 @@ const styles = StyleSheet.create({
   galleryText: {
     fontSize: 16,
     fontWeight: "600",
+  },
+  subtitle: {
+    color: "#6b7280",
+    fontSize: 12,
+    marginTop: 5,
+    marginBottom: 7,
+    paddingLeft: 16,
+
   },
   viewMoreBtn: {
     padding: 4,

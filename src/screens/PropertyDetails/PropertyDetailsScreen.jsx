@@ -179,7 +179,12 @@ const PropertyDetailsScreen = ({ route }) => {
           )}
 
           <Pressable
-            style={[styles.enquirybtn,{backgroundColor : property?.color ? property?.color : "#27AE60"  }]}
+            style={[
+              styles.enquirybtn,
+              {
+                backgroundColor: property?.color ? property?.color : "#27AE60",
+              },
+            ]}
             onPress={() => setShowEnquiryModal(true)}
           >
             <Text style={{ color: "#fff", fontSize: 12, fontWeight: "500" }}>
@@ -314,7 +319,10 @@ const PropertyDetailsScreen = ({ route }) => {
             sectionPositions.current.properties = e.nativeEvent.layout.y;
           }}
         >
-          <AvailableProperties bhk={property}   bookAppointment={() => setShowEnquiryModal(true)}/>
+          <AvailableProperties
+            bhk={property}
+            bookAppointment={() => setShowEnquiryModal(true)}
+          />
         </View>
 
         <View
@@ -353,6 +361,9 @@ const PropertyDetailsScreen = ({ route }) => {
               >
                 Location & Landmarks
               </Text>
+              <Text style={styles.subtitle}>
+                Everything you need, just minutes away
+              </Text>
 
               <FlatList
                 data={property?.nearbyPlaces}
@@ -362,7 +373,7 @@ const PropertyDetailsScreen = ({ route }) => {
                   <View style={styles.placeRow}>
                     <LocationIcon color="#FFAC1D" width={18} height={18} />
                     <Text style={styles.placeName}>
-                      {item.name} : {item.distanceText}
+                      {item.name} : {item?.distanceText}
                     </Text>
                   </View>
                 )}
@@ -392,6 +403,7 @@ const PropertyDetailsScreen = ({ route }) => {
           >
             About Us
           </Text>
+          <Text style={styles.subtitle}>The story behind the project</Text>
           {property?.aboutSummary?.map((item, index) => (
             <View key={index} style={styles.homepage}>
               <Text style={styles.about}>{item?.aboutDescription}</Text>
@@ -402,7 +414,7 @@ const PropertyDetailsScreen = ({ route }) => {
                 />
                 {/* <Text style={styles.overlayText}>Why Choose Us</Text> */}
               </View>
-              <View style={{marginTop:15}}>
+              <View style={{ marginTop: 15 }}>
                 <RenderHTML
                   contentWidth={width * 0.9}
                   source={{ html: item?.rightContent }}
@@ -437,7 +449,14 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   imageWrapper: {
-    position: "relative", 
+    position: "relative",
+  },
+  subtitle: {
+    color: "#6b7280",
+    fontSize: 12,
+    marginTop: 5,
+    marginBottom: 7,
+    paddingLeft: 16,
   },
 
   image: {
@@ -552,7 +571,7 @@ const styles = StyleSheet.create({
   homepage: {
     alignItems: "center",
     width: "93%",
-    margin: 10,
+    marginLeft: 10,
     // marginVertical: 18,
   },
 
@@ -574,6 +593,7 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     color: "#444",
     marginBottom: 10,
+    fontWeight: 500,
     paddingHorizontal: 7,
     textAlign: "justify",
   },

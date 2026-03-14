@@ -239,6 +239,7 @@ const AgriculturalProfile = () => {
 
   const handleAgriculturalSubmitDetails = () => {
     setShowErrors(true);
+    console.log("HAIIIIIIIIIIIII")
 
     const allImages = [...(agricultural?.gallery || []), ...(files || [])];
 
@@ -260,7 +261,8 @@ const AgriculturalProfile = () => {
 
     const isFormValid = validationResult.success;
 
-    // console.log("validation result agricultural", validationResult);
+    console.log("validation result agricultural", validationResult,  );
+
 
     if (!isFormValid && !draftId) {
       ToastError("Something went wrong");
@@ -296,7 +298,7 @@ const AgriculturalProfile = () => {
   };
 
   const allImages = [...(agricultural?.gallery || []), ...(files || [])];
-  console.log(allImages, "allImages");
+  console.log("Field errors :", fieldErrors)
 
   const Section = ({ title, subtitle, children }) => (
     <View style={styles.section}>
@@ -513,9 +515,9 @@ const AgriculturalProfile = () => {
                 }
               />
               {showErrors &&
-                fieldErrors?.borewellErrors?.drilledYear?._errors?.[0] && (
+              fieldErrors?.borewellDetails?.[0] && (
                   <Text style={styles.errorText}>
-                    {borewellErrors.drilledYear._errors[0]}
+                    {fieldErrors?.borewellDetails?.[0]}
                   </Text>
                 )}
             </View>

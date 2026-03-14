@@ -171,15 +171,20 @@ const Membership = () => {
         </View>
         <Pressable
           style={styles.upgradeButton}
-          onPress={() => navigation.navigate("OwnerRentPlans")}
-          //     if (plan.category === "buy") {
-          //       navigation.navigate("BuyPlans");
-          //     } else if (plan.category === "rent_view") {
-          //       navigation.navigate("RentPlans");
-          //     } else {
-          //       navigation.navigate("Pricing");
-          //     }
-          //   }}
+          // navigation.navigate("OwnerRentPlans")}
+
+          onPress={() => {
+            console.log("Plan category :", plan.category)
+            if (plan.category === "buy") {
+              navigation.navigate("BuyViewPlans");
+            } else if (plan.category === "sell") {
+              navigation.navigate("OwnerSellPlans");
+            } else if (plan.category === "rent") {
+              navigation.navigate("OwnerRentPlans");
+            } else if (plan.category === "rent_view") {
+              navigation.navigate("OwnerRentPlans");
+            } 
+          }}
         >
           <Text style={styles.upgradeText}>Upgrade Plan</Text>
         </Pressable>

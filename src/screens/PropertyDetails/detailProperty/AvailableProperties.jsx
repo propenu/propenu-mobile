@@ -64,7 +64,7 @@ const AvailableProperties = ({ bhk, bookAppointment }) => {
         >
           Available Properties
         </Text>
-        <Text style={styles.subtitle}>Building excellence in Hyderabad</Text>
+        <Text style={styles.subtitle}>Your next property could be here</Text>
       </View>
 
       {/* Card */}

@@ -110,7 +110,7 @@ const MyProperties = () => {
     const screenName = screenMap[activeTab];
 
     if (screenName) {
-      navigation.navigate(screenName, { id: item?._id });
+      navigation.navigate(screenName, { slug: item?.slug });
     } else {
       console.log("Invalid category");
     }

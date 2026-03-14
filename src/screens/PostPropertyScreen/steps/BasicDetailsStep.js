@@ -250,7 +250,7 @@ export default function BasicDetailsStep() {
     )
       .unwrap()
       .then((result) => {
-        console.log("Thunk result:", result, result.data.completion.percent);
+        // console.log("Thunk result:", result);
         dispatch(setPercentage(result?.data?.completion?.percent));
 
         ToastSuccess("Basic details submitted successfully");
@@ -274,7 +274,6 @@ export default function BasicDetailsStep() {
     </>
   );
 
-  console.log("RESIDENTIAL  :0", residential.facing);
   return (
     <KeyboardAwareScrollView
       contentContainerStyle={{ flexGrow: 1 }}
@@ -720,9 +719,9 @@ export default function BasicDetailsStep() {
                       />
                     ))}
                   </View>
-                  {fieldErrors?.furnishing ? (
+                  {fieldErrors?.furnishedStatus ? (
                     <Text style={styles.errorText}>
-                      {fieldErrors?.furnishing}
+                      {fieldErrors?.furnishedStatus}
                     </Text>
                   ) : null}
                   <View style={styles.facingDropDown}>

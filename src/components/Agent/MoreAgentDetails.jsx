@@ -11,6 +11,7 @@ import React, { useEffect, useState } from "react";
 import { apiService } from "../../services/apiService";
 import { ToastInfo } from "../../utils/Toast";
 import { useQuery } from "@tanstack/react-query";
+import { Linking } from "react-native";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -27,7 +28,6 @@ const MoreAgentDetails = ({ route }) => {
   const { slug } = route.params;
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState("residential");
-  console.log("SLIGsss", slug);
 
   const categories = ["residential", "commercial", "agricultural", "land"];
 
@@ -59,6 +59,25 @@ const MoreAgentDetails = ({ route }) => {
   const activeProperties = details?.properties?.[activeTab] || [];
 
   const ActiveCard = cardComponents[activeTab];
+
+  const openWhatsApp = (phone) => {
+      const message =
+        "Hi, I would like to connect with you regarding property details.";
+      const url = `https://wa.me/${"+919182759849"}?text=${encodeURIComponent(message)}`;
+  
+      Linking.openURL(url);
+    };
+  
+    const makeCall = async (phone) => {
+      const url = `tel:${"+919182759849"}`;
+      const supported = await Linking.canOpenURL(url);
+  
+      if (supported) {
+        Linking.openURL(url);
+      } else {
+        console.log("Calling is not supported on this device");
+      }
+    };
 
   if (isLoading) {
     return (
@@ -282,14 +301,14 @@ const styles = StyleSheet.create({
   },
   deals: {
     paddingHorizontal: 15,
-    paddingTop: 7,
+    paddingTop: 5,
     fontSize: 12,
   },
   hrline: {
     height: 1,
     backgroundColor: "#eee",
     marginHorizontal: 8,
-    marginVertical: 10,
+    marginVertical: 7,
   },
   areas: {
     fontSize: 12,

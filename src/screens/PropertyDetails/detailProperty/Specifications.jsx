@@ -31,7 +31,7 @@ const Specifications = ({ property }) => {
         <Text style={[styles.title, { color: color ? color : "#000" }]}>
           Specifications
         </Text>
-        {/* <Text style={styles.subtitle}>Building excellence in Hyderabad</Text> */}
+        <Text style={styles.subtitle}>Key details of the property</Text>
       </View>
 
       {/* Card */}

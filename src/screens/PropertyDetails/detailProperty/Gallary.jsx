@@ -54,7 +54,7 @@ const Gallery = ({ property }) => {
           Gallery
         </Text>
         <Text style={styles.smallText}>
-          Building excellence in{" "}
+         See the space before you step in
           {selectedCity?.city ? selectedCity.city : "Hyderabad"}
         </Text>
         <FlatList
