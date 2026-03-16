@@ -23,6 +23,7 @@ import EnquiryModal from "../../components/ui/EnquiryModal";
 import Specifications from "./detailProperty/Specifications";
 import RenderHTML from "react-native-render-html";
 import useDimensions from "../../components/CustomHooks/UseDimension";
+import { prop } from "ramda";
 
 const PropertyDetailsScreen = ({ route }) => {
   const { width } = useDimensions();
@@ -94,9 +95,34 @@ const PropertyDetailsScreen = ({ route }) => {
     return date.toLocaleString("en-US", {
       month: "short",
       year: "numeric",
-    });
+    }); 
   };
 
+  const getDistanceInKm = (coord2) => {
+    const toRad = (value) => (value * Math.PI) / 180;
+
+    const lon1 = property?.location?.coordinates[0];
+    const lat1 = property?.location?.coordinates[1];
+    const lon2 = coord2[0];
+    const lat2 = coord2[1];
+
+    const R = 6371; // Earth radius in KM
+
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRad(lat1)) *
+        Math.cos(toRad(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c;
+  };
+ 
   return (
     <SafeAreaView style={styles.safe}>
       {showNav && (
@@ -373,7 +399,8 @@ const PropertyDetailsScreen = ({ route }) => {
                   <View style={styles.placeRow}>
                     <LocationIcon color="#FFAC1D" width={18} height={18} />
                     <Text style={styles.placeName}>
-                      {item.name} : {item?.distanceText}
+                      {item.name} :{" "}
+                      {getDistanceInKm(item.coordinates).toFixed(2)} km
                     </Text>
                   </View>
                 )}
@@ -414,12 +441,12 @@ const PropertyDetailsScreen = ({ route }) => {
                 />
                 {/* <Text style={styles.overlayText}>Why Choose Us</Text> */}
               </View>
-              <View style={{ marginTop: 15 }}>
+              <View style={{ marginTop: 10 }}>
                 <RenderHTML
                   contentWidth={width * 0.9}
                   source={{ html: item?.rightContent }}
                   tagsStyles={{
-                    ul: { marginLeft: 10, marginTop: 15 },
+                    ul: { marginLeft: 10, marginTop: 10 },
                     li: { marginBottom: 8 },
                     p: {
                       fontSize: 12,
@@ -613,12 +640,12 @@ const styles = StyleSheet.create({
     // paddingVertical: 8,
     // borderBottomWidth: 0.5,
     // borderColor: "#eee",
-    marginRight: 17,
-    marginVertical: 12,
+    marginRight: 15,
+    marginVertical: 10,
   },
 
   placeName: {
-    fontSize: 14,
+    fontSize: 13,
     color: "#333",
     flexShrink: 1,
     fontWeight: 500,

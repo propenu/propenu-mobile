@@ -113,7 +113,7 @@ fontSize: 14,
     padding: 12,
   },
   card: {
-    width:250,
+    width:280,
     backgroundColor: "white",
     marginTop: 10,
     marginRight:12,
