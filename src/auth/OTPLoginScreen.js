@@ -74,8 +74,11 @@ const OTPLoginModal = ({ route, navigation }) => {
         });
         console.log("otp Result :", phone, otpValue, otpResult);
         if (otpResult?.status !== 200) {
-          ToastInfo(otpResult?.data?.message || "Please complete the verification steps");
-          return ;
+          ToastInfo(
+            otpResult?.data?.message ||
+              "Please complete the verification steps",
+          );
+          return;
         }
       }
 
@@ -109,11 +112,12 @@ const OTPLoginModal = ({ route, navigation }) => {
           name: data?.user?.name,
           phone: data?.user?.phone,
           roleName: data?.user?.roleName,
+          email: data?.user?.email,
         }),
       );
       await new Promise((resolve) => setTimeout(resolve, 100));
       await refreshAuth();
-      ToastSuccess("OTP verified successfully");
+      ToastSuccess("Logged in successfully");
       console.log("Login successful......");
       navigation.pop(2);
 

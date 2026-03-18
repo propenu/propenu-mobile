@@ -9,11 +9,14 @@ import useDimensions from "../CustomHooks/UseDimension";
 import { ToastInfo, ToastSuccess } from "../../utils/Toast";
 import defaultImage from "../../../assets/defaultImage.png";
 import { useAuth } from "../../context/AuthContext";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import ContactOwnerButton from "../ui/ContactOwnerButton";
+
 
 const OwnerPropertyCard = ({ details }) => {
   const navigation = useNavigation();
+  const {userDetails} = useAuth();
   const { width, height } = useDimensions();
-  const { isLoggedIn } = useAuth();
   const cardWidth = width * 0.75;
   const imageSource =
     details?.gallery?.length > 0
@@ -34,14 +37,6 @@ const OwnerPropertyCard = ({ details }) => {
     return `₹ ${price.toLocaleString("en-IN")}`;
   };
 
-  const handleContact = async () => {
-    if (isLoggedIn) {
-      ToastSuccess("Owner will contact you shortly");
-    } else {
-      ToastInfo("User not authenticated");
-    }
-  };
-
   const handleClick = () => {
     const screenMap = {
       residential: "MoreResidentialDetails",
@@ -59,15 +54,30 @@ const OwnerPropertyCard = ({ details }) => {
     }
   };
 
-  const MetaItem = ({ label, value, Icon }) => (
+  const listingSourceRaw = (
+  details?.listingSource ||
+  details?.createdBy?.roleName ||
+  details?.createdBy?.role ||
+  "user"
+)?.toLowerCase();
+
+const resolvedListingSource =
+  listingSourceRaw === "agent"
+    ? "Agent"
+    : listingSourceRaw === "builder"
+    ? "builder"
+    : "Owner";
+
+  const MetaItem = ({ label, value, Icon, iconProps = {} }) => (
     <View style={styles.metaItemRow}>
-      {Icon}
-      <View>
+      <Icon size={20} color="#8BEAB2" {...iconProps} />
+      <View style={{ gap: 3 }}>
         <Text style={styles.metaLabel}>{label}</Text>
         <Text style={styles.metaValue}>{value}</Text>
       </View>
     </View>
   );
+  // console.log("Details :", details);
   return (
     <Pressable
       onPress={handleClick}
@@ -87,7 +97,11 @@ const OwnerPropertyCard = ({ details }) => {
           />
         )}
         <View style={styles.likeIcon}>
-          <LikedIconContainer id={details?._id} slug={details?.slug} type={details?.type} />
+          <LikedIconContainer
+            id={details?._id}
+            slug={details?.slug}
+            type={details?.type}
+          />
         </View>
       </View>
       <View style={styles.detailsSection}>
@@ -102,30 +116,65 @@ const OwnerPropertyCard = ({ details }) => {
         <View style={styles.metaRow}>
           <View style={{ gap: 7 }}>
             <MetaItem
-              Icon={<AreaIcon width={20} height={20} />}
+              Icon={AreaIcon}
               label="Area"
-              value={`${details.superBuiltUpArea ?? "—"} sqft`}
+              value={
+                details.type === "residential" || details.type === "commercial"
+                  ? `${details.builtUpArea ?? "—"} sqft`
+                  : `${details?.plotArea ?? "-"} sqft`
+              }
             />
-            <MetaItem
-              Icon={<BedIcon width={20} height={20} />}
-              label="Furnishing"
-              value={details?.furnishing || "Unfurnished"}
-            />
+            {details.type === "residential" || details.type === "commercial" ? (
+              <MetaItem
+                Icon={BedIcon}
+                label="Furnishing"
+                value={details?.furnishing || "Unfurnished"}
+              />
+            ) : (
+              <MetaItem
+                Icon={AntDesign}
+                iconProps={{ name: "compass" }}
+                label="Facing"
+                value={details.facing ?? "-"}
+              />
+            )}
           </View>
           <View style={{ gap: 7 }}>
-            <MetaItem
-              Icon={<ReadyToMoveIcon width={20} height={20} />}
-              label="Availability"
-              value={`Available`}
-            />
+            {details.type === "residential" || details.type === "commercial" ? (
+              <MetaItem
+                Icon={ReadyToMoveIcon}
+                label="Availability"
+                value={`Available`}
+              />
+            ) : (
+              <MetaItem
+                Icon={ReadyToMoveIcon}
+                label="Dimensions"
+                value={
+                  details?.dimensions?.length && details?.dimensions?.width
+                    ? `${details.dimensions.length} X ${details.dimensions.width}`
+                    : "-"
+                }
+              />
+            )}
 
-            <MetaItem
-              Icon={<FontAwesome5 name="car" size={19} color="#8BEAB2" />}
-              label="Parking"
-              value={`${details?.parkingDetails?.twoWheeler || 0} + ${
-                details?.parkingDetails?.fourWheeler || 0
-              }`}
-            />
+            {details.type === "residential" || details.type === "commercial" ? (
+              <MetaItem
+                Icon={FontAwesome5}
+                iconProps={{ name: "car" }}
+                label="Parking"
+                value={`${details?.parkingDetails?.twoWheeler || 0} + ${
+                  details?.parkingDetails?.fourWheeler || 0
+                }`}
+              />
+            ) : (
+              <MetaItem
+                Icon={FontAwesome5}
+                iconProps={{ name: "road" }}
+                label="Road Width"
+                value={details?.roadWidthFt ?? "-"}
+              />
+            )}
           </View>
         </View>
 
@@ -135,10 +184,18 @@ const OwnerPropertyCard = ({ details }) => {
             <Text style={styles.priceSub}>₹ {details?.pricePerSqft}/sqft</Text>
           </View>
 
-          <Pressable style={styles.button} onPress={handleContact}>
-            {/* <PhoneIcon width={18} height={18} /> */}
-            <Text style={styles.buttonText}>Contact Owner</Text>
-          </Pressable>
+          <ContactOwnerButton
+            projectId={details?._id}
+            propertyType={details?.type}
+            listingType={details?.listingType}
+            listingSource={resolvedListingSource}
+            ownerName={details?.createdBy?.name}
+            ownerPhone={details?.createdBy?.contact ?? details?.phone}
+            ownerEmail={details?.createdBy?.email ?? details?.email}
+            postedOn={details?.createdAt}
+            price={details?.price}
+            propertyLabel={details?.title}
+          />
         </View>
       </View>
     </Pressable>
@@ -217,7 +274,7 @@ const styles = StyleSheet.create({
     gap: 3,
   },
   metaLabel: {
-    fontSize: 11,
+    fontSize: 12,
     color: "#777",
   },
   metaValue: {

@@ -24,7 +24,7 @@ const BuyPlans = ({ navigation }) => {
   const flatListRef = useRef(null);
 
   useEffect(() => {
-    if (plans.length > 1) {
+    if (plans?.length > 1) {
       setTimeout(() => {
         flatListRef.current?.scrollToOffset({
           offset: 250,

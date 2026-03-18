@@ -8,35 +8,35 @@ import {
   Dimensions,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import CustomerSupport from "../../../assets/svg/customer-support.svg";
+import { useAuth } from "../../context/AuthContext";
 
 const { width } = Dimensions.get("window");
 
 const PromoBanner = () => {
   const navigation = useNavigation();
+  const { useDetails } = useAuth();
+
+  const handleNavigate = () => {
+    if (useDetails?.roleName === "agent") {
+      navigation.navigate("BuyPlans");
+    } else {
+      navigation.navigate("BuyViewPlans");
+    }
+  };
   return (
     <View style={styles.container}>
       <View style={styles.leftSection}>
+        <CustomerSupport height="130" width="130" />
+
         <Text style={styles.title}>
           Haven’t subscribed yet? Upgrade now to unlock more leads and grow your
           property reach.
         </Text>
 
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate("BuyPlans")}
-        >
+        <TouchableOpacity style={styles.button} onPress={handleNavigate}>
           <Text style={styles.buttonText}>Upgrade your Plan</Text>
         </TouchableOpacity>
-      </View>
-
-      <View style={styles.imageContainer}>
-        <Image
-          source={{
-            uri: "https://illustrations.popsy.co/emerald/customer-support.svg",
-          }}
-          style={styles.image}
-          resizeMode="contain"
-        />
       </View>
     </View>
   );
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#1F2937",
     textAlign: width > 768 ? "left" : "center",
-    marginBottom: 20,
+    marginVertical: 20,
     paddingHorizontal: 20,
     lineHeight: 23,
   },
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   imageContainer: {
-    marginTop: width > 768 ? 0 : 12,
+    // marginTop: width > 768 ? 0 : 12,
     height: 100,
   },
   image: {

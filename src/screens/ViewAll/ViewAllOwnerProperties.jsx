@@ -152,7 +152,7 @@ const ItemCard = ({ item }) => {
               Icon={FontAwesome5}
               iconProps={{ name: "road" }}
               label="Road Width"
-              value={item?.roadWidthFt || "Unfurnished"}
+              value={item?.roadWidthFt || "-"}
             />
           </View>
         )}

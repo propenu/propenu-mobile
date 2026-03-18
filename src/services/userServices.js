@@ -184,6 +184,39 @@ export const userServices = {
     }
   },
 
+  postLeads: async (payload) => {
+    try {
+      const token = await getToken();
+
+      const response = await fetch(
+        `${ENV.BASE_URL}${API_ROUTES.SHORTLIST.LEADS}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        },
+      );
+
+      const data = await response.json();
+      // console.log(data, "LLLLL");
+
+      if (!response.ok) {
+        throw {
+          message: data?.message || "Failed to post lead",
+          status: response.status,
+        };
+      }
+
+      return data;
+    } catch (error) {
+      console.log("Error when posting leads :", error);
+      throw error;
+    }
+  },
+
   // getProjectLeads: async (projectId) => {
   //   const token = await getToken();
   //   console.log(projectId, "MyProjectLeadsid");
