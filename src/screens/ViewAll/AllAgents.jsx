@@ -216,7 +216,7 @@ const AllAgents = () => {
 
       {filteredData?.length > 0 && (
         <Text style={styles.title}>
-          {filteredData?.length} Projects in {cityData?.city}
+          {filteredData?.length} Agents in {cityData?.city}
         </Text>
       )}
 

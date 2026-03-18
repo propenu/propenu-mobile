@@ -7,6 +7,8 @@ export const API_ROUTES = {
     VERIFY_TOKEN: "/api/users/auth/me",
     CREATE_ACCOUNT: "/api/users/auth/request-otp/create",
     REQUEST_OTP: "/api/users/auth/verify-otp/create",
+    LOCATION:"/api/users/auth/update-location/create",
+    KYC:"/api/users/kyc/start"
   },
   USER: {
     FEATURED_PROJECTS: "/api/properties/featured-project",

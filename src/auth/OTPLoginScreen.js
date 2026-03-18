@@ -14,7 +14,7 @@ import useDimensions from "../components/CustomHooks/UseDimension";
 import { setItem } from "../utils/Storage";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Keychain from "react-native-keychain";
-import { ToastSuccess } from "../utils/Toast";
+import { ToastInfo, ToastSuccess } from "../utils/Toast";
 import { BigLogo } from "../../assets/svg/LogoPropenu";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useAuth } from "../context/AuthContext";
@@ -74,7 +74,8 @@ const OTPLoginModal = ({ route, navigation }) => {
         });
         console.log("otp Result :", phone, otpValue, otpResult);
         if (otpResult?.status !== 200) {
-          throw new Error("OTP verification failed");
+          ToastInfo(otpResult?.data?.message || "Please complete the verification steps");
+          return ;
         }
       }
 

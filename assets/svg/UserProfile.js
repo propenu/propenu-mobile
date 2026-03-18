@@ -10,6 +10,12 @@ import Svg, {
   Use,
   Image,
 } from "react-native-svg";
+let idCounter = 0
+
+export const getUniqueMaskId = (prefix = "mask") => {
+  idCounter += 1;
+  return `${prefix}-${idCounter}`;
+};
 
 export const UserProfile = ({ width = 66, height = 80, ...props }) => (
   <Svg
@@ -47,7 +53,7 @@ export const calling = ({ width = 20, height = 20, ...props }) => (
   >
     <G clipPath="url(#a)">
       <Mask
-        id="b"
+        id={getUniqueMaskId("abc")}
         width={24}
         height={20}
         x={0}
@@ -90,7 +96,7 @@ export const PrivacyPolicy = ({ width = 20, height = 20, ...props }) => (
   >
     <G clipPath="url(#a)">
       <Mask
-        id="b"
+        id={getUniqueMaskId("DFGH")}
         width={24}
         height={24}
         x={0}
@@ -134,7 +140,7 @@ export const TermsAndConditions = ({ width = 20, height = 20, ...props }) => (
   >
     <G clipPath="url(#a)">
       <Mask
-        id="b"
+        id={getUniqueMaskId("sd")}
         width={24}
         height={21}
         x={0}
@@ -175,7 +181,7 @@ export const ReportIssue = ({ width = 20, height = 20, ...props }) => (
   >
     <G clipPath="url(#a)">
       <Mask
-        id="b"
+        id={getUniqueMaskId("WER")}
         width={24}
         height={21}
         x={0}
@@ -220,7 +226,7 @@ export const SafetyGuide = ({ width = 20, height = 20, ...props }) => (
   >
     <G clipPath="url(#a)">
       <Mask
-        id="b"
+        id={getUniqueMaskId("ghjk")}
         width={24}
         height={24}
         x={0}
@@ -262,7 +268,7 @@ export const AboutUs = ({ width = 20, height = 20, ...props }) => (
     {...props}
   >
     <Mask
-      id="a"
+      id={getUniqueMaskId("ea")}
       width={24}
       height={24}
       x={0}
@@ -304,7 +310,7 @@ export const ShortList = ({ width = 20, height = 20, ...props }) => (
   >
     <G clipPath="url(#a)">
       <Mask
-        id="b"
+        id={getUniqueMaskId("ber")}
         width={20}
         height={20}
         x={0}
@@ -352,7 +358,7 @@ export const Dollar = ({ width = 20, height = 20, ...props }) => (
   >
     <G clipPath="url(#a)">
       <Mask
-        id="b"
+        id={getUniqueMaskId("btt")}
         width={24}
         height={24}
         x={0}
@@ -395,7 +401,7 @@ export const Leads = ({ width = 20, height = 20, ...props }) => (
   >
     <G clipPath="url(#a)">
       <Mask
-        id="b"
+        id={getUniqueMaskId("bok")}
         width={24}
         height={24}
         x={0}
@@ -440,7 +446,7 @@ export const MyProperties = ({ width = 50, height = 50, ...props }) => (
   >
     <G clipPath="url(#a)">
       <Mask
-        id="b"
+        id={getUniqueMaskId("bgfd")}
         width={24}
         height={24}
         x={0}
@@ -473,3 +479,4 @@ export const MyProperties = ({ width = 50, height = 50, ...props }) => (
     </Defs>
   </Svg>
 );
+

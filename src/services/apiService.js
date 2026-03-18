@@ -1,6 +1,18 @@
 import { ENV } from "../../config";
 import { API_ROUTES } from "./apiRoutes";
+import * as Keychain from "react-native-keychain";
 
+const getToken = async () => {
+  const credentials = await Keychain.getGenericPassword();
+
+  if (!credentials) {
+    console.log("No token found in keychain");
+    return;
+  }
+
+  const token = credentials.password;
+  return token;
+};
 export const apiService = {
   login: async (payload) => {
     console.log(payload);
@@ -68,7 +80,7 @@ export const apiService = {
   },
 
   createAccount: async (payload) => {
-    // console.log("PAYLOAD IN CREATE ACCOUNT :", payload)
+    console.log("PAYLOAD IN CREATE ACCOUNT :", payload);
     try {
       const response = await fetch(
         `${ENV.BASE_URL}${API_ROUTES.AUTH.CREATE_ACCOUNT}`,
@@ -90,8 +102,46 @@ export const apiService = {
     }
   },
 
+  updateLocation: async (payload) => {
+    const token = await getToken();
+    console.log("PAYLOAD IN LOCATION UPDATE :", payload, token,   `${ENV.BASE_URL}${API_ROUTES.AUTH.LOCATION}`,);
+
+    try {
+      const response = await fetch(
+        `${ENV.BASE_URL}${API_ROUTES.AUTH.LOCATION}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        },
+      );
+
+      const data = await response.json();
+      // console.log("LOCATION RESPONSE" ,data)
+
+      if (!response.ok) {
+        throw data || "Something went wrong";
+      }
+
+      return {
+        status: response.status,
+        data,
+      };;
+    } catch (error) {
+      console.log("Update Location Error:", error);
+      throw error;
+    }
+  },
+
   requestOTP: async (payload) => {
-    // console.log("checking Payload for verify otp when creating the account :", payload)
+    console.log(
+      "checking Payload for verify otp when creating the account :",
+      payload,
+    );
+
     try {
       const response = await fetch(
         `${ENV.BASE_URL}${API_ROUTES.AUTH.REQUEST_OTP}`,
@@ -103,16 +153,43 @@ export const apiService = {
           body: JSON.stringify(payload),
         },
       );
+
       const data = await response.json();
-      return {
-        status: response.status,
-        data,
-      };
+
+      if (!response.ok) {
+        throw data || "Request OTP failed";
+      }
+
+      return { data, status: response.status };
     } catch (error) {
+      console.log("Request OTP Error:", error);
       throw error;
     }
   },
 
+  startKyc: async () => {
+    try {
+      const token = await getToken();
+
+      const response = await fetch(`${ENV.BASE_URL}${API_ROUTES.AUTH.KYC}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw data || "KYC failed";
+      }
+
+      return { data, status: response.status };
+    } catch (error) {
+      console.log("Start KYC Error:", error);
+      throw error;
+    }
+  },
   featuredProjects: async () => {
     try {
       const response = await fetch(
@@ -194,7 +271,6 @@ export const apiService = {
       throw error;
     }
   },
-
 
   agricultural: async () => {
     try {
@@ -299,14 +375,16 @@ export const apiService = {
   },
 
   agentDetailsBySlug: async (id) => {
-
     try {
-      const response = await fetch(`${ENV.BASE_URL}${API_ROUTES.USER.AGENT}/slug/${id}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${ENV.BASE_URL}${API_ROUTES.USER.AGENT}/slug/${id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
-      });
+      );
 
       const data = await response.json();
 
@@ -429,7 +507,10 @@ export const apiService = {
   category_search: async (params) => {
     try {
       const query = new URLSearchParams(params).toString();
-      console.log("`${ENV.BASE_URL}${API_ROUTES.SEARCH.CATEGORY_SEARCH}?${query}`,",`${ENV.BASE_URL}${API_ROUTES.SEARCH.CATEGORY_SEARCH}?${query}`)
+      console.log(
+        "`${ENV.BASE_URL}${API_ROUTES.SEARCH.CATEGORY_SEARCH}?${query}`,",
+        `${ENV.BASE_URL}${API_ROUTES.SEARCH.CATEGORY_SEARCH}?${query}`,
+      );
 
       const response = await fetch(
         `${ENV.BASE_URL}${API_ROUTES.SEARCH.CATEGORY_SEARCH}?${query}`,
@@ -461,7 +542,7 @@ export const apiService = {
     }
   },
   residential_category_search: async (slug) => {
-    console.log(slug, "IDddddddddddddddddddddddddddd")
+    console.log(slug, "IDddddddddddddddddddddddddddd");
     try {
       const response = await fetch(
         `${ENV.BASE_URL}${API_ROUTES.SEARCH.RESIDENTIAL_CATEGORY_SEARCH}/slug/${slug}`,

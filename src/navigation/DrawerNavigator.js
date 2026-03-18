@@ -160,6 +160,7 @@ const Drawer = createDrawerNavigator();
 const CustomDrawerContent = ({ navigation, state }) => {
   const { isLoggedIn, userDetails, refreshAuth } = useAuth();
   const [selectedRoute, setSelectedRoute] = useState(null);
+  console.log("islo", isLoggedIn, userDetails)
 
   const capitalize = (str) =>
     str
@@ -410,7 +411,7 @@ const CustomDrawerContent = ({ navigation, state }) => {
             );
           })}
           {/* {userDetails?.roleName !== "user" && ( */}
-          {isLoggedIn && (
+          {isLoggedIn && userDetails?.name && (
             <Pressable
               onPress={handleLogout}
               style={[styles.menuItem, styles.logoutItem]}
