@@ -186,8 +186,9 @@ export const agentServices = {
       );
 
       if (!response.ok) {
+        console.log("response plans:", response)
         const errorData = await response.json();
-        throw new Error(errorData?.message || "Something went wrong");
+        throw (errorData || "Something went wrong");
       }
 
       return await response.json();
@@ -249,4 +250,84 @@ export const agentServices = {
       throw error;
     }
   },
+
+ registerAgency : async (payload, files) => {
+  try {
+       const token = await getToken();
+
+    const formData = new FormData();
+
+    // ✅ Basic fields
+    formData.append("name", payload.name);
+    formData.append("bio", payload.bio);
+    formData.append("agencyName", payload.agencyName);
+    formData.append("licenseNumber", payload.licenseNumber);
+    formData.append("licenseValidTill", payload.licenseValidTill);
+    formData.append("city", payload.city);
+    formData.append("experienceYears", String(payload.experienceYears));
+    formData.append("dealsClosed", String(payload.dealsClosed));
+    formData.append("verificationStatus", payload.verificationStatus);
+    formData.append("user", payload.user);
+
+    // ✅ Arrays
+    payload.areasServed?.forEach((area) => {
+      formData.append("areasServed[]", area.trim());
+    });
+
+    payload.languages?.forEach((lang) => {
+      formData.append("languages[]", lang.trim());
+    });
+
+    // ✅ Objects
+    formData.append("rera[reraAgentId]", payload.rera?.reraAgentId);
+    formData.append("rera[isVerified]", String(payload.rera?.isVerified));
+
+    formData.append(
+      "stats[totalProperties]",
+      String(payload.stats?.totalProperties)
+    );
+    formData.append(
+      "stats[publishedCount]",
+      String(payload.stats?.publishedCount)
+    );
+
+    // ✅ Files (IMPORTANT for React Native)
+    if (files?.avatar) {
+      formData.append("avatar", {
+        uri: files.avatar.uri,
+        type: files.avatar.type || "image/jpeg",
+        name: files.avatar.fileName || "avatar.jpg",
+      });
+    }
+
+    if (files?.coverImage) {
+      formData.append("coverImage", {
+        uri: files.coverImage.uri,
+        type: files.coverImage.type || "image/jpeg",
+        name: files.coverImage.fileName || "cover.jpg",
+      });
+    }
+
+    const response = await fetch(`${ENV.BASE_URL}/api/users/agent`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.log("API Error:", data);
+      return data;
+    }
+
+    return data;
+  } catch (error) {
+    console.log("Register Agency Error:", error);
+    return data;
+  }
+},
+ 
 };

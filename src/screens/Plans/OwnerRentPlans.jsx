@@ -42,8 +42,6 @@ const OwnerRentPlans = ({ navigation }) => {
     }
   }, [plans]);
 
-//   console.log("PLANSSSSSSSSSSSSSSSSSSSSSSSS:", plans);
-
   if (isLoading) {
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>

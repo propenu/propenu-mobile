@@ -12,7 +12,7 @@ const ContactOwnerButton = ({
   listingType,
   listingSource,
   projectId,
-  propertyType = "residentials",
+  propertyType,
   ownerName,
   ownerPhone,
   ownerEmail,
@@ -22,10 +22,9 @@ const ContactOwnerButton = ({
   children,
 }) => {
   const navigation = useNavigation();
-  const {isLoggedIn, userDetails } = useAuth();
+  const { isLoggedIn, userDetails } = useAuth();
   const [showLeadDialog, setShowLeadDialog] = useState(false);
   const [loading, setLoading] = useState(false);
-
 
   const normalizeListingType = (value) => {
     const normalized = value?.toLowerCase()?.trim();
@@ -37,14 +36,14 @@ const ContactOwnerButton = ({
     return undefined;
   };
 
-const propertyTypeMap = {
-  residential: "residentials",
-  commercial: "commercials",
-  land: "lands",
-  agricultural: "agriculturals",
-};
+  const propertyTypeMap = {
+    residential: "residentials",
+    commercial: "commercials",
+    land: "landplots",
+    agricultural: "agriculturals",
+  };
 
-const profileType = propertyTypeMap[propertyType] || featuredprojects;
+  const profileType = propertyTypeMap[propertyType] || "featuredprojects";
   const resolvedListingType = normalizeListingType(listingType);
 
   // 🔹 Redirect to plans
@@ -65,9 +64,8 @@ const profileType = propertyTypeMap[propertyType] || featuredprojects;
   };
 
   const handleContactOwner = async () => {
-
     if (!isLoggedIn) {
-    navigation.navigate("Login")
+      navigation.navigate("Login");
     }
 
     if (!projectId) {
@@ -79,15 +77,15 @@ const profileType = propertyTypeMap[propertyType] || featuredprojects;
       setLoading(true);
 
       const response = await userServices.postLeads({
-        name: userDetails.name || "Guest User",
-        phone: userDetails.phone,
-        email: userDetails.email,
-        projectId,
-        propertyType : profileType,
+        name: userDetails?.name || "Guest User",
+        phone: userDetails?.phone,
+        email: userDetails?.email,
+        projectId: projectId,
+        propertyType: profileType,
         // listingType: resolvedListingType,
         remarks: "Interested in this property",
       });
-      console.log("responseresponseresponseresponse", response)
+      // console.log("responseresponseresponseresponse", response);
 
       setShowLeadDialog(true);
     } catch (error) {
@@ -110,8 +108,10 @@ const profileType = propertyTypeMap[propertyType] || featuredprojects;
         redirectToPlan();
         return;
       }
+      console.log("Message :", message);
+      ToastInfo(message);
 
-    //   (message); // replace with Toast if needed
+      //   (message); // replace with Toast if needed
     } finally {
       setLoading(false);
     }
@@ -123,17 +123,16 @@ const profileType = propertyTypeMap[propertyType] || featuredprojects;
         onPress={handleContactOwner}
         disabled={loading}
         style={{
-            paddingHorizontal:20,
+          paddingHorizontal: 20,
           backgroundColor: "#27AE60",
-          paddingVertical:7,
+          paddingVertical: 7,
           borderRadius: 8,
           alignItems: "center",
         }}
       >
-      
-          <Text style={{ color: "#fff", fontSize:13,fontWeight: "600" }}>
-            {children || `Contact ${getContactPerson()}`}
-          </Text>
+        <Text style={{ color: "#fff", fontSize: 13, fontWeight: "600" }}>
+          {children || `Contact ${getContactPerson()}`}
+        </Text>
       </TouchableOpacity>
 
       {/* Lead Dialog */}

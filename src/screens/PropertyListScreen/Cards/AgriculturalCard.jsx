@@ -12,12 +12,27 @@ import {
 import AutoImageSlider from "../../../components/ui/AutoImageSlider";
 import { useAuth } from "../../../context/AuthContext";
 import LikedIconContainer from "../../../components/ui/LikedIconContainer";
-
+import ContactOwnerButton from "../../../components/ui/ContactOwnerButton";
 const AgriculturalCard = ({ item }) => {
   const { width } = useDimensions();
   const navigation = useNavigation();
   const { isLoggedIn, userDetails } = useAuth();
 
+   const listingSourceRaw = (
+    item?.listingSource ||
+    item?.createdBy?.roleName ||
+    item?.createdBy?.role ||
+    "user"
+  )?.toLowerCase();
+
+  const resolvedListingSource =
+    listingSourceRaw === "agent"
+      ? "Agent"
+      : listingSourceRaw === "builder"
+        ? "builder"
+        : "Owner";
+
+        
   const handleNavigate = async () => {
     console.log("Checking property id : ", item?.slug);
     navigation.navigate("MoreAgriculturalDetails", {
@@ -96,11 +111,23 @@ const AgriculturalCard = ({ item }) => {
             <Text style={styles.priceSub}>₹ {item?.pricePerSqft} / sqft</Text>
           ) : null}
         </View>
+         <ContactOwnerButton
+          projectId={item?.id ?? item?._id}
+          propertyType={item?.type}
+          listingType={item?.listingType}
+          listingSource={resolvedListingSource}
+          ownerName={item?.createdBy?.name}
+          ownerPhone={item?.createdBy?.contact ?? item?.phone}
+          ownerEmail={item?.createdBy?.email ?? item?.email}
+          postedOn={item?.createdAt}
+          price={item?.price}
+          propertyLabel={item?.title}
+        />
 
-        <Pressable style={styles.button} onPress={handleContact}>
+        {/* <Pressable style={styles.button} onPress={handleContact}>
           <PhoneIcon width={18} height={18} color="white" />
           <Text style={styles.buttonText}>Contact</Text>
-        </Pressable>
+        </Pressable> */}
       </View>
     </Pressable>
   );

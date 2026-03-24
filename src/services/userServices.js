@@ -185,6 +185,7 @@ export const userServices = {
   },
 
   postLeads: async (payload) => {
+    console.log("Pauyload :",payload)
     try {
       const token = await getToken();
 
@@ -201,13 +202,10 @@ export const userServices = {
       );
 
       const data = await response.json();
-      // console.log(data, "LLLLL");
+      console.log(data, "LLLLL");
 
       if (!response.ok) {
-        throw {
-          message: data?.message || "Failed to post lead",
-          status: response.status,
-        };
+        throw data;
       }
 
       return data;

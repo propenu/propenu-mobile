@@ -30,6 +30,7 @@ const BuyViewPlans = ({ navigation }) => {
         category: "buy",
       }),
   });
+
   useEffect(() => {
     if (plans?.length > 1) {
       setTimeout(() => {

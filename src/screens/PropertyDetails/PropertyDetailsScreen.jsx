@@ -24,7 +24,7 @@ import Specifications from "./detailProperty/Specifications";
 import RenderHTML from "react-native-render-html";
 import useDimensions from "../../components/CustomHooks/UseDimension";
 import { prop } from "ramda";
-
+import formatINR from "../../utils/FormatINR";
 const PropertyDetailsScreen = ({ route }) => {
   const { width } = useDimensions();
   const { propertyId } = route.params;
@@ -33,6 +33,7 @@ const PropertyDetailsScreen = ({ route }) => {
   const [showEnquiryModal, setShowEnquiryModal] = useState(false);
   const [isLoading, setIsLoadiing] = useState(false);
 
+  console.log("propertyIdpropertyIdpropertyId", propertyId)
   const scrollRef = useRef(null);
   const sectionPositions = useRef({
     properties: 0,
@@ -62,6 +63,7 @@ const PropertyDetailsScreen = ({ route }) => {
     try {
       setIsLoadiing(true);
       const res = await apiService.featuredProjectById(propertyId);
+      console.log("RESsPPPPPPPP:", res)
       setProperty(res.data);
     } catch (error) {
       console.error(error);
@@ -95,7 +97,7 @@ const PropertyDetailsScreen = ({ route }) => {
     return date.toLocaleString("en-US", {
       month: "short",
       year: "numeric",
-    }); 
+    });
   };
 
   const getDistanceInKm = (coord2) => {
@@ -122,7 +124,9 @@ const PropertyDetailsScreen = ({ route }) => {
 
     return R * c;
   };
- 
+
+  console.log("PROPERTY DETAILS", property);
+
   return (
     <SafeAreaView style={styles.safe}>
       {showNav && (
@@ -239,7 +243,7 @@ const PropertyDetailsScreen = ({ route }) => {
 
                 if (extension === "svg") {
                   // Remote SVG
-                  return <RemoteSvg url={url} width={100} height={80} />;
+                  return <RemoteSvg url={url} width={100} height={70} />;
                 } else {
                   // PNG, JPG, etc.
                   return (
@@ -247,7 +251,7 @@ const PropertyDetailsScreen = ({ route }) => {
                       source={{ uri: url }}
                       style={{
                         width: 100,
-                        height: 80,
+                        height: 70,
                         borderRadius: 10,
                         // backgroundColor: "#eee",
                       }}
@@ -291,34 +295,61 @@ const PropertyDetailsScreen = ({ route }) => {
           </View>
         </View>
 
-        <View style={styles.section}>
-          <View style={styles.sectionRow}>
+        <Text
+          style={{
+            color: "#FFAC1D",
+            fontWeight: "600",
+            marginLeft: 15,
+            marginVertical: 8,
+          }}
+        >
+          {property?.priceFrom && property?.priceTo
+            ? `${formatINR(property.priceFrom)} - ${formatINR(property.priceTo)}`
+            : property?.priceFrom
+              ? formatINR(property.priceFrom)
+              : "Price on request"}
+
+          <Text style={{ color: "#000", fontWeight: "500" }}>
+            {property?.pricePersqft ? ` / ${property.pricePersqft}` : ""}
+          </Text>
+        </Text>
+        <View style={[styles.section,{backgroundColor: "#F9F9F9"}]}>
+          <View style={styles.sectionRow}>  
             <View style={styles.center}>
               <Text style={styles.sectionData}>
-                2 - {property?.bhkSummary?.length + 1} BHK
+                {property?.bhkSummary?.[0]?.bhkLabel || "2, 3 BHK"}
+                {/* 2 - {property?.bhkSummary?.length + 1} BHK */}
               </Text>
               <Text style={styles.sectionTitle}>Configuration</Text>
             </View>
             <View style={styles.center}>
               <Text style={styles.sectionData}>
-                {property?.amenities?.length}
+                {property?.amenities?.length
+                  ? `${property.amenities.length}+`
+                  : "—"}
               </Text>
               <Text style={styles.sectionTitle}>Amenities</Text>
             </View>
             <View style={styles.center}>
-              <Text style={styles.sectionData}>{property?.projectArea}</Text>
+              <Text style={styles.sectionData}>
+                {property?.projectArea ? property.projectArea : "—"}
+              </Text>
               <Text style={styles.sectionTitle}>Total Area</Text>
             </View>
           </View>
           <View style={styles.sectionRow}>
             <View style={styles.center}>
               <Text style={styles.sectionData}>
-                {formatMonthYear(property?.possessionDate)}
+                {property?.possessionDate
+                  ? formatMonthYear(property?.possessionDate)
+                  : "—"}
               </Text>
               <Text style={styles.sectionTitle}>Ready To Move</Text>
             </View>
             <View style={styles.center}>
-              <Text style={styles.sectionData}>{property?.totalUnits}</Text>
+              <Text style={styles.sectionData}>
+                {property?.totalUnits ? property?.totalUnits : "—"}
+              </Text>
               <Text style={styles.sectionTitle}>Units</Text>
             </View>
             <View style={styles.center}>
@@ -441,11 +472,12 @@ const PropertyDetailsScreen = ({ route }) => {
                 />
                 {/* <Text style={styles.overlayText}>Why Choose Us</Text> */}
               </View>
-              <View style={{ marginTop: 10 }}>
+              <View style={{ marginTop: 10, marginBottom: 5 }}>
                 <RenderHTML
                   contentWidth={width * 0.9}
                   source={{ html: item?.rightContent }}
                   tagsStyles={{
+                    ol: { marginLeft: 10, marginTop: 10 },
                     ul: { marginLeft: 10, marginTop: 10 },
                     li: { marginBottom: 8 },
                     p: {
@@ -453,6 +485,25 @@ const PropertyDetailsScreen = ({ route }) => {
                       color: "#000",
                       lineHeight: 20,
                       paddingLeft: 5,
+                      textAlign: "justify",
+                    },
+                    h1: {
+                      fontSize: 12,
+                      // fontWeight:500,
+                      marginLeft: 10,
+                      lineHeight: 20,
+                      textAlign: "justify",
+                    },
+                    h2: {
+                      fontSize: 12,
+                      marginLeft: 10,
+                      lineHeight: 20,
+                      textAlign: "justify",
+                    },
+                    h3: {
+                      fontSize: 12,
+                      marginLeft: 10,
+                      lineHeight: 20,
                       textAlign: "justify",
                     },
                   }}
@@ -565,7 +616,7 @@ const styles = StyleSheet.create({
     // margin:5,
     gap: 20,
     marginHorizontal: 10,
-    backgroundColor: "#ebebebff",
+    // backgroundColor: "#ebebebff",
     height: 140,
     borderRadius: 10,
     justifyContent: "center",

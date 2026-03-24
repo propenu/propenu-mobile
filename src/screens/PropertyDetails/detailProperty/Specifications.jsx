@@ -35,7 +35,7 @@ const Specifications = ({ property }) => {
       </View>
 
       {/* Card */}
-      <View style={[styles.mainCard, { backgroundColor: `${color}1A` }]}>
+      <View style={[styles.mainCard, { backgroundColor: "#F9F9F9", borderColor:`${color}2A` }]}>
         {/* BHK Tabs */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View style={styles.row}>
@@ -49,12 +49,13 @@ const Specifications = ({ property }) => {
                   styles.tab,
                   {
                     backgroundColor: active ? color : "#f3f4f6",
+                    borderColor :color ? `${color}3A` : "#gray"
                   },
                 ]}
               >
                 <Text
                   style={{
-                    color: active ? "#fff" : "#2c2c2c",
+                    color: active ? "#fff" : color,
                     fontWeight: "500",
                     fontSize: 12,
                    
@@ -70,7 +71,7 @@ const Specifications = ({ property }) => {
         <ScrollView horizontal showsHorizontalScrollIndicator={false}> 
           {activeBhk?.items?.map((item, index) => (
             <View key={index} style={styles.card}>
-              <Text style={styles.smallText}>{item.title}</Text>
+              <Text style={[styles.smallText, {color: color ? color : "#000",}]}>{item.title}</Text>
               <Text style={styles.description}>{item.description}</Text>
             </View>
           ))}
@@ -111,12 +112,14 @@ fontSize: 14,
     marginTop: 10,
     borderRadius: 12,
     padding: 12,
+    // borderWidth:1,
   },
   card: {
     width:280,
     backgroundColor: "white",
     marginTop: 10,
     marginRight:12,
+    marginLeft:2,
     borderRadius: 12,
     padding: 12,
     borderRadius: 8,
@@ -129,6 +132,7 @@ fontSize: 14,
     marginBottom: 7,
   },
   tab: {
+    borderWidth:1,
     paddingVertical: 7,
     paddingHorizontal: 12,
     borderRadius: 8,

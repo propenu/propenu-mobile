@@ -8,6 +8,8 @@ import {
   FlatList,
   Image,
   ScrollView,
+  Modal,
+  Button,
 } from "react-native";
 import { useDispatch } from "react-redux";
 import { userServices } from "../../services/userServices";
@@ -22,7 +24,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { setPropertyType } from "../../redux/slice/PostPropertySlice";
 // import ResponsesModal from "./ResponseModal";
 import DropdownUI from "../../components/ui/DropDownUI";
-
+import { agentServices } from "../../services/agentServices";
+import AgentRegistrationModal from "../AgentAccount/ui/AgentRegistrationModal";
+import { useAuth } from "../../context/AuthContext";
 const TAB_KEY_MAP = {
   Residential: "residential",
   Commercial: "commercial",
@@ -41,6 +45,7 @@ const AgentProperties = () => {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
+  const {userDetails} =useAuth()
 
   const [activeTab, setActiveTab] = useState("Residential");
   const [search, setSearch] = useState("");
@@ -48,11 +53,30 @@ const AgentProperties = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [selectedFilter, setSelectedFilter] = useState("All");
+  const [dateRange, setDateRange] = useState("30");
+  const [showModal, setShowModal] = useState(false);
 
-  const { data, isLoading,isError, error, } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ["myProperties"],
     queryFn: userServices.getMyProperties,
   });
+
+  const {
+    data: agentData,
+    isLoading: loading,
+    error: err,
+  } = useQuery({
+    queryKey: ["myAgentProfile", dateRange],
+    queryFn: () => agentServices.getAgent(dateRange),
+    staleTime: 1000 * 60 * 5,
+  });
+
+  useEffect(() => {
+    if (agentData?.exists === false) {
+      setShowModal(true);
+    }
+  }, [agentData]);
+
   /* ================= FILTER ================= */
 
   const filteredProperties = useMemo(() => {
@@ -74,9 +98,7 @@ const AgentProperties = () => {
     }
 
     if (selectedFilter !== "All") {
-      list = list.filter(
-        (p) => p.status === selectedFilter.toLowerCase(),
-      );
+      list = list.filter((p) => p.status === selectedFilter.toLowerCase());
     }
 
     return list;
@@ -96,8 +118,8 @@ const AgentProperties = () => {
   };
 
   const handleResponse = (projectId) => {
-    setSelectedProjectId(projectId); 
-    setIsModalOpen(true); 
+    setSelectedProjectId(projectId);
+    setIsModalOpen(true);
   };
 
   const handleNavigate = (item) => {
@@ -191,7 +213,7 @@ const AgentProperties = () => {
         </View>
 
         {/* <View style={styles.buttonsContainer}> */}
-          {/* <Pressable
+        {/* <Pressable
             style={styles.responseOption}
             onPress={() => handleResponse(item._id)}
           >
@@ -199,14 +221,14 @@ const AgentProperties = () => {
             <Text style={{ fontSize: 12, fontWeight: 500 }}>Responses</Text>
           </Pressable> */}
 
-          <Pressable style={styles.editOption} onPress={handleEdit}>
-            <MaterialIcons name="mode-edit" size={17} color="white" />
-            <Text style={{ color: "white", fontSize: 13, fontWeight: 500 }}>
-              Manage Property
-            </Text>
-          </Pressable>
+        <Pressable style={styles.editOption} onPress={handleEdit}>
+          <MaterialIcons name="mode-edit" size={17} color="white" />
+          <Text style={{ color: "white", fontSize: 13, fontWeight: 500 }}>
+            Manage Property
+          </Text>
+        </Pressable>
 
-          {/* <ResponsesModal
+        {/* <ResponsesModal
             open={isModalOpen}
             projectId={selectedProjectId}
             onClose={() => setIsModalOpen(false)}
@@ -231,7 +253,16 @@ const AgentProperties = () => {
           </Pressable>
         ))}
       </View>
-
+      {showModal && (
+        <AgentRegistrationModal
+          open={showModal}
+          userId={userDetails?.id}
+          onCompleted={() => {
+            setShowModal(false);
+            console.log("Registration completed");
+          }}
+        />
+      )}
       <FlatList
         data={filteredProperties}
         keyExtractor={(item) => item._id}
@@ -439,7 +470,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#27AE60",
     width: "48%",
     alignItems: "center",
-    alignSelf:"flex-end",
+    alignSelf: "flex-end",
     justifyContent: "center",
     paddingVertical: 7,
     borderRadius: 8,

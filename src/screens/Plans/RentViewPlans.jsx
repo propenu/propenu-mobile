@@ -31,8 +31,6 @@ const RentViewPlans = ({ navigation }) => {
       }),
   });
 
-  console.log("PLANSSSSSSSSSSSSSSSSSSSSSSSS:", plans);
-
   useEffect(() => {
     if (plans?.length > 1) {
       setTimeout(() => {

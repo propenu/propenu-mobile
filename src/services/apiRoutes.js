@@ -39,6 +39,7 @@ export const API_ROUTES = {
   AGENT: {
     AGENT_PROFILE: "/api/users/agent",
     AGENT_DETAILS: "/api/users/agent/me/profile",
+    GET_AGENT_PROFILE :"/api/users/agent/my"
   },
 
   BUILDER: {

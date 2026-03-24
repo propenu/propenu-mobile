@@ -34,7 +34,7 @@ import AutoImageSlider from "../../components/ui/AutoImageSlider";
 import useDimensions from "../../components/CustomHooks/UseDimension";
 import formatINR from "../../utils/FormatINR";
 import { FontAwesome5 } from "@expo/vector-icons";
-
+import ContactOwnerButton from "../../components/ui/ContactOwnerButton";
 const ItemCard = ({ item }) => {
   const navigation = useNavigation();
   const { width, height } = useDimensions();
@@ -44,6 +44,43 @@ const ItemCard = ({ item }) => {
     item?.type === "residential" || item?.type === "commercial"
       ? item?.buildingName
       : item?.landName;
+
+  const listingSourceRaw = (
+    item?.listingSource ||
+    item?.createdBy?.roleName ||
+    item?.createdBy?.role ||
+    "user"
+  )?.toLowerCase();
+
+  const resolvedListingSource =
+    listingSourceRaw === "agent"
+      ? "Agent"
+      : listingSourceRaw === "builder"
+        ? "builder"
+        : "Owner";
+
+        console.log("item id ", item._id, item.type)
+
+
+  const handleNavigate = ()=>{
+    if(item.type === "residential"){
+ navigation.navigate("MoreResidentialDetails", {
+      slug: item?.slug,
+    });
+      }else if(item.type === "commercial"){
+         navigation.navigate("MoreCommercialDetails", {
+      slug: item?.slug,
+    })}else if(item.type === "agricultural"){
+      navigation.navigate("MoreAgriculturalDetails", {
+      slug: item?.slug,
+    });
+    }else{
+          navigation.navigate("MoreLandDetails", {
+      slug: item.slug,
+    });
+    }
+      
+  }
 
   const MetaItem = ({ label, value, Icon, iconProps = {} }) => (
     <View style={styles.metaItemRow}>
@@ -57,10 +94,7 @@ const ItemCard = ({ item }) => {
   return (
     <Pressable
       style={styles.itemCard}
-      onPress={() =>
-        navigation.navigate("PropertyDetails", { propertyId: item?._id })
-      }
-    >
+      onPress={handleNavigate}>
       {item?.gallery?.length === 0 ? (
         <Image
           source={defaultImage}
@@ -184,12 +218,25 @@ const ItemCard = ({ item }) => {
             <Text style={styles.price}>{formatINR(item?.price)}</Text>
             <Text style={styles.priceSub}>₹ {item?.pricePerSqft}/sqft</Text>
           </View>
-          <Pressable style={styles.button}>
+
+          <ContactOwnerButton
+            projectId={item?._id}
+            propertyType={item?.type}
+            listingType={item?.listingType}
+            listingSource={resolvedListingSource}
+            ownerName={item?.createdBy?.name}
+            ownerPhone={item?.createdBy?.contact ?? item?.phone}
+            ownerEmail={item?.createdBy?.email ?? item?.email}
+            postedOn={item?.createdAt}
+            price={item?.price}
+            propertyLabel={item?.title}
+          />
+          {/* <Pressable style={styles.button} onPress={()=>console.log("HAIIIII")}>
             <View style={{ marginTop: 3 }}>
               <PhoneIcon width="16" height="16" color="white" />
             </View>
             <Text style={styles.buttonText}>Contact Owner</Text>
-          </Pressable>
+          </Pressable> */}
         </View>
       </View>
     </Pressable>
@@ -219,7 +266,7 @@ const ViewAllOwnerProperties = () => {
   //     )
   //   : data?.data?.items;
 
-  console.log("filteredDatafilteredData", filteredData);
+  // console.log("filteredDatafilteredData", filteredData);
 
   const handleSelect = (name) => {
     if (selectedArea === name) {

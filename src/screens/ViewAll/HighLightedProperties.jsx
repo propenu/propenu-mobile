@@ -20,12 +20,27 @@ import { useQuery } from "@tanstack/react-query";
 import { apiService } from "../../services/apiService";
 import defaultImage from "../../../assets/defaultImage.png";
 import { useNavigation } from "@react-navigation/native";
-import { Celebration, Building, PhoneIcon } from "../../../assets/svg/Logo";
+import { Celebration,Building, PhoneIcon } from "../../../assets/svg/Logo";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import ContactOwnerButton from "../../components/ui/ContactOwnerButton";
 
 const ItemCard = ({ item }) => {
   const navigation = useNavigation();
 
+
+    const listingSourceRaw = (
+    item?.listingSource ||
+    item?.createdBy?.roleName ||
+    item?.createdBy?.role ||
+    "user"
+  )?.toLowerCase();
+
+  const resolvedListingSource =
+    listingSourceRaw === "agent"
+      ? "Agent"
+      : listingSourceRaw === "builder"
+        ? "builder"
+        : "Owner";
   return (
     <Pressable
       style={styles.itemCard}
@@ -44,7 +59,7 @@ const ItemCard = ({ item }) => {
         <Text style={styles.status}>2,3 bhk | Ready to move</Text>
         <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
           <View style={styles.btn}>
-            <Building width="20" height="18" />
+            <Building width="20" height="19" />
             <Text style={styles.btnText}>
               {item?.bhkSummary?.length || 0} Floor Plans
             </Text>
@@ -63,12 +78,29 @@ const ItemCard = ({ item }) => {
             </View>
           </View>
         </View>
-        <Pressable style={styles.button}>
+
+         <View style={styles.button}>
+
+         <ContactOwnerButton
+            projectId={item?._id}
+            propertyType={item?.type}
+            listingType={item?.listingType}
+            listingSource={resolvedListingSource}
+            ownerName={item?.createdBy?.name}
+            ownerPhone={item?.createdBy?.contact ?? item?.phone}
+            ownerEmail={item?.createdBy?.email ?? item?.email}
+            postedOn={item?.createdAt}
+            price={item?.price}
+            propertyLabel={item?.title}
+          />       
+          </View>
+
+        {/* <Pressable style={styles.button}>
           <View style={{ marginTop: 3 }}>
             <PhoneIcon width="16" height="16" color="white" />
           </View>
           <Text style={styles.buttonText}>Contact</Text>
-        </Pressable>
+        </Pressable> */}
       </View>
     </Pressable>
   );
@@ -237,14 +269,15 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   button: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    // width:"100%",
+    // flexDirection: "row",
+    // alignItems: "center",
+    // justifyContent: "center",
     gap: 4,
-    backgroundColor: "#27AE60",
+    // backgroundColor: "#27AE60",
     marginTop: 12,
     borderRadius: 8,
-    padding: 8,
+    paddingHorizontal: 8,
   },
   buttonText: {
     color: "#fff",
@@ -253,6 +286,7 @@ const styles = StyleSheet.create({
   },
   btn: {
     flexDirection: "row",
+    alignItems:"center",
     justifyContent: "center",
     backgroundColor: "#F1FCF5",
     paddingVertical: 5,

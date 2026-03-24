@@ -821,7 +821,7 @@ const CommercialProfile = () => {
         <TextArea
           label="Property Description"
           placeholder="e.g. Well-maintained commercial space with ample natural light, power backup, and easy access to main road."
-          value={commercial.description}
+          value={commercial.description || ""}
           maxLength={500}
           onChange={(value) =>
             dispatch(

@@ -369,7 +369,7 @@ export const apiService = {
         data,
       };
     } catch (error) {
-      console.error("agent error:", error);
+      console.log("agent error:", error);
       throw error;
     }
   },
@@ -412,7 +412,7 @@ export const apiService = {
       // const data = await response.json();
       return response;
     } catch (error) {
-      console.error("agent error:", error);
+      console.error("Location error:", error);
       throw error;
     }
   },
@@ -542,7 +542,6 @@ export const apiService = {
     }
   },
   residential_category_search: async (slug) => {
-    console.log(slug, "IDddddddddddddddddddddddddddd");
     try {
       const response = await fetch(
         `${ENV.BASE_URL}${API_ROUTES.SEARCH.RESIDENTIAL_CATEGORY_SEARCH}/slug/${slug}`,

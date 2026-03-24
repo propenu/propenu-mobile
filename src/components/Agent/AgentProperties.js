@@ -64,7 +64,7 @@ const AgentProperties = () => {
         />
       ) : (
         <Text style={styles.emptyText}>
-          No agent properties available at the moment
+          No agents available at the moment
         </Text>
       )}
     </View>

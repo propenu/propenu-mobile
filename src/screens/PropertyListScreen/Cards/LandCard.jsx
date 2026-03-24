@@ -13,11 +13,30 @@ import AutoImageSlider from "../../../components/ui/AutoImageSlider";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { useAuth } from "../../../context/AuthContext";
 import LikedIconContainer from "../../../components/ui/LikedIconContainer";
-
+import ContactOwnerButton from "../../../components/ui/ContactOwnerButton";
 const LandCard = ({ item }) => {
   const { width } = useDimensions();
   const navigation = useNavigation();
   const { isLoggedIn, userDetails } = useAuth();
+
+  const displayName =
+    item?.type === "residential" || item?.type === "commercial"
+      ? item?.buildingName
+      : item?.landName;
+
+  const listingSourceRaw = (
+    item?.listingSource ||
+    item?.createdBy?.roleName ||
+    item?.createdBy?.role ||
+    "user"
+  )?.toLowerCase();
+
+  const resolvedListingSource =
+    listingSourceRaw === "agent"
+      ? "Agent"
+      : listingSourceRaw === "builder"
+        ? "builder"
+        : "Owner";
 
   const handleNavigate = async () => {
     console.log("Checking property id : ", item.slug);
@@ -89,7 +108,7 @@ const LandCard = ({ item }) => {
             Icon={FontAwesome5}
             iconProps={{ name: "road" }}
             label="Road Width"
-            value={item?.roadWidthFt || "Unfurnished"}
+            value={item?.roadWidthFt || "—"}
           />
         </View>
       </View>
@@ -102,11 +121,23 @@ const LandCard = ({ item }) => {
             <Text style={styles.priceSub}>₹ {item?.pricePerSqft} / sqft</Text>
           ) : null}
         </View>
+         <ContactOwnerButton
+          projectId={item?.id ?? item?._id}
+          propertyType={item?.type}
+          listingType={item?.listingType}
+          listingSource={resolvedListingSource}
+          ownerName={item?.createdBy?.name}
+          ownerPhone={item?.createdBy?.contact ?? item?.phone}
+          ownerEmail={item?.createdBy?.email ?? item?.email}
+          postedOn={item?.createdAt}
+          price={item?.price}
+          propertyLabel={item?.title}
+        />
 
-        <Pressable style={styles.button} onPress={handleContact}>
+        {/* <Pressable style={styles.button} onPress={handleContact}>
           <PhoneIcon width={18} height={18} color="white" />
           <Text style={styles.buttonText}>Contact</Text>
-        </Pressable>
+        </Pressable> */}
       </View>
     </Pressable>
   );
@@ -176,6 +207,7 @@ const styles = StyleSheet.create({
   },
   metaRow: {
     flexDirection: "row",
+    flexWrap:"wrap",
     justifyContent: "space-between",
     alignItems: "center",
     marginTop: 10,

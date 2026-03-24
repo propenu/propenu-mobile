@@ -22,7 +22,7 @@ import Toast from "react-native-toast-message";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { BigLogo } from "../../assets/svg/LogoPropenu";
 import * as Keychain from "react-native-keychain";
-import { ToastSuccess } from "../utils/Toast";
+import { ToastInfo, ToastSuccess } from "../utils/Toast";
 import { useAuth } from "../context/AuthContext";
 import { setItem } from "../utils/Storage";
 import { Linking } from "react-native";
@@ -191,6 +191,7 @@ export default function CreateLogin({
       // Alert.alert("Success", "OTP verified successfully");
     } catch (err) {
       console.log("OTP verification failed:", err);
+      ToastInfo(err?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -225,6 +226,58 @@ export default function CreateLogin({
       }));
     }
   };
+
+  const getToken = async () => {
+    const credentials = await Keychain.getGenericPassword();
+
+    if (!credentials) {
+      console.log("No token found in keychain");
+      return;
+    }
+
+    const token = credentials.password;
+    return token;
+  };
+
+  useEffect(() => {
+    const handleDeepLink = async (url) => {
+      if (!url) return;
+
+      if (url.includes("kyc-success")) {
+        const token = await getToken();
+        if (!token) return;
+
+        const tokenResult = await apiService.verifyToken(token);
+
+        if (tokenResult?.status === 200) {
+          const data = tokenResult?.data;
+
+          if (data?.token) {
+            await Keychain.setGenericPassword("token", data.token);
+            await refreshAuth();
+          }
+
+          await setItem("user", JSON.stringify(data.user));
+
+          // ToastSuccess("Login Successfully");
+          navigation.navigate("Home");
+        }
+      }
+
+      if (url.includes("kyc-failed")) {
+        // ToastError("KYC Failed ❌");
+        console.log("verification failed")
+      }
+    };
+
+    const sub = Linking.addEventListener("url", (event) => {
+      handleDeepLink(event.url);
+    });
+
+    Linking.getInitialURL().then(handleDeepLink);
+
+    return () => sub.remove();
+  }, []);
 
   const handlePincodeChange = (value) => {
     const numericValue = value.replace(/\D/g, "").slice(0, 6);
@@ -303,6 +356,36 @@ export default function CreateLogin({
       setLoading(false);
     }
   };
+  
+  const handleDeepLink = async () => {
+      // if (!url) return;
+
+      // if (url.includes("kyc-success")) {
+        const token = await getToken();
+        if (!token) return;
+
+        const tokenResult = await apiService.verifyToken(token);
+
+        if (tokenResult?.status === 200) {
+          const data = tokenResult?.data;
+
+          if (data?.token) {
+            await Keychain.setGenericPassword("token", data.token);
+            await refreshAuth();
+          }
+
+          await setItem("user", JSON.stringify(data.user));
+
+          // ToastSuccess("Login Successfully");
+          navigation.navigate("Home");
+        }
+      // }
+
+      // if (url.includes("kyc-failed")) {
+        // ToastError("KYC Failed ❌");
+        console.log("verification failed")
+      // }
+    };
 
   const handleKYC = async () => {
     try {
@@ -311,10 +394,14 @@ export default function CreateLogin({
       const kycUrl = response?.data?.url;
 
       if (kycUrl) {
+        await handleDeepLink()
         await Linking.openURL(kycUrl);
+        
       } else {
         console.log("No KYC URL found");
       }
+      
+
     } catch (error) {
       console.log("KYC Error:", error);
     }

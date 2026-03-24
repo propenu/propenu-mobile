@@ -23,7 +23,7 @@ const AmenitiesWithModal = ({ amenities, color }) => {
   return (
     <View style={styles.gallery}>
       <View style={styles.priceRow}>
-        <Text style={[styles.galleryText, { color: color ? color : "green" }]}>
+        <Text style={[styles.galleryText, { color: color ? color : "#000" }]}>
           Amenities
         </Text>
 
@@ -32,7 +32,7 @@ const AmenitiesWithModal = ({ amenities, color }) => {
             onPress={() => setShowAllAmenities(true)}
             style={styles.viewMoreBtn}
           >
-            <Text style={styles.viewMoreText}>View All</Text>
+            <Text style={[styles.viewMoreText, { color: color ? color : "#27AE60" }]}>View All</Text>
           </Pressable>
         )}
       </View>
@@ -57,7 +57,7 @@ const AmenitiesWithModal = ({ amenities, color }) => {
                 ) : (
                   AlternateImage && <AlternateImage width={17} height={17} />
                 )}
-                <Text style={styles.amenityText}>{item?.title}</Text>
+                <Text style={styles.amenityText} numberOfLines={1}>{item?.title}</Text>
               </View>
             );
           })}
@@ -110,7 +110,8 @@ const AmenitiesWithModal = ({ amenities, color }) => {
 export default AmenitiesWithModal;
 const styles = StyleSheet.create({
   gallery: {
-    marginVertical: 12,
+    marginTop: 15,
+    marginBottom:5
   },
   priceRow: {
     flexDirection: "row",
@@ -139,20 +140,23 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   viewMoreText: {
-    color: "#27AE60",
+    // color: "#27AE60",
+    fontSize:13,
     fontWeight: "600",
   },
   amenitiesContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 10,
+    gap: 12,
+    // paddingVertical:3
   },
 
   amenityCard: {
-    width: "45%",
+    width: "48%",
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
+    // marginTop:3
   },
   amenitiesGrid: {
     backgroundColor: "#FFFCF6",

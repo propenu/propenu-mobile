@@ -9,7 +9,6 @@ import {
   StyleSheet,
   useWindowDimensions,
 } from "react-native";
-import HomePage from "../../../../assets/HomePage.png";
 import defaultImage from "../../../../assets/defaultImage.png";
 
 /** INR formatter */
@@ -68,7 +67,7 @@ const AvailableProperties = ({ bhk, bookAppointment }) => {
       </View>
 
       {/* Card */}
-      <View style={[styles.card, { backgroundColor: `${color}1A` }]}>
+      <View style={[styles.card, { backgroundColor: "#F9F9F9" }]}>
         {/* BHK Tabs */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View style={styles.row}>
@@ -206,6 +205,8 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 8,
+    borderWidth:1,
+    borderColor:"#ccc"
   },
   chip: {
     paddingVertical: 6,

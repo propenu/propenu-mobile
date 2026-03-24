@@ -10,6 +10,7 @@ export default function PricingDetails({ propertyType, data, fieldErrors }) {
 
   const isAgricultural = propertyType === "agricultural";
   const isLand = propertyType === "land";
+  console.log("DATAAAAA:", data)
 
   /* ================= AREA KEYS ================= */
   const areaValue = isAgricultural
