@@ -172,7 +172,7 @@ import SeniorCitizenArea from "../../../../assets/Amenities/senior_citizen_area.
 import SewageTreatmentPlant from "../../../../assets/Amenities/sewage_treatment_plant.svg";
 import SkatingPark from "../../../../assets/Amenities/skating_park.svg";
 import SkyDeck from "../../../../assets/Amenities/sky_deck.svg";
-import SnookerPool from "../../../../assets/Amenities/Snookerpool.svg";
+import SnookerPool from "../../../../assets/Amenities/SnookerPool.svg";
 import SocietyOffice from "../../../../assets/Amenities/society_office.svg";
 import SolarHeaters from "../../../../assets/Amenities/solar_heaters.svg";
 import StreamWithJumpingJets from "../../../../assets/Amenities/stream_with_jumping_jets.svg";
