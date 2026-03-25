@@ -167,7 +167,7 @@ import Sauna from "../../../../assets/amenities/Sauna.svg";
 import SculptureCourtWithUniformalSeatingArea from "../../../../assets/amenities/sculpture_court_with_uniformal_seating_area.svg";
 import SeatingDeck from "../../../../assets/amenities/seating_deck.svg";
 import SeatingPlaza from "../../../../assets/amenities/seating_plaza.svg";
-import SeismicSafetyCompliant from "../../../../assets/amenities/seismic_safety _compliant.svg";
+import SeismicSafetyCompliant from "../../../../assets/amenities/seismic_safety_compliant.svg";
 import SeniorCitizenArea from "../../../../assets/amenities/senior_citizen_area.svg";
 import SewageTreatmentPlant from "../../../../assets/amenities/sewage_treatment_plant.svg";
 import SkatingPark from "../../../../assets/amenities/skating_park.svg";
