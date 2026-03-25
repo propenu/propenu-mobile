@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { View, ScrollView, Image, StyleSheet, Dimensions } from "react-native";
-import HomePageImage from "../../../assets/HomePageImage.png";
 import FallBackImage from "../../../assets/svg/FallBackImage";
 import defaultImage from "../../../assets/defaultImage.png";
 

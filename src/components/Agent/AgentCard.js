@@ -1,14 +1,16 @@
 import { View, Text, StyleSheet, Image, Pressable } from "react-native";
-import HomePageImage from "../../../assets/HomePageImage.png";
+// import HomePageImage from "../../../assets/HomePageImage.png";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Logo, LocationIcon } from "../../../assets/svg/Logo";
 import { useNavigation } from "@react-navigation/native";
+import defaultImage from "../../../assets/defaultImage.png";
 
 const AgentCard = ({ details }) => {
   const navigation = useNavigation();
   const imageSource = details?.coverImage?.url
     ? { uri: details.coverImage.url }
-    : HomePageImage;
+    : defaultImage;
+;
 
   const handlePress = () => {
     navigation.navigate("MoreAgentDetails", { slug: details?.slug });
