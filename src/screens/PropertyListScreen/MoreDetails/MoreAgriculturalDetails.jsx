@@ -16,6 +16,7 @@ import { apiService } from "../../../services/apiService";
 import formatINR from "../../../utils/FormatINR";
 import useDimensions from "../../../components/CustomHooks/UseDimension";
 import {
+  LocationIcon,
   PhoneIcon,
 } from "../../../../assets/svg/Logo";
 import { ToastSuccess, ToastInfo } from "../../../utils/Toast";
@@ -162,7 +163,11 @@ const MoreAgriculturalDetails = ({ route }) => {
               {Platform.OS === "web" ? (
                 <Text>Map is available on mobile only</Text>
               ) : (
-                <NearByLocations nearbyPlaces={details?.nearbyPlaces} />
+                 <NearByLocations
+                                                    nearbyPlaces={details?.nearbyPlaces}
+                                                    location={details?.location}
+                                                  />
+                // <NearByLocations nearbyPlaces={details?.nearbyPlaces} />
               )}
             </View>
           </View>

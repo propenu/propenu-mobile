@@ -21,11 +21,7 @@ import { getItem } from "../../../utils/Storage";
 import AmenitiesWithModal from "../../PropertyDetails/detailProperty/AmenitiesWithModal";
 import NearByLocations from "../../PropertyDetails/detailProperty/NearByLocation";
 import {
-  AreaIcon,
-  BedIcon,
   PhoneIcon,
-  ReadyToMoveIcon,
-  ImageListIcon,
   LocationIcon,
 } from "../../../../assets/svg/Logo";
 import { ToastSuccess, ToastInfo } from "../../../utils/Toast";
@@ -192,7 +188,11 @@ const MoreCommercialDetails = ({ route }) => {
               {Platform.OS === "web" ? (
                 <Text>Map is available on mobile only</Text>
               ) : (
-                <NearByLocations nearbyPlaces={details?.nearbyPlaces} />
+                <NearByLocations
+                  nearbyPlaces={details?.nearbyPlaces}
+                  location={details?.location}
+                />
+                // <NearByLocations nearbyPlaces={details?.nearbyPlaces} />
               )}
             </View>
           </View>
@@ -298,7 +298,7 @@ const styles = StyleSheet.create({
   },
 
   mapBox: {
-     height: 180,
+    height: 180,
     marginHorizontal: 2,
     marginVertical: 10,
     borderWidth: 1,

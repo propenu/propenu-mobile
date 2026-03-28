@@ -288,7 +288,7 @@ const LocationDetailsStep = () => {
           {Platform.OS === "web" ? (
             <Text>Map is available on mobile only</Text>
           ) : (
-            <MapScreen />
+            <MapScreen pin={base.pincode}/>
           )}
         </View>
         <Text style={styles.markLocation}>
@@ -346,6 +346,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   markLocation: {
+    marginTop:5,
     fontSize: 12,
     color: "#74777eff",
   },

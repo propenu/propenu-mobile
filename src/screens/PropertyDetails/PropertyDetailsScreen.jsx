@@ -33,7 +33,7 @@ const PropertyDetailsScreen = ({ route }) => {
   const [showEnquiryModal, setShowEnquiryModal] = useState(false);
   const [isLoading, setIsLoadiing] = useState(false);
 
-  console.log("propertyIdpropertyIdpropertyId", propertyId)
+  console.log("propertyIdpropertyIdpropertyId", propertyId);
   const scrollRef = useRef(null);
   const sectionPositions = useRef({
     properties: 0,
@@ -63,7 +63,7 @@ const PropertyDetailsScreen = ({ route }) => {
     try {
       setIsLoadiing(true);
       const res = await apiService.featuredProjectById(propertyId);
-      console.log("RESsPPPPPPPP:", res)
+      console.log("RESsPPPPPPPP:", res);
       setProperty(res.data);
     } catch (error) {
       console.error(error);
@@ -313,8 +313,8 @@ const PropertyDetailsScreen = ({ route }) => {
             {property?.pricePersqft ? ` / ${property.pricePersqft}` : ""}
           </Text>
         </Text>
-        <View style={[styles.section,{backgroundColor: "#F9F9F9"}]}>
-          <View style={styles.sectionRow}>  
+        <View style={[styles.section, { backgroundColor: "#F9F9F9" }]}>
+          <View style={styles.sectionRow}>
             <View style={styles.center}>
               <Text style={styles.sectionData}>
                 {property?.bhkSummary?.[0]?.bhkLabel || "2, 3 BHK"}
@@ -441,7 +441,10 @@ const PropertyDetailsScreen = ({ route }) => {
                 {Platform.OS === "web" ? (
                   <Text>Map is available on mobile only</Text>
                 ) : (
-                  <NearByLocations nearbyPlaces={property?.nearbyPlaces} />
+                  <NearByLocations
+                    nearbyPlaces={property?.nearbyPlaces}
+                    location={property?.location}
+                  />
                 )}
               </View>
             </View>
@@ -702,7 +705,7 @@ const styles = StyleSheet.create({
     fontWeight: 500,
   },
   mapBox: {
-    height: 190,
+    height: 200,
     marginHorizontal: 10,
     marginVertical: 10,
     borderWidth: 1,

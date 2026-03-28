@@ -218,7 +218,11 @@ const MoreResidentialDetails = ({ route }) => {
               {Platform.OS === "web" ? (
                 <Text>Map is available on mobile only</Text>
               ) : (
-                <NearByLocations nearbyPlaces={details?.nearbyPlaces} />
+                <NearByLocations
+                                    nearbyPlaces={details?.nearbyPlaces}
+                                    location={details?.location}
+                                  />
+                // <NearByLocations nearbyPlaces={details?.nearbyPlaces} />
               )}
             </View>
           </View>

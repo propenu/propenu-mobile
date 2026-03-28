@@ -48,7 +48,7 @@ import BuyViewPlans from "../screens/Plans/BuyViewPlans";
 import HighLightedProperties from "../screens/ViewAll/HighLightedProperties";
 import ViewAllOwnerProperties from "../screens/ViewAll/ViewAllOwnerProperties";
 import AllAgents from "../screens/ViewAll/AllAgents";
-
+import MapScreen from "../components/location/MapScreen";
 const Stack = createNativeStackNavigator();
 
 const HEADER_TYPES = {
@@ -139,6 +139,7 @@ export default function StackNavigator() {
   };
 
   const stackScreens = [
+
     { name: "Home", component: HomeScreen, headerType: HEADER_TYPES.HOME },
 
     {
