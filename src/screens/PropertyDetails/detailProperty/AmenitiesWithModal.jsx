@@ -39,7 +39,7 @@ const AmenitiesWithModal = ({ amenities, color }) => {
               <Text style={styles.subtitle}>Facilities designed for comfortable living</Text>
 
 
-      <View style={styles.amenitiesGrid}>
+      <View style={[styles.amenitiesGrid,{backgroundColor:color ? `${color}0A` : "#FFFCF6"}]}>
         {amenities?.length === 0 && (
           <Text style={styles.amenityText}>
             Amenities information not available
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     // marginTop:3
   },
   amenitiesGrid: {
-    backgroundColor: "#FFFCF6",
+    // backgroundColor: "#FFFCF6",
     paddingHorizontal: 16,
     marginTop: 10,
     paddingVertical: 10,

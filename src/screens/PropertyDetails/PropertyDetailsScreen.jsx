@@ -313,7 +313,7 @@ const PropertyDetailsScreen = ({ route }) => {
             {property?.pricePersqft ? ` / ${property.pricePersqft}` : ""}
           </Text>
         </Text>
-        <View style={[styles.section, { backgroundColor: "#F9F9F9" }]}>
+        <View style={[styles.section, { backgroundColor: property?.color ?`${property.color}0A` : "#f7f4f4"}]}>
           <View style={styles.sectionRow}>
             <View style={styles.center}>
               <Text style={styles.sectionData}>

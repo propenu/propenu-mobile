@@ -35,7 +35,7 @@ const Specifications = ({ property }) => {
       </View>
 
       {/* Card */}
-      <View style={[styles.mainCard, { backgroundColor: "#F9F9F9", borderColor:`${color}2A` }]}>
+      <View style={[styles.mainCard, { backgroundColor: color ? `${color}0A` : "#F9F9F9", borderColor:`${color}2A` }]}>
         {/* BHK Tabs */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View style={styles.row}>

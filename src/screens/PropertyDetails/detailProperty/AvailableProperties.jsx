@@ -67,7 +67,7 @@ const AvailableProperties = ({ bhk, bookAppointment }) => {
       </View>
 
       {/* Card */}
-      <View style={[styles.card, { backgroundColor: "#F9F9F9" }]}>
+      <View style={[styles.card, { backgroundColor: bhk?.color  ?`${bhk?.color}0A` : "#f7f4f4"}]}>
         {/* BHK Tabs */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View style={styles.row}>
