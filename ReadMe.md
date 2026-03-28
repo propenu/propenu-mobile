@@ -18,3 +18,9 @@ Follow these steps to build an APK for the Android app.
 }
 
 5. Build the APK: "eas build -p android --profile preview"
+
+or
+
+
+cd android
+./gradlew assembleRelease

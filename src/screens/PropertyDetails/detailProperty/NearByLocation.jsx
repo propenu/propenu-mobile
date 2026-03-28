@@ -4,7 +4,7 @@ import MapplsGL from "mappls-map-react-native";
 
 export default function NearByLocations({
   nearbyPlaces = [],
-  location = [77.0111572, 28.4890874],
+  location = null,
 }) {
   console.log("nearbyPlacesnearbyPlaces", nearbyPlaces, location);
   const cameraRef = useRef(null);
@@ -50,15 +50,22 @@ export default function NearByLocations({
   );
 
   const propertyPoint = useMemo(
-    () =>
-      Array.isArray(location?.coordinates) && location.coordinates.length === 2
+    () => {
+      const coordinates = Array.isArray(location?.coordinates)
+        ? location.coordinates
+        : Array.isArray(location) && location.length === 2
+          ? location
+          : null;
+
+      return coordinates
         ? {
             id: "property-location",
-            lng: location.coordinates[0],
-            lat: location.coordinates[1],
+            lng: coordinates[0],
+            lat: coordinates[1],
             label: "Property Location",
           }
-        : null,
+        : null;
+    },
     [location],
   );
 
