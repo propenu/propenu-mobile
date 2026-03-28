@@ -210,6 +210,7 @@ export default function NearByLocations({
                 style={{
                   iconImage: "nearbyIcon",
                   iconSize: 0.02,
+                  iconRotate: 180,
                   iconAllowOverlap: true,
                 }}
               />
