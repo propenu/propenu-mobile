@@ -11,7 +11,6 @@ export default function MapScreen() {
   const initialPosition = useMemo(() => [17.4013, 78.41104], []);
   const [position, setPosition] = useState(initialPosition);
 
-  // Optional: mute unnecessary logs
   useEffect(() => {
     MapplsGL.Logger.setLogCallback((log) => {
       const msg = log?.message || "";

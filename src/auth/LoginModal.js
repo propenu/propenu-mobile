@@ -8,7 +8,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-  Modal,
+  ActivityIndicator,
 } from "react-native";
 import { apiService } from "../services/apiService";
 import useDimension from "../components/CustomHooks/UseDimension";
@@ -16,7 +16,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { BigLogo } from "../../assets/svg/LogoPropenu";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import CountryPicker from "react-native-country-picker-modal";
-import { ToastError, ToastSuccess } from "../utils/Toast";
+import { ToastError, ToastInfo, ToastSuccess } from "../utils/Toast";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { getItem, setItem } from "../utils/Storage";
 import { userServices } from "../services/userServices";
@@ -28,7 +28,7 @@ export default function LoginModal({ navigation }) {
   const [role, setRole] = useState("");
   const [errors, setErrors] = useState({});
   const { width, height, isLandscape } = useDimension();
-
+  const [loading, setLoading] = useState(false);
   const [countryCode, setCountryCode] = useState("IN");
   const [callingCode, setCallingCode] = useState("91");
   const [phone, setPhone] = useState("");
@@ -82,34 +82,42 @@ export default function LoginModal({ navigation }) {
   }
 };
 
-  const handleLogin = async () => {
-    try {
-      if (phone.length !== 10) {
-        ToastError("Enter 10 digit Phone number");
-        return;
-      }
-
-      const fullNumber = `+${callingCode}${phone}`;
-      console.log("Phone:", fullNumber);
-
-      const res = await apiService.login({
-        // name: username,
-        phone : fullNumber,
-      });
-
-      if (res?.status === 200) {
-        await syncGuestShortlist();
-        ToastSuccess("OTP sent successfully");
-        navigation.navigate("OTPLogin", { phone: fullNumber });
-        // onOtpSuccess({
-        //   email,
-        //   // username,
-        // });
-      }
-    } catch (err) {
-      console.log("Login error:", err);
+ const handleLogin = async () => {
+  try {
+    if (phone.length !== 10) {
+      ToastError("Enter 10 digit Phone number");
+      return;
     }
-  };
+
+    setLoading(true); // ✅ start loader
+
+    const fullNumber = `+${callingCode}${phone}`;
+    console.log("Phone:", fullNumber);
+
+    const res = await apiService.login({
+      phone: fullNumber,
+    });
+
+    if (res?.status === 200) {
+      await syncGuestShortlist();
+      ToastSuccess("OTP sent successfully");
+      navigation.navigate("OTPLogin", { phone: fullNumber });
+    } else if (res?.status === 404) {
+      ToastInfo(res?.data?.message || "Account not registered. Please sign up first.");
+    }
+
+  } catch (err) {
+    console.log("Login error:", err);
+  } finally {
+    setLoading(false); // ✅ stop loader
+  }
+};
+if (loading ) {
+  return(
+  <View style={styles.loaderStyle}>
+    <ActivityIndicator size="large" color="#27AE60" />
+  </View>
+)}
 
   return (
     <SafeAreaView style={styles.overlay}>
@@ -130,7 +138,7 @@ export default function LoginModal({ navigation }) {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.inputFields}>
-            <BigLogo width={200} height={90} />
+            <BigLogo width={200} height={70} />
             <Text style={styles.title}>Welcome Back</Text>
             <Text style={styles.subTitle}>
               Enter your details to access your account
@@ -208,6 +216,13 @@ const styles = StyleSheet.create({
     // justifyContent: "center",
     // alignItems: "center",
   },
+  loaderStyle:{
+    flex: 1,
+justifyContent:"center", 
+alignItems:"center",
+    backgroundColor: "rgba(243, 255, 245, 0.5)",
+
+  },
   scrollContent: {
     flexGrow: 1,
     justifyContent: "center",
@@ -218,11 +233,11 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
   title: {
-    marginTop: 10,
+    // marginTop: 5,
     fontSize: 18,
     fontWeight: "600",
     textAlign: "center",
-    // marginBottom:5
+    marginBottom:5
   },
   subTitle: {
     fontSize: 12,

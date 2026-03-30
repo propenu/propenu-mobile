@@ -36,9 +36,9 @@ const tabs = [
   { id: "kyc", label: "KYC Verification" },
 ];
 const Roles = [
-  { value: "User", key: "user", icon: "user-o" },
-  { value: "Builder", key: "builder", icon: "building-o" },
-  { value: "Agent", key: "agent", icon: "vcard-o" },
+  { value: "Buyer/Seller", key: "User", icon: "user-o" },
+  { value: "Builder", key: "Builder", icon: "building-o" },
+  { value: "Agent", key: "Agent", icon: "vcard-o" },
 ];
 
 export default function CreateLogin({
@@ -241,9 +241,11 @@ export default function CreateLogin({
 
   useEffect(() => {
     const handleDeepLink = async (url) => {
+      console.log("URL IM CREATE LOGIN :", url)
       if (!url) return;
 
-      if (url.includes("kyc-success")) {
+
+    if (url.includes("kyc")) {
         const token = await getToken();
         if (!token) return;
 
@@ -266,11 +268,12 @@ export default function CreateLogin({
 
       if (url.includes("kyc-failed")) {
         // ToastError("KYC Failed ❌");
-        console.log("verification failed")
+        console.log("verification failed");
       }
     };
 
     const sub = Linking.addEventListener("url", (event) => {
+      console.log("KKKKKKKKKKK", event)
       handleDeepLink(event.url);
     });
 
@@ -356,36 +359,36 @@ export default function CreateLogin({
       setLoading(false);
     }
   };
-  
+
   const handleDeepLink = async () => {
-      // if (!url) return;
+    // if (!url) return;
 
-      // if (url.includes("kyc-success")) {
-        const token = await getToken();
-        if (!token) return;
+    // if (url.includes("kyc-success")) {
+    const token = await getToken();
+    if (!token) return;
 
-        const tokenResult = await apiService.verifyToken(token);
+    const tokenResult = await apiService.verifyToken(token);
 
-        if (tokenResult?.status === 200) {
-          const data = tokenResult?.data;
+    if (tokenResult?.status === 200) {
+      const data = tokenResult?.data;
 
-          if (data?.token) {
-            await Keychain.setGenericPassword("token", data.token);
-            await refreshAuth();
-          }
+      if (data?.token) {
+        await Keychain.setGenericPassword("token", data.token);
+        await refreshAuth();
+      }
 
-          await setItem("user", JSON.stringify(data.user));
+      await setItem("user", JSON.stringify(data.user));
 
-          // ToastSuccess("Login Successfully");
-          navigation.navigate("Home");
-        }
-      // }
+      // ToastSuccess("Login Successfully");
+      navigation.navigate("Home");
+    }
+    // }
 
-      // if (url.includes("kyc-failed")) {
-        // ToastError("KYC Failed ❌");
-        console.log("verification failed")
-      // }
-    };
+    // if (url.includes("kyc-failed")) {
+    // ToastError("KYC Failed ❌");
+    console.log("verification failed");
+    // }
+  };
 
   const handleKYC = async () => {
     try {
@@ -394,14 +397,11 @@ export default function CreateLogin({
       const kycUrl = response?.data?.url;
 
       if (kycUrl) {
-        await handleDeepLink()
+        // await handleDeepLink();
         await Linking.openURL(kycUrl);
-        
       } else {
         console.log("No KYC URL found");
       }
-      
-
     } catch (error) {
       console.log("KYC Error:", error);
     }
@@ -643,11 +643,11 @@ export default function CreateLogin({
                   <Text style={[styles.whatsappText]}>Select Role</Text>
                   <View style={styles.roles}>
                     {Roles.map((option) => {
-                      const isActive = formData.role === option.value;
+                      const isActive = formData.role === option.key;
 
                       return (
                         <Pressable
-                          key={option.value}
+                          key={option.key}
                           style={[
                             styles.optionBtn,
                             isActive && styles.optionBtnActive,
@@ -655,7 +655,7 @@ export default function CreateLogin({
                           onPress={() =>
                             setFormData((prev) => ({
                               ...prev,
-                              role: option.value,
+                              role: option.key,
                             }))
                           }
                         >
@@ -965,14 +965,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignSelf: "flex-start",
     justifyContent: "space-around",
-    gap: 15,
-    marginBottom: 10,
-  },
-  roles: {
-    flexDirection: "row",
-    alignSelf: "flex-start",
-    justifyContent: "space-around",
-    gap: 15,
+    gap: 12,
     marginBottom: 10,
   },
   sheet: {

@@ -35,13 +35,17 @@ const CardDetails = ({ details, onPress }) => {
           </Text>
 
           <Text style={styles.price}>
-            {priceFrom && priceTo
+            {priceFrom && `${formatPrice(priceFrom)}`}{" "}
+            <Text style={{ color: "gray", fontWeight: 400, fontSize: 11 }}>
+              Onwards
+            </Text>
+            {/* {priceFrom && priceTo
               ? `${formatPrice(priceFrom)} – ${formatPrice(priceTo)}`
               : priceFrom
                 ? formatPrice(priceFrom)
                 : priceTo
                   ? formatPrice(priceTo)
-                  : "-"}
+                  : "-"} */}
           </Text>
         </View>
       </View>

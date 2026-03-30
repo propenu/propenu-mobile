@@ -13,19 +13,22 @@ import {
   TopRightArrow,
 } from "../../../assets/svg/Logo";
 import useCity from "../CustomHooks/useCity";
-import upcomingPage from "../../../assets/upcomingPage.png";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 
 const ServiceHub = () => {
   const { selectedCity } = useCity();
   const navigation = useNavigation();
+    const insets = useSafeAreaInsets();
 
   const handleClick = () => {
     navigation.navigate("upComingScreen");
   };
 
   return (
-    <View style={styles.container}>
+    // <View style={[styles.container, {marginBottom :insets.bottom}]}>
+        <View style={[styles.container,]}>
+
       <Text style={styles.title}>Explore Our Services</Text>
       <Text style={styles.subtitle}>
         Services tailored for {selectedCity?.city ?? "Hyderabad"} residents
@@ -118,7 +121,8 @@ export default ServiceHub;
 
 const styles = StyleSheet.create({
   container: {
-    margin: 10,
+    marginHorizontal: 10,
+    marginTop:10,
     marginBottom: 30,
   },
 
