@@ -28,20 +28,20 @@ cd android
 
 
 android aab file creations(keystore setup):{
-nter keystore password:  
-Re-enter new password: 
+enter keystore password:  propenu
+Re-enter new password: propenu
 What is your first and last name?
-  [Unknown]:  propenu solutions
+  propenu solutions
 What is the name of your organizational unit?
-  [Unknown]:  real estate
+   real estate
 What is the name of your organization?
-  [Unknown]:  Propenu Solutions Private Limited
+    Propenu Solutions Private Limited
 What is the name of your City or Locality?
-  [Unknown]:  Hyderabad
+    Hyderabad
 What is the name of your State or Province?
-  [Unknown]:  Telangana
+    Telangana
 What is the two-letter country code for this unit?
-  [Unknown]:  +91
+   +91
 Is CN=propenu solutions, OU=real estate, O=Propenu Solutions Private Limited, L=Hyderabad, ST=Telangana, C="+91" correct?
-  [no]:   
+  
 }
