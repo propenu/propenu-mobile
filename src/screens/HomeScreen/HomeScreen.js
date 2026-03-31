@@ -21,6 +21,8 @@ import AgentProperties from "../../components/Agent/AgentProperties";
 import ServiceHub from "../../components/ServiceHub/ServiceHub";
 import useCity from "../../components/CustomHooks/useCity";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { apiService } from "../../services/apiService";
+import * as Keychain from "react-native-keychain";
 import {
   BellIcon,
   Commercial,
@@ -60,6 +62,44 @@ const HomeScreen = ({ navigation }) => {
     console.log("Navigating to filters......");
     navigation.navigate("CategoryFilter");
   };
+
+
+    const getToken = async () => {
+      const credentials = await Keychain.getGenericPassword();
+  
+      if (!credentials) {
+        console.log("No token found in keychain");
+        return;
+      }
+  
+      const token = credentials.password;
+      return token;
+    };
+  // useEffect(()=>{
+  //   const handleDeepLink = async () => {
+        
+  //           const token = await getToken();
+  //           if (!token) return;
+    
+  //           const tokenResult = await apiService.verifyToken(token);
+  //           console.log("tokenResulttokenResult", tokenResult)
+    
+  //           if (tokenResult?.status === 200) {
+  //             const data = tokenResult?.data;
+    
+  //             if (data?.token) {
+  //               await Keychain.setGenericPassword("token", data.token);
+  //               await new Promise((resolve) => setTimeout(resolve, 100));
+  //               await setItem("user", JSON.stringify(data.user));
+    
+  //               await refreshAuth();
+  //             }
+    
+  //           }
+  //       }
+
+  //       handleDeepLink()
+  // },[])
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>

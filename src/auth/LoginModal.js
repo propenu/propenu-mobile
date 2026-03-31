@@ -21,7 +21,6 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { getItem, setItem } from "../utils/Storage";
 import { userServices } from "../services/userServices";
 
-
 export default function LoginModal({ navigation }) {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -63,61 +62,56 @@ export default function LoginModal({ navigation }) {
   };
 
   const syncGuestShortlist = async () => {
-  try {
-    const stored = await getItem("guest_shortlist");
-    const parsed = stored ? JSON.parse(stored) : [];
+    try {
+      const stored = await getItem("guest_shortlist");
+      const parsed = stored ? JSON.parse(stored) : [];
 
-    if (!parsed.length) return;
+      if (!parsed.length) return;
 
-    for (const item of parsed) {
-      await userServices.postShortlistedProperties(item);
+      for (const item of parsed) {
+        await userServices.postShortlistedProperties(item);
+      }
+
+      // clear guest shortlist
+      await setItem("guest_shortlist", JSON.stringify([]));
+
+      console.log("Guest shortlist synced successfully");
+    } catch (error) {
+      console.log("Error syncing guest shortlist:", error);
     }
+  };
 
-    // clear guest shortlist
-    await setItem("guest_shortlist", JSON.stringify([]));
+  const handleLogin = async () => {
+    try {
+      if (phone.length !== 10) {
+        ToastError("Enter 10 digit Phone number");
+        return;
+      }
 
-    console.log("Guest shortlist synced successfully");
-  } catch (error) {
-    console.log("Error syncing guest shortlist:", error);
-  }
-};
+      setLoading(true); // ✅ start loader
 
- const handleLogin = async () => {
-  try {
-    if (phone.length !== 10) {
-      ToastError("Enter 10 digit Phone number");
-      return;
+      const fullNumber = `+${callingCode}${phone}`;
+      console.log("Phone:", fullNumber);
+
+      const res = await apiService.login({
+        phone: fullNumber,
+      });
+
+      if (res?.status === 200) {
+        await syncGuestShortlist();
+        ToastSuccess("OTP sent successfully");
+        navigation.navigate("OTPLogin", { phone: fullNumber });
+      } else if (res?.status === 404) {
+        ToastInfo(
+          res?.data?.message || "Account not registered. Please sign up first.",
+        );
+      }
+    } catch (err) {
+      console.log("Login error:", err);
+    } finally {
+      setLoading(false); // ✅ stop loader
     }
-
-    setLoading(true); // ✅ start loader
-
-    const fullNumber = `+${callingCode}${phone}`;
-    console.log("Phone:", fullNumber);
-
-    const res = await apiService.login({
-      phone: fullNumber,
-    });
-
-    if (res?.status === 200) {
-      await syncGuestShortlist();
-      ToastSuccess("OTP sent successfully");
-      navigation.navigate("OTPLogin", { phone: fullNumber });
-    } else if (res?.status === 404) {
-      ToastInfo(res?.data?.message || "Account not registered. Please sign up first.");
-    }
-
-  } catch (err) {
-    console.log("Login error:", err);
-  } finally {
-    setLoading(false); // ✅ stop loader
-  }
-};
-if (loading ) {
-  return(
-  <View style={styles.loaderStyle}>
-    <ActivityIndicator size="large" color="#27AE60" />
-  </View>
-)}
+  };
 
   return (
     <SafeAreaView style={styles.overlay}>
@@ -188,8 +182,14 @@ if (loading ) {
               // disabled={!isFormValid}
               onPress={handleLogin}
             >
-              <FontAwesome name="whatsapp" size={20} color="white" />
-              <Text style={[styles.loginText]}>Get OTP</Text>
+              {loading ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                <>
+                  <FontAwesome name="whatsapp" size={20} color="white" />
+                  <Text style={styles.loginText}>Get OTP</Text>
+                </>
+              )}
             </Pressable>
             <View style={{ paddingTop: 15, alignItems: "center" }}>
               <Text style={styles.subTitle}>
@@ -216,18 +216,18 @@ const styles = StyleSheet.create({
     // justifyContent: "center",
     // alignItems: "center",
   },
-  loaderStyle:{
-    flex: 1,
-justifyContent:"center", 
-alignItems:"center",
-    backgroundColor: "rgba(243, 255, 245, 0.5)",
 
-  },
   scrollContent: {
     flexGrow: 1,
     justifyContent: "center",
   },
-
+  loaderOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.3)",
+    zIndex: 999,
+  },
   backOption: {
     marginTop: 20,
     marginLeft: 20,
@@ -237,7 +237,7 @@ alignItems:"center",
     fontSize: 18,
     fontWeight: "600",
     textAlign: "center",
-    marginBottom:5
+    marginBottom: 5,
   },
   subTitle: {
     fontSize: 12,

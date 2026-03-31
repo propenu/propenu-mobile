@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  ActivityIndicator,
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
@@ -129,6 +130,7 @@ export default function CreateLogin({
         phone: formData.phone,
         otp: formData.otp,
       };
+      setLoading(true);
 
       console.log("OPT PAYLOAD :", payload);
       const res = await apiService.requestOTP(payload);
@@ -241,25 +243,26 @@ export default function CreateLogin({
 
   useEffect(() => {
     const handleDeepLink = async (url) => {
-      console.log("URL IM CREATE LOGIN :", url)
+      console.log("URL IM CREATE LOGIN :", url);
       if (!url) return;
 
-
-    if (url.includes("kyc")) {
+      if (url.includes("kyc")) {
         const token = await getToken();
         if (!token) return;
 
         const tokenResult = await apiService.verifyToken(token);
+        console.log("tokenResulttokenResult", tokenResult)
 
         if (tokenResult?.status === 200) {
           const data = tokenResult?.data;
 
           if (data?.token) {
             await Keychain.setGenericPassword("token", data.token);
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            await setItem("user", JSON.stringify(data.user));
+
             await refreshAuth();
           }
-
-          await setItem("user", JSON.stringify(data.user));
 
           // ToastSuccess("Login Successfully");
           navigation.navigate("Home");
@@ -273,7 +276,7 @@ export default function CreateLogin({
     };
 
     const sub = Linking.addEventListener("url", (event) => {
-      console.log("KKKKKKKKKKK", event)
+      console.log("KKKKKKKKKKK", event);
       handleDeepLink(event.url);
     });
 
@@ -374,10 +377,10 @@ export default function CreateLogin({
 
       if (data?.token) {
         await Keychain.setGenericPassword("token", data.token);
+        await setItem("user", JSON.stringify(data.user));
+        await new Promise((resolve) => setTimeout(resolve, 100));
         await refreshAuth();
       }
-
-      await setItem("user", JSON.stringify(data.user));
 
       // ToastSuccess("Login Successfully");
       navigation.navigate("Home");
@@ -397,7 +400,7 @@ export default function CreateLogin({
       const kycUrl = response?.data?.url;
 
       if (kycUrl) {
-        // await handleDeepLink();
+        await handleDeepLink();
         await Linking.openURL(kycUrl);
       } else {
         console.log("No KYC URL found");
@@ -685,10 +688,11 @@ export default function CreateLogin({
                     // disabled={!isFormValid}s
                     onPress={handleDetailsStep}
                   >
-                    <FontAwesome name="whatsapp" size={20} color="white" />
-                    <Text style={[styles.loginText]}>
-                      {loading ? "Verifying..." : "Continue"}
-                    </Text>
+                    {loading ? (
+                      <ActivityIndicator size="small" color="#fff" />
+                    ) : (
+                      <Text style={[styles.loginText]}>Continue</Text>
+                    )}
                   </Pressable>
                   <View style={{ paddingTop: 15, alignItems: "center" }}>
                     <Text style={styles.subTitle}>
