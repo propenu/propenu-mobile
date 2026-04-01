@@ -23,6 +23,7 @@ import useCity from "../../components/CustomHooks/useCity";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { apiService } from "../../services/apiService";
 import * as Keychain from "react-native-keychain";
+import feature1 from "../../../assets/feature.png";
 import {
   BellIcon,
   Commercial,
@@ -129,8 +130,8 @@ const HomeScreen = ({ navigation }) => {
         {/* */}
         <View style={styles.imageContainer}>
           <Image
-            source={HomePage}
-            style={[styles.homePageImage, { height: height * 0.2 }]}
+            source={feature1}
+            style={[styles.homePageImage, { height: height * 0.27 }]}
           />
         </View>
 
@@ -186,12 +187,12 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     paddingTop: 5,
-    paddingHorizontal: 10,
+    // paddingHorizontal: 10,
   },
 
   homePageImage: {
     width: "100%",
-    borderRadius: 10,
+    // borderRadius: 10,
   },
   // homePageImage: {
   //   width: "97%",
