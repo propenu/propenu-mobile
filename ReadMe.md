@@ -45,3 +45,6 @@ What is the two-letter country code for this unit?
 Is CN=propenu solutions, OU=real estate, O=Propenu Solutions Private Limited, L=Hyderabad, ST=Telangana, C="+91" correct?
   
 }
+
+
+.AAB file: in android folder ,    ./gradlew bundleRelease
