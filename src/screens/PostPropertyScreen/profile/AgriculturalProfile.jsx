@@ -22,7 +22,7 @@ import { submitDetailsThunk } from "../../../redux/thunk/SubmitPropertyThunk";
 import { useAppDispatch } from "../../../redux/store/store";
 import { AGRICULTURE_AMENITIES } from "../constants/amenities";
 import InputWithUnit from "../../../components/ui/InputWithUnit";
-import { ToastError, ToastSuccess } from "../../../utils/Toast";
+import { ToastError, ToastSuccess, ToastInfo } from "../../../utils/Toast";
 import InputField from "../../../components/ui/InputField";
 import CounterField from "../../../components/ui/CounterField";
 import Dropdownui from "../../../components/ui/DropDownUI";
@@ -152,6 +152,12 @@ const AgriculturalProfile = () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (!permission.granted) {
+      if (!permission.canAskAgain) {
+        ToastInfo("Please enable photo permission in app settings");
+        Linking.openSettings();
+        return;
+      }
+
       ToastError("Permission required to access images");
       return;
     }
@@ -239,7 +245,7 @@ const AgriculturalProfile = () => {
 
   const handleAgriculturalSubmitDetails = () => {
     setShowErrors(true);
-    console.log("HAIIIIIIIIIIIII")
+    console.log("HAIIIIIIIIIIIII");
 
     const allImages = [...(agricultural?.gallery || []), ...(files || [])];
 
@@ -261,8 +267,7 @@ const AgriculturalProfile = () => {
 
     const isFormValid = validationResult.success;
 
-    console.log("validation result agricultural", validationResult,  );
-
+    console.log("validation result agricultural", validationResult);
 
     if (!isFormValid && !draftId) {
       ToastError("Something went wrong");
@@ -298,7 +303,7 @@ const AgriculturalProfile = () => {
   };
 
   const allImages = [...(agricultural?.gallery || []), ...(files || [])];
-  console.log("Field errors :", fieldErrors)
+  console.log("Field errors :", fieldErrors);
 
   const Section = ({ title, subtitle, children }) => (
     <View style={styles.section}>
@@ -514,12 +519,11 @@ const AgriculturalProfile = () => {
                   )
                 }
               />
-              {showErrors &&
-              fieldErrors?.borewellDetails?.[0] && (
-                  <Text style={styles.errorText}>
-                    {fieldErrors?.borewellDetails?.[0]}
-                  </Text>
-                )}
+              {showErrors && fieldErrors?.borewellDetails?.[0] && (
+                <Text style={styles.errorText}>
+                  {fieldErrors?.borewellDetails?.[0]}
+                </Text>
+              )}
             </View>
           )}
         </View>

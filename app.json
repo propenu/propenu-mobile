@@ -2,7 +2,7 @@
   "expo": {
     "name": "Propenu",
     "slug": "Propenu",
-        "scheme": "propenu", 
+    "scheme": "propenu",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -30,7 +30,15 @@
     },
     "plugins": [
       "@react-native-community/datetimepicker",
-      "@maplibre/maplibre-react-native"
+      "@maplibre/maplibre-react-native",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Propenu to access your photos.",
+          "cameraPermission": "Allow Propenu to access your camera.",
+          "microphonePermission": false
+        }
+      ]
     ],
     "extra": {
       "eas": {

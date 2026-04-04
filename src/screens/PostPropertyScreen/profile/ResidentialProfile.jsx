@@ -33,7 +33,7 @@ import Toggle from "../../../components/ui/ToggleSwitch";
 import InputField from "../../../components/ui/InputField";
 import TextArea from "../../../components/ui/TextArea";
 import DateInputField from "../../../components/ui/DateInputField";
-import { ToastSuccess, ToastError } from "../../../utils/Toast";
+import { ToastSuccess, ToastError, ToastInfo } from "../../../utils/Toast";
 import { setFiles as setFileStoreFiles } from "../../../lib/FileStore";
 import * as ImagePicker from "expo-image-picker";
 import {
@@ -136,6 +136,12 @@ const ResidentialProfile = () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (!permission.granted) {
+      if (!permission.canAskAgain) {
+        ToastInfo("Please enable photo permission in app settings");
+        Linking.openSettings();
+        return;
+      }
+
       ToastError("Permission required to access images");
       return;
     }
@@ -157,7 +163,6 @@ const ResidentialProfile = () => {
       setBaseField({
         key: "galleryFiles",
         value: assets.map((img) => ({
-          
           uri: img.uri,
           name: img.fileName || "image.jpg",
           type: img.type,
@@ -317,15 +322,14 @@ const ResidentialProfile = () => {
     };
 
     if (isFormValid) {
-        dispatch(
-          setProfileField({
-            propertyType: "residential",
-            key: "gallery",
-            value: normalizedImages,
-          }),
-        );
-      
-    
+      dispatch(
+        setProfileField({
+          propertyType: "residential",
+          key: "gallery",
+          value: normalizedImages,
+        }),
+      );
+
       dispatch(
         submitDetailsThunk({
           category: propertyType,

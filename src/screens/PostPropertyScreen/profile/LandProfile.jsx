@@ -24,7 +24,7 @@ import Dropdownui from "../../../components/ui/DropDownUI";
 import AmenitiesSelect from "./AmenitiesSelect";
 import { LAND_AMENITIES } from "../constants/amenities";
 import InputWithUnit from "../../../components/ui/InputWithUnit";
-import { ToastError, ToastSuccess } from "../../../utils/Toast";
+import { ToastError, ToastSuccess, ToastInfo } from "../../../utils/Toast";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { setFiles as setFileStoreFiles } from "../../../lib/FileStore";
 import { ImageListIcon } from "../../../../assets/svg/Logo";
@@ -98,6 +98,12 @@ const LandProfile = () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (!permission.granted) {
+      if (!permission.canAskAgain) {
+        ToastInfo("Please enable photo permission in app settings");
+        Linking.openSettings();
+        return;
+      }
+  
       ToastError("Permission required to access images");
       return;
     }

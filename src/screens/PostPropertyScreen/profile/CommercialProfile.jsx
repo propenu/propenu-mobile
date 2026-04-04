@@ -26,7 +26,7 @@ import Toggle from "../../../components/ui/ToggleSwitch";
 import TextArea from "../../../components/ui/TextArea";
 import AmenitiesSelect from "./AmenitiesSelect";
 import { COMMERCIAL_AMENITIES } from "../constants/amenities";
-import { ToastError, ToastSuccess } from "../../../utils/Toast";
+import { ToastError, ToastInfo, ToastSuccess } from "../../../utils/Toast";
 import Entypo from "@expo/vector-icons/Entypo";
 import { ImageListIcon } from "../../../../assets/svg/Logo";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -126,7 +126,7 @@ const CommercialProfile = () => {
 
   if (!permission.granted) {
     if (!permission.canAskAgain) {
-      ToastError("Please enable photo permission in app settings");
+      ToastInfo("Please enable photo permission in app settings");
       Linking.openSettings();
       return;
     }
