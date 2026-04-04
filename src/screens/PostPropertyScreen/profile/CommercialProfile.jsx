@@ -10,6 +10,7 @@ import {
   Keyboard,
   Switch,
   Image,
+  Linking,
 } from "react-native";
 import { useSelector } from "react-redux";
 import { postPropertyServices } from "../../../services/postPropertyServices";
@@ -121,13 +122,18 @@ const CommercialProfile = () => {
   const isSharedPantry = commercial?.pantry?.shared ?? false;
 
   const pickImages = async () => {
-    // Need user permission to get images
-    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-    if (!permission.granted) {
-      ToastError("Permission required to access images");
+  if (!permission.granted) {
+    if (!permission.canAskAgain) {
+      ToastError("Please enable photo permission in app settings");
+      Linking.openSettings();
       return;
     }
+
+    ToastError("Permission required to access images");
+    return;
+  }
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,

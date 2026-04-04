@@ -170,7 +170,6 @@ export default function NearByLocations({
       800,
     );
   }, [allPoints, propertyPoint]);
-  const hasAnyPoint = allPoints.length > 0;
   return (
     <View style={styles.container}>
       <MapplsGL.MapView

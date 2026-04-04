@@ -48,3 +48,4 @@ Is CN=propenu solutions, OU=real estate, O=Propenu Solutions Private Limited, L=
 
 
 .AAB file: in android folder ,    ./gradlew bundleRelease
+To check SHA : keytool -printcert -jarfile app/build/outputs/bundle/release/app-release.aab
