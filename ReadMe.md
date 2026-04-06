@@ -44,6 +44,8 @@ or
 cd android
 ./gradlew assembleRelease
 
+File Path :android/app/build/outputs/apk/release/app-release.apk
+
 
 ---------------------------------------------------------------------------------------------------------------------------
 
