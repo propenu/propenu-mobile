@@ -25,7 +25,7 @@ import { LocationIcon, PhoneIcon } from "../../../assets/svg/Logo";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 const MoreAgentDetails = ({ route }) => {
-  const { slug } = route.params;
+  const { id } = route.params;
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState("residential");
 
@@ -37,6 +37,7 @@ const MoreAgentDetails = ({ route }) => {
     agricultural: AgriculturalCard,
     land: LandCard,
   };
+  console.log("id in more agents details :", id)
 
   const {
     data: details,
@@ -44,14 +45,11 @@ const MoreAgentDetails = ({ route }) => {
     isError,
     error,
   } = useQuery({
-    queryKey: ["agentDetails", slug],
-    queryFn: async () => {
-      const res = await apiService.agentDetailsBySlug(slug);
-      return res?.data;
-    },
-    enabled: !!slug,
+    queryKey: ["agentDetails", id],
+    queryFn: () => apiService.agentDetailsBySlug(id),
+    // enabled: !!id,
   });
-  // console.log("details", details);
+  console.log("details", details);
 
   const agentDetails = details?.agent;
   const agentProperties = details?.properties;

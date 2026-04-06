@@ -42,7 +42,7 @@ const PrivacyPolicy = () => {
   ];
 
   const infoSharing = [
-    "Owners / Agents / Developers when you submit enquiries",
+    "Owners/Agents/Developers when you submit enquiries",
     "Trusted third-party partners (hosting, analytics, messaging, support tools)",
     "Legal authorities when required by law",
     "Other users when you voluntarily share your details via forms",

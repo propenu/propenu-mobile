@@ -62,9 +62,9 @@ const ContactedProperties = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>My Contact Listing</Text>
+      <Text style={styles.title}>My Contacted Properties</Text>
       <Text style={styles.subTitle}>
-        Properties you have contacted ({total ? total : null})
+        Properties you have contacted {total ? (total) : null}
       </Text>
       {contactedProperties?.length > 0 ? (
         <FlatList
@@ -75,7 +75,7 @@ const ContactedProperties = () => {
       ) : (
         <View style={styles.noContent}>
 
-        <Text>No contacted properties available</Text>
+        <Text>No contacted properties</Text>
         </View>
       )}
     </View>

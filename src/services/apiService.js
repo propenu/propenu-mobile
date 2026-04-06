@@ -375,9 +375,10 @@ export const apiService = {
   },
 
   agentDetailsBySlug: async (id) => {
+    console.log("`${ENV.BASE_URL}${API_ROUTES.USER.AGENT}/${id}`,",  `${ENV.BASE_URL}${API_ROUTES.USER.AGENT}/${id}`,)
     try {
       const response = await fetch(
-        `${ENV.BASE_URL}${API_ROUTES.USER.AGENT}/slug/${id}`,
+        `${ENV.BASE_URL}${API_ROUTES.USER.AGENT}/${id}`,
         {
           method: "GET",
           headers: {
@@ -386,6 +387,7 @@ export const apiService = {
         },
       );
 
+      console.log("REsponseeee:", response)
       const data = await response.json();
 
       if (!response.ok) {

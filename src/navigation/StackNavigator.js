@@ -146,7 +146,7 @@ export default function StackNavigator() {
       name: "ShortListedProperties",
       component: ShortListedScreen,
       headerType: HEADER_TYPES.INNER,
-      title: "ShortListed Properties",
+      title: "Shortlisted Properties",
     },
 
     {

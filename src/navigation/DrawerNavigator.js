@@ -432,7 +432,7 @@ const CustomDrawerContent = ({ navigation, state }) => {
             <View style={{ paddingLeft: 5 }}>
               <Text style={styles.textPost}>Post Property</Text>
               <Text style={styles.subTitle}>
-                Sell / Rent Faster with Propenu
+                Sell/Rent Faster with Propenu
               </Text>
             </View>
 

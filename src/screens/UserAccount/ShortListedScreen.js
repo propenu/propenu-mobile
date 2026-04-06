@@ -88,7 +88,7 @@ if (error) {
           })
         ) : (
           <View style={styles.noDataText}>
-            <Text>Not shortlisted any property</Text>
+            <Text>No properties shortlisted</Text>
           </View>
         )}
       </>

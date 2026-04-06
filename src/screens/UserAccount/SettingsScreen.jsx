@@ -206,7 +206,7 @@ const SettingsScreen = () => {
       {/* Personal Information */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Personal information</Text>
+          <Text style={styles.sectionTitle}>Personal Information</Text>
 
           <Pressable style={styles.editBtn} onPress={() => setIsEditing(true)}>
             <Text style={styles.editText}>Edit</Text>

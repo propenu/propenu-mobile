@@ -50,7 +50,7 @@ const ItemCard = ({ item }) => {
   };
 
   const makeCall = async (phone) => {
-    const url = `tel:${"+919182759849"}`;
+    const url = `tel:${"+919182759849"}`;// this mobile nuber is Propenu HR Mobile 
     const supported = await Linking.canOpenURL(url);
 
     if (supported) {
@@ -64,13 +64,12 @@ const ItemCard = ({ item }) => {
     ? { uri: item.avatar.url }
     : defaultImage;
 
-    console.log("SLIG", item.slug)
 
   return (
     <Pressable
       style={styles.itemCard}
       onPress={() =>
-        navigation.navigate("MoreAgentDetails", { slug: item?.slug })
+        navigation.navigate("MoreAgentDetails", { id: item?._id })
       }
     >
       <View style={[styles.metaItemRow, { margin: 7 }]}>
@@ -153,7 +152,7 @@ const AllAgents = () => {
       )
     : data?.data?.items;
 
-  console.log("filteredDatafilteredData", filteredData);
+  // console.log("filteredDatafilteredData", filteredData);
 
   const handleSelect = (name) => {
     if (selectedArea === name) {

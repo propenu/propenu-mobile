@@ -25,14 +25,14 @@ import ResponsesModal from "./ResponseModal";
 const TAB_KEY_MAP = {
   Residential: "residential",
   Commercial: "commercial",
-  Plot: "land",
+  Plots: "land",
   Agriculture: "agricultural",
 };
 
-const categories = ["Residential", "Commercial", "Plot", "Agriculture"];
+const categories = ["Residential", "Commercial", "Plots", "Agricultural"];
 const categoriesDropdown = [
   { label: "Buy", value: "sale" },
-  { label: "Rent / Lease", value: "other" },
+  { label: "Rent/Lease", value: "other" },
 ];
 
 const MyProperties = () => {

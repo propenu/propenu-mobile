@@ -64,7 +64,7 @@ const AgentProperties = () => {
         />
       ) : (
         <Text style={styles.emptyText}>
-          No agents available at the moment
+          No agents available in {selectedCity?.city}
         </Text>
       )}
     </View>

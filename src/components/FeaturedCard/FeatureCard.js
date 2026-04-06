@@ -32,6 +32,7 @@ const FeaturedCard = ({ navigation }) => {
 
     fetchDetails();
   }, [selectedCity]);
+
   return (
     <View style={styles.card}>
       <Text style={styles.title}>Prime Projects</Text>
