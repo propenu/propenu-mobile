@@ -34,8 +34,8 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Allow Propenu to access your photos.",
-          "cameraPermission": "Allow Propenu to access your camera.",
+          "photosPermission": "Allow Propenu to access your photos",
+          "cameraPermission": "Allow Propenu to access your camera",
           "microphonePermission": false
         }
       ]
