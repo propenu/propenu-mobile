@@ -125,6 +125,50 @@ const ResidentialProfile = () => {
 
 
 
+// const pickImages = async () => {
+//   try {
+//     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+//     if (!permission.granted) {
+//       if (!permission.canAskAgain) {
+//         ToastInfo("Please enable photo permission in app settings");
+//         Linking.openSettings();
+//         return;
+//       }
+
+//       ToastError("Permission required to access images");
+//       return;
+//     }
+//  const result = await ImagePicker.launchImageLibraryAsync({
+//   mediaTypes: ["images"],
+//   allowsMultipleSelection: true,
+//   quality: 0.8,
+//   selectionLimit: 0,
+// });
+
+//     if (result.canceled) return;
+
+//     const assets = result.assets || [];
+
+//     setFiles(assets);
+//     setFileStoreFiles("postProperty", assets);
+
+//     dispatch(
+//       setBaseField({
+//         key: "galleryFiles",
+//         value: assets.map((img) => ({
+//           uri: img.uri,
+//           name: img.fileName || `image-${Date.now()}.jpg`,
+//           type: img.mimeType || img.type || "image/jpeg",
+//         })),
+//       })
+//     );
+//   } catch (error) {
+//     console.log("Image picker error:", error);
+//     ToastError("Unable to open gallery");
+//   }
+// };
+
 const pickImages = async () => {
   try {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -139,16 +183,20 @@ const pickImages = async () => {
       ToastError("Permission required to access images");
       return;
     }
+
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ["images"],
       allowsMultipleSelection: true,
+      selectionLimit: 10,
+      orderedSelection: true,
       quality: 0.8,
-      selectionLimit: 0,
     });
+
+    console.log("picker result:", JSON.stringify(result, null, 2));
 
     if (result.canceled) return;
 
-    const assets = result.assets || [];
+    const assets = (result.assets || []).filter((img) => img?.uri);
 
     setFiles(assets);
     setFileStoreFiles("postProperty", assets);
@@ -156,15 +204,16 @@ const pickImages = async () => {
     dispatch(
       setBaseField({
         key: "galleryFiles",
-        value: assets.map((img) => ({
+        value: assets.map((img, index) => ({
           uri: img.uri,
-          name: img.fileName || `image-${Date.now()}.jpg`,
-          type: img.mimeType || img.type || "image/jpeg",
+          name: img.fileName || `image-${Date.now()}-${index}.jpg`,
+          type: img.mimeType || "image/jpeg",
         })),
       })
     );
   } catch (error) {
     console.log("Image picker error:", error);
+    console.log("Image picker error JSON:", JSON.stringify(error, null, 2));
     ToastError("Unable to open gallery");
   }
 };
