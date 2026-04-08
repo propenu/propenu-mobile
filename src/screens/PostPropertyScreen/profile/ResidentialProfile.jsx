@@ -43,6 +43,7 @@ import {
 import { ImageListIcon } from "../../../../assets/svg/Logo";
 import { submitDetailsThunk } from "../../../redux/thunk/SubmitPropertyThunk";
 import { validateResidentialProfile } from "../../../zod/detailsZod/residentialProfileZod";
+import { Linking } from "react-native";
 
 export const FLOORING_TYPES = [
   "vitrified",
@@ -82,24 +83,17 @@ const ResidentialProfile = () => {
   const [showErrors, setShowErrors] = useState(false);
   const [fieldErrors, setFieldErrors] = useState(null);
 
-  // const validationResult = validateResidentialProfile(
-  //   residential,
-  //   files.map((f) => f.file),
-  // );
-  // console.log("(((((((((((((((", files)
-
-  // const fieldErrors = !validationResult.success
-  //   ? validationResult.error.flatten().fieldErrors
-  //   : {};
-  // console.log("*********", fieldErrors, validationResult.success);
-
-  // const isFormValid = validationResult.success;
-
   // const pickImages = async () => {
-  //   // Ask permission
+  //   // Need user permission to get images
   //   const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
   //   if (!permission.granted) {
+  //     if (!permission.canAskAgain) {
+  //       ToastInfo("Please enable photo permission in app settings");
+  //       Linking.openSettings();
+  //       return;
+  //     }
+
   //     ToastError("Permission required to access images");
   //     return;
   //   }
@@ -107,32 +101,32 @@ const ResidentialProfile = () => {
   //   const result = await ImagePicker.launchImageLibraryAsync({
   //     mediaTypes: ImagePicker.MediaTypeOptions.Images,
   //     allowsMultipleSelection: true,
-  //     // selectionLimit: 5, // iOS 14+ & Android supported
   //     quality: 0.8,
   //   });
-  //   console.log(result);
-  //   if (!result.canceled) {
-  //     setFiles(result.assets);
-  //     console.log("result assets", result.assets);
-  //     // OPTIONAL: save metadata to redux
-  //     dispatch(
-  //       setBaseField({
-  //         key: "galleryFiles",
-  //         value: result.assets.map((img) => ({
-  //           uri: img.uri,
-  //           name: img.fileName || "image.jpg",
-  //           type: img.mimeType || "image/jpeg",
-  //           size: img.fileSize,
-  //         })),
-  //       }),
-  //     );
-  //     console.log("assetssssssss :", result, result.assets);
-  //     setFileStoreFiles("postProperty", result.assets);
-  //   }
+
+  //   if (result.canceled) return;
+
+  //   const assets = result.assets || [];
+
+  //   setFiles(assets);
+  //   setFileStoreFiles("postProperty", assets);
+
+  //   dispatch(
+  //     setBaseField({
+  //       key: "galleryFiles",
+  //       value: assets.map((img) => ({
+  //         uri: img.uri,
+  //         name: img.fileName || "image.jpg",
+  //         type: img.type,
+  //       })),
+  //     }),
+  //   );
   // };
 
-  const pickImages = async () => {
-    // Need user permission to get images
+
+
+const pickImages = async () => {
+  try {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (!permission.granted) {
@@ -147,9 +141,10 @@ const ResidentialProfile = () => {
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ["images"],
       allowsMultipleSelection: true,
       quality: 0.8,
+      selectionLimit: 0,
     });
 
     if (result.canceled) return;
@@ -164,12 +159,16 @@ const ResidentialProfile = () => {
         key: "galleryFiles",
         value: assets.map((img) => ({
           uri: img.uri,
-          name: img.fileName || "image.jpg",
-          type: img.type,
+          name: img.fileName || `image-${Date.now()}.jpg`,
+          type: img.mimeType || "image/jpeg",
         })),
-      }),
+      })
     );
-  };
+  } catch (error) {
+    console.log("Image picker error:", error);
+    ToastError("Unable to open gallery");
+  }
+};
 
   useEffect(() => {
     const price =

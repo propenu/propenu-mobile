@@ -1,10 +1,6 @@
 
 Propenu Mobile App
-
-Real estate mobile application for **verified properties & trusted agents**.  
 Built with **React Native (Expo Dev Client)**.
-
-Running the Project
 
 How to Run the Project : 
 Connect your mobile device using a USB cable.
@@ -80,7 +76,6 @@ versionName (optional but recommended)
 
 cd android
 ./gradlew bundleRelease
-
 
 Output File : android/app/build/outputs/bundle/release/app-release.aab
 

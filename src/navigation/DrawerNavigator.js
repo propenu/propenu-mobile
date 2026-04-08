@@ -188,6 +188,7 @@ const CustomDrawerContent = ({ navigation, state }) => {
     }
   };
 
+  console.log("checking Login status :", isLoggedIn)
   const handleLogout = async () => {
     if (userDetails != null) {
       await clearStorage();
