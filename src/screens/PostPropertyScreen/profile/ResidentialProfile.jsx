@@ -44,6 +44,7 @@ import { ImageListIcon } from "../../../../assets/svg/Logo";
 import { submitDetailsThunk } from "../../../redux/thunk/SubmitPropertyThunk";
 import { validateResidentialProfile } from "../../../zod/detailsZod/residentialProfileZod";
 import { Linking } from "react-native";
+import * as DocumentPicker from "expo-document-picker";
 
 export const FLOORING_TYPES = [
   "vitrified",
@@ -171,32 +172,15 @@ const ResidentialProfile = () => {
 
 const pickImages = async () => {
   try {
-    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (!permission.granted) {
-      if (!permission.canAskAgain) {
-        ToastInfo("Please enable photo permission in app settings");
-        Linking.openSettings();
-        return;
-      }
-
-      ToastError("Permission required to access images");
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
-      allowsMultipleSelection: true,
-      selectionLimit: 10,
-      orderedSelection: true,
-      quality: 0.8,
+    const result = await DocumentPicker.getDocumentAsync({
+      type: "image/*",
+      multiple: true,
+      copyToCacheDirectory: true,
     });
-
-    console.log("picker result:", JSON.stringify(result, null, 2));
 
     if (result.canceled) return;
 
-    const assets = (result.assets || []).filter((img) => img?.uri);
+    const assets = result.assets || [];
 
     setFiles(assets);
     setFileStoreFiles("postProperty", assets);
@@ -206,14 +190,13 @@ const pickImages = async () => {
         key: "galleryFiles",
         value: assets.map((img, index) => ({
           uri: img.uri,
-          name: img.fileName || `image-${Date.now()}-${index}.jpg`,
+          name: img.name || `image-${Date.now()}-${index}.jpg`,
           type: img.mimeType || "image/jpeg",
         })),
       })
     );
   } catch (error) {
-    console.log("Image picker error:", error);
-    console.log("Image picker error JSON:", JSON.stringify(error, null, 2));
+    console.log("Document picker error:", error);
     ToastError("Unable to open gallery");
   }
 };
