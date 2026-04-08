@@ -139,9 +139,8 @@ const pickImages = async () => {
       ToastError("Permission required to access images");
       return;
     }
-
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsMultipleSelection: true,
       quality: 0.8,
       selectionLimit: 0,
@@ -160,7 +159,7 @@ const pickImages = async () => {
         value: assets.map((img) => ({
           uri: img.uri,
           name: img.fileName || `image-${Date.now()}.jpg`,
-          type: img.mimeType || "image/jpeg",
+          type: img.mimeType || img.type || "image/jpeg",
         })),
       })
     );
