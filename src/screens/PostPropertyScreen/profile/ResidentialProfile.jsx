@@ -44,7 +44,6 @@ import { ImageListIcon } from "../../../../assets/svg/Logo";
 import { submitDetailsThunk } from "../../../redux/thunk/SubmitPropertyThunk";
 import { validateResidentialProfile } from "../../../zod/detailsZod/residentialProfileZod";
 import { Linking } from "react-native";
-import * as DocumentPicker from "expo-document-picker";
 
 export const FLOORING_TYPES = [
   "vitrified",
@@ -170,36 +169,54 @@ const ResidentialProfile = () => {
 //   }
 // };
 
-const pickImages = async () => {
-  try {
-    const result = await DocumentPicker.getDocumentAsync({
-      type: "image/*",
-      multiple: true,
-      copyToCacheDirectory: true,
-    });
+  const pickImages = async () => {
+    try {
+      let permission = await ImagePicker.getMediaLibraryPermissionsAsync();
 
-    if (result.canceled) return;
+      if (!permission.granted && permission.canAskAgain !== false) {
+        permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      }
 
-    const assets = result.assets || [];
+      if (!permission.granted) {
+        if (!permission.canAskAgain) {
+          ToastInfo("Please enable photo permission in app settings");
+          Linking.openSettings();
+          return;
+        }
 
-    setFiles(assets);
-    setFileStoreFiles("postProperty", assets);
+        ToastError("Permission required to access images");
+        return;
+      }
 
-    dispatch(
-      setBaseField({
-        key: "galleryFiles",
-        value: assets.map((img, index) => ({
-          uri: img.uri,
-          name: img.name || `image-${Date.now()}-${index}.jpg`,
-          type: img.mimeType || "image/jpeg",
-        })),
-      })
-    );
-  } catch (error) {
-    console.log("Document picker error:", error);
-    ToastError("Unable to open gallery");
-  }
-};
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images"],
+        allowsMultipleSelection: true,
+        quality: 0.8,
+        legacy: Platform.OS === "android",
+      });
+
+      if (result.canceled) return;
+
+      const assets = result.assets || [];
+
+      setFiles(assets);
+      setFileStoreFiles("postProperty", assets);
+
+      dispatch(
+        setBaseField({
+          key: "galleryFiles",
+          value: assets.map((img, index) => ({
+            uri: img.uri,
+            name: img.fileName || `image-${Date.now()}-${index}.jpg`,
+            type: img.mimeType || img.type || "image/jpeg",
+          })),
+        }),
+      );
+    } catch (error) {
+      console.log("Image picker error:", error);
+      ToastError(error?.message || "Unable to open gallery");
+    }
+  };
 
   useEffect(() => {
     const price =
