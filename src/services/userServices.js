@@ -275,6 +275,7 @@ export const userServices = {
           },
         },
       );
+      console.log("Agent Response :", `${ENV.BASE_URL}${API_ROUTES.AGENT.AGENT_DETAILS}`, response)
 
       if (!response.ok) {
         throw new Error("Failed to fetch profile");
@@ -308,7 +309,7 @@ export const userServices = {
       const data = await response.json();
       return data;
     } catch (error) {
-      console.log("Error fetching agent profile:", error);
+      console.log("Error fetching getMembershipHistory profile:", error);
       return null;
     }
   },
