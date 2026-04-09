@@ -1,9 +1,10 @@
-import { Pressable, View, Text, StyleSheet } from "react-native";
+import { Pressable, View, Text, StyleSheet,Image } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import PostProperty from "../screens/PostPropertyScreen/PostProperty";
 import PropertyDetailsScreen from "../screens/PropertyDetails/PropertyDetailsScreen";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 // import DrawerNavigator from "./DrawerNavigator";
+import { useAuth } from "../context/AuthContext";
 import PropertyListScreen from "../screens/PropertyListScreen/PropertyListScreen";
 import MoreResidentialDetails from "../screens/PropertyListScreen/MoreDetails/MoreResidentialDetails";
 import CategoryFilterScreen from "../screens/SearchFilter/CategoryFilterScreen";
@@ -49,6 +50,7 @@ import HighLightedProperties from "../screens/ViewAll/HighLightedProperties";
 import ViewAllOwnerProperties from "../screens/ViewAll/ViewAllOwnerProperties";
 import AllAgents from "../screens/ViewAll/AllAgents";
 import MapScreen from "../components/location/MapScreen";
+import splashIcon from "../../assets/splashIcon.png";
 const Stack = createNativeStackNavigator();
 
 const HEADER_TYPES = {
@@ -60,6 +62,7 @@ export default function StackNavigator() {
   const dispatch = useDispatch();
   const isOpen = useSelector((state) => state.dropdown.isOpen);
   const { selectedCity } = useCity();
+  const {userDetails, isLoggedIn} = useAuth();
 
   const handleCity = () => {
     dispatch(toggleDropdown());
@@ -86,6 +89,14 @@ export default function StackNavigator() {
   );
 
   const renderPostPropertyButton = (navigation) => (
+  userDetails?.roleName === "builder" ? (
+    <View>
+      <Image
+        source={splashIcon}
+        style={styles.fullIcon}
+      />
+    </View>
+  ) : (
     <Pressable
       onPress={() => navigation.navigate("PostProperty")}
       style={styles.postBtn}
@@ -93,7 +104,8 @@ export default function StackNavigator() {
       <Text style={styles.postText}>Post Property</Text>
       <Text style={styles.freeBadge}>Free</Text>
     </Pressable>
-  );
+  )
+);
 
   const baseHeader = {
     headerShadowVisible: false,
@@ -116,6 +128,8 @@ export default function StackNavigator() {
           ...baseHeader,
           headerTitle: () => null,
           headerLeft: () => renderMenuButton(navigation),
+        //   headerRight: () =>
+        //  userDetails?.roleName === "builder" ? null : renderPostPropertyButton(navigation),
           headerRight: () => renderPostPropertyButton(navigation),
         };
 
@@ -385,7 +399,7 @@ export default function StackNavigator() {
       name: "BuilderFeaturedProperties",
       component: BuilderFeaturedProperties,
       headerType: HEADER_TYPES.INNER,
-      title: "Featured Projects",
+      title: "My Featured Projects",
     },
   ];
   return (
@@ -449,6 +463,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginRight: 8,
+  },
+  fullIcon:{
+    height:25,
+    width:100
   },
 
   postBtn: {

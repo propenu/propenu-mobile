@@ -10,8 +10,7 @@ const AgentCard = ({ details }) => {
   const imageSource = details?.coverImage?.url
     ? { uri: details.coverImage.url }
     : defaultImage;
-;
-console.log("detialaaaaa,", details._id)
+    
   const handlePress = () => {
     navigation.navigate("MoreAgentDetails", { id:details._id });
   };

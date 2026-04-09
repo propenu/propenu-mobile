@@ -388,7 +388,7 @@ const ResidentialProfile = () => {
         .then((result) => {
           // console.log("Result :", result);
           dispatch(setPercentage(result?.data?.completion?.percent));
-          ToastSuccess("Profile details submitted successfully");
+          ToastSuccess("Property details submitted successfully");
           dispatch(nextStep());
         })
         .catch((error) => {
@@ -400,6 +400,7 @@ const ResidentialProfile = () => {
     // console.log(files?.length, "JJJJ");
   }, [files]);
 
+  console.log("DESCRIPTION STATE:", residential.description);
   const allImages = [...(residential?.gallery || []), ...(files || [])];
 
   const isChecked = residential?.isModularKitchen || false;
@@ -686,14 +687,14 @@ const ResidentialProfile = () => {
           placeholder="e.g. Spacious 3 BHK apartment with east-facing balcony, covered parking, power backup, and close to IT parks."
           maxLength={500}
           onChange={(value) =>
-            dispatch(
-              setProfileField({
-                propertyType: "residential",
-                key: "description",
-                value,
-              }),
-            )
-          }
+  dispatch(
+    setProfileField({
+      propertyType: "residential",
+      key: "description",
+      value: value || "",
+    })
+  )
+}
         />
         <View>
           {showErrors && fieldErrors?.description ? (

@@ -424,6 +424,7 @@ const CustomDrawerContent = ({ navigation, state }) => {
           {/* )} */}
 
           {/*--------------------Bottom card---------------------- */}
+                  {!userDetails?.roleName === "builder" && (
           <Pressable
             style={[styles.card, { marginTop: 10 }]}
             onPress={() =>
@@ -438,7 +439,7 @@ const CustomDrawerContent = ({ navigation, state }) => {
             </View>
 
             <Image source={HouseSell} style={{ width: 40, height: 40 }} />
-          </Pressable>
+          </Pressable>)}
           {/* <View style={styles.card}>
             <View style={{ paddingLeft: 5 }}>
               <Text style={styles.textPost}>Search Property</Text>

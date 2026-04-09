@@ -73,6 +73,8 @@ const AgentLeads = () => {
     enabled: !!selectedPropertyId,
   });
 
+  console.log("leadsLoadingleadsLoading", leadsLoading, leadsData)
+
   useEffect(() => {
     setActiveStatus("All");
   }, [selectedPropertyId]);
@@ -205,7 +207,8 @@ const AgentLeads = () => {
         <ActivityIndicator
           style={{ marginTop: 20 }}
           size="small"
-          color="#27AE60"
+          // color="#27AE60"
+          color="#fff"
         />
       ) : (
         <FlatList

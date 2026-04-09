@@ -293,7 +293,7 @@ const AgriculturalProfile = () => {
         .then((res) => {
           // console.log("Result :", res);
           dispatch(setPercentage(res?.data?.completion?.percent));
-          ToastSuccess("Profile details submitted successfully");
+          ToastSuccess("Property details submitted successfully");
           dispatch(nextStep());
         })
         .catch((error) => {
