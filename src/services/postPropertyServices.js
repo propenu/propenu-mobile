@@ -134,16 +134,50 @@ export const postPropertyServices = {
         },
       );
 
-      const data = await res.json();
-      console.log("RESSSSSSSSS", data);
+      const text = await res.text();
+
+      let data = null;
+
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        const isHtml =
+          typeof text === "string" &&
+          (text.includes("<!DOCTYPE html") || text.includes("<html"));
+
+        throw {
+          type: isHtml ? "HTML_RESPONSE" : "INVALID_RESPONSE",
+          status: res.status,
+          code: null,
+          message: isHtml ? "Server error occurred" : "Invalid server response",
+          raw: text,
+        };
+      }
 
       if (!res.ok) {
-      throw data; 
-    }
+        throw {
+          type: "API_ERROR",
+          status: res.status,
+          code: data?.code,
+          message: data?.message || "Verification failed",
+          data,
+        };
+      }
 
       return data;
     } catch (error) {
-      console.log("🔥 VERIFY API ERROR:", error);
+      console.error("🔥 VERIFY API ERROR:", error);
+
+      // network error fallback
+      if (!error?.type) {
+        throw {
+          type: "NETWORK_ERROR",
+          status: null,
+          code: null,
+          message: error?.message || "Network request failed",
+        };
+      }
+
       throw error;
     }
   },

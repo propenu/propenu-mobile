@@ -187,15 +187,27 @@ const VerificationStep = () => {
         //   navigation.navigate("Home");
         // }, 3000);
       })
-      .catch((error) => {
-        console.log("ERROR :", error);
-        console.log("ERROR RESPONSE :", error?.response?.data);
-        console.error("ERROR FULL:", JSON.stringify(error, null, 2));
-        console.error(
-          "RESPONSE:",
-          JSON.stringify(error?.response?.data, null, 2),
-        );
-        if (error?.code === "NO_VALID_PLAN") {
+      .catch((err) => {
+        const errorPayload = {
+          code: err?.code || err?.data?.code || err?.response?.data?.code,
+
+          message:
+            err?.message ||
+            err?.data?.message ||
+            err?.response?.data?.message ||
+            (typeof err?.raw === "string" && err.raw.includes("<html")
+              ? "Server error occurred"
+              : "Try again later") ||
+            "Verification failed",
+
+          status: err?.status,
+          type: err?.type,
+        };
+
+        console.log("ERROR PAYLOAD:", errorPayload);
+
+        // 🔥 Your existing logic
+        if (errorPayload.code === "NO_VALID_PLAN") {
           ToastError("Please subscribe to a plan");
 
           const listingType = propertyProfile?.listingType || "sale";
@@ -206,7 +218,7 @@ const VerificationStep = () => {
           return;
         }
 
-        if (error?.code === "PLAN_LIMIT_REACHED") {
+        if (errorPayload.code === "PLAN_LIMIT_REACHED") {
           const listingType = propertyProfile?.listingType || "sale";
           const redirectScreen =
             listingType === "sale" ? "OwnerSellPlans" : "OwnerRentPlans";
@@ -216,24 +228,21 @@ const VerificationStep = () => {
           return;
         }
 
-        let message = "Verification failed";
-
-        if (typeof error?.response?.data === "string") {
-          const responseText = error.response.data.trim();
-
-          if (
-            !responseText.startsWith("<!DOCTYPE html") &&
-            !responseText.startsWith("<html")
-          ) {
-            message = responseText;
-          }
-        } else if (typeof error?.response?.data?.message === "string") {
-          message = error.response.data.message;
-        } else if (typeof error?.message === "string") {
-          message = error.message;
+        // 🔥 HTML / server crash case
+        if (errorPayload.type === "HTML_RESPONSE") {
+          navigation.navigate("ServerErrorScreen"); 
+          return;
         }
 
-        ToastError(message);
+        // 🔥 auth error
+        if (errorPayload.status === 401) {
+          ToastError("Session expired");
+          navigation.navigate("Login");
+          return;
+        }
+
+        // fallback
+        ToastError(errorPayload.message);
       });
     // .catch((error) => {
     //   console.log("ERROR :", error);
@@ -415,6 +424,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 8,
     marginVertical: 20,
+    alignItems:"center",
 
     // iOS shadow
     shadowColor: "#000",
