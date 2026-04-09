@@ -29,7 +29,7 @@ import TrackPropertyStatus from "./TrackPropertyStatus ";
 const VerificationStep = () => {
   const dispatch = useAppDispatch();
   const [submissionMeta, setSubmissionMeta] = useState(null);
-  const [showTracker, setShowTracker ]= useState(false)
+  const [showTracker, setShowTracker] = useState(false);
 
   const VERIFICATION_DOCS = [
     {
@@ -79,7 +79,7 @@ const VerificationStep = () => {
         : propertyType === "land"
           ? land
           : agricultural;
-      console.log("propertyProfilepropertyProfilepropertyProfile", propertyProfile)
+  console.log("propertyProfilepropertyProfilepropertyProfile", propertyProfile);
 
   const navigation = useNavigation();
 
@@ -161,14 +161,14 @@ const VerificationStep = () => {
       // });
       .unwrap()
       .then((res) => {
-        console.log("RESPONSE :::", res)
+        console.log("RESPONSE :::", res);
         ToastSuccess("Property is under review");
 
         const data = res?.data;
         const approved = Boolean(res?.verified);
         const updatedAt = data?.updatedAt || new Date().toISOString();
-        if(res?.success && !res?.verified){
-          setShowTracker(true)
+        if (res?.success && !res?.verified) {
+          setShowTracker(true);
         }
 
         setSubmissionMeta({
@@ -189,88 +189,140 @@ const VerificationStep = () => {
       })
       .catch((error) => {
         console.log("ERROR :", error);
-        const errObj =
-          error?.response?.data ??
-          (typeof error === "string" ? { message: error } : error);
+        console.log("ERROR RESPONSE :", error?.response?.data);
+        console.error("ERROR FULL:", JSON.stringify(error, null, 2));
+        console.error(
+          "RESPONSE:",
+          JSON.stringify(error?.response?.data, null, 2),
+        );
         if (error?.code === "NO_VALID_PLAN") {
           ToastError("Please subscribe to a plan");
-              console.log("propertyProfile", propertyProfile)
 
           const listingType = propertyProfile?.listingType || "sale";
-
           const redirectScreen =
             listingType === "sale" ? "OwnerSellPlans" : "OwnerRentPlans";
 
           navigation.navigate(redirectScreen);
-
           return;
         }
 
         if (error?.code === "PLAN_LIMIT_REACHED") {
           const listingType = propertyProfile?.listingType || "sale";
-
           const redirectScreen =
             listingType === "sale" ? "OwnerSellPlans" : "OwnerRentPlans";
 
           navigation.navigate(redirectScreen);
-
           ToastError("Your plan limit is reached");
           return;
         }
 
-        // 🔴 Fallback
-       ToastError(errObj?.message || "Verification failed");
+        let message = "Verification failed";
+
+        if (typeof error?.response?.data === "string") {
+          const responseText = error.response.data.trim();
+
+          if (
+            !responseText.startsWith("<!DOCTYPE html") &&
+            !responseText.startsWith("<html")
+          ) {
+            message = responseText;
+          }
+        } else if (typeof error?.response?.data?.message === "string") {
+          message = error.response.data.message;
+        } else if (typeof error?.message === "string") {
+          message = error.message;
+        }
+
+        ToastError(message);
       });
+    // .catch((error) => {
+    //   console.log("ERROR :", error);
+    //   const errObj =
+    //     error?.response?.data ??
+    //     (typeof error === "string" ? { message: error } : error);
+    //   if (error?.code === "NO_VALID_PLAN") {
+    //     ToastError("Please subscribe to a plan");
+    //         console.log("propertyProfile", propertyProfile)
+
+    //     const listingType = propertyProfile?.listingType || "sale";
+
+    //     const redirectScreen =
+    //       listingType === "sale" ? "OwnerSellPlans" : "OwnerRentPlans";
+
+    //     navigation.navigate(redirectScreen);
+
+    //     return;
+    //   }
+
+    //   if (error?.code === "PLAN_LIMIT_REACHED") {
+    //     const listingType = propertyProfile?.listingType || "sale";
+
+    //     const redirectScreen =
+    //       listingType === "sale" ? "OwnerSellPlans" : "OwnerRentPlans";
+
+    //     navigation.navigate(redirectScreen);
+
+    //     ToastError("Your plan limit is reached");
+    //     return;
+    //   }
+
+    //   // 🔴 Fallback
+    //  ToastError(errObj?.message || "Verification failed");
+    // });
   };
   // const existingDoc = propertyProfile?.verificationDocuments?.[0];
-  console.log("propertyProfile?.verificationDocuments?.[0]", propertyProfile?.verificationDocuments?.[0])
+  console.log(
+    "propertyProfile?.verificationDocuments?.[0]",
+    propertyProfile?.verificationDocuments?.[0],
+  );
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {showTracker ? 
-      <TrackPropertyStatus  submissionMeta={submissionMeta}/>
-      : <>
-      <View style={styles.card}>
-        <Text style={styles.cardText}>
-          Ownership proof verifies properties and prevents duplicates. Buyers
-          and tenants are verified too.
-        </Text>
-      </View>
+      {showTracker ? (
+        <TrackPropertyStatus submissionMeta={submissionMeta} />
+      ) : (
+        <>
+          <View style={styles.card}>
+            <Text style={styles.cardText}>
+              Ownership proof verifies properties and prevents duplicates.
+              Buyers and tenants are verified too.
+            </Text>
+          </View>
 
+          <Text style={styles.heading}>
+            Select any one of the required documents below to verify your
+            property
+          </Text>
 
-      <Text style={styles.heading}>
-        Select any one of the required documents below to verify your property
-      </Text>
+          {/* RADIO LIST */}
 
-      {/* RADIO LIST */}
+          {VERIFICATION_DOCS.map((doc) => {
+            const selected = propertyProfile?.verificationDocument === doc.key;
 
-      {VERIFICATION_DOCS.map((doc) => {
-        const selected = propertyProfile?.verificationDocument === doc.key;
+            return (
+              <Pressable
+                key={doc.key}
+                style={styles.radioRow}
+                onPress={() => {
+                  const newValue = selected ? null : doc.key;
 
-        return (
-          <Pressable
-            key={doc.key}
-            style={styles.radioRow}
-            onPress={() => {
-              const newValue = selected ? null : doc.key;
+                  dispatch(
+                    setProfileField({
+                      propertyType: propertyType,
+                      key: "verificationDocument",
+                      value: newValue,
+                    }),
+                  );
+                }}
+              >
+                {/* Radio */}
+                <View style={[styles.radio, selected && styles.radioSelected]}>
+                  {selected && <View style={styles.dot} />}
+                </View>
 
-              dispatch(
-                setProfileField({
-                  propertyType: propertyType,
-                  key: "verificationDocument",
-                  value: newValue,
-                }),
-              );
-            }}
-          >
-            {/* Radio */}
-            <View style={[styles.radio, selected && styles.radioSelected]}>
-              {selected && <View style={styles.dot} />}
-            </View>
-
-            {/* Label */}
-            <Text style={styles.label}>{doc.label}</Text>
-            {/* {doc?.showInfo ? (
+                {/* Label */}
+                <Text style={styles.label}>{doc.label}</Text>
+                {/* {doc?.showInfo ? (
               <Pressable
                 style={{ marginRight: 5 }}
                 onPress={ToastInfo("Please Upload in PDF format only")}
@@ -278,66 +330,69 @@ const VerificationStep = () => {
                 <Feather name="info" size={12} color="gray" />
               </Pressable>
             ) : null} */}
+              </Pressable>
+            );
+          })}
+
+          {/* FILE PICKER */}
+
+          {file?.uri && (
+            <View style={styles.previewContainer}>
+              <Image source={{ uri: file.uri }} style={styles.previewImage} />
+            </View>
+          )}
+
+          <Pressable style={styles.uploadBox} onPress={pickFile}>
+            <ImageListIcon width={50} height={40} color="#82D1A3" />
+
+            <View style={styles.uploadContent}>
+              <Text style={styles.uploadText}>
+                Tap here to upload your document.
+              </Text>
+
+              <Text style={styles.uploadText}>Max 1 image : upto 5 MB</Text>
+            </View>
+
+            <Text style={styles.uploadButton}>Upload document</Text>
           </Pressable>
-        );
-      })}
 
-      {/* FILE PICKER */}
+          {fieldErrors?.verificationDocuments?.[0] && (
+            <Text style={styles.error}>
+              {fieldErrors.verificationDocuments[0]}
+            </Text>
+          )}
 
-      {file?.uri && (
-        <View style={styles.previewContainer}>
-          <Image source={{ uri: file.uri }} style={styles.previewImage} />
-        </View>
+          {/* Continue */}
+          <View style={styles.btnOptions}>
+            <Pressable
+              style={styles.backButton}
+              onPress={() => dispatch(prevStep())}
+            >
+              <Text style={styles.backButtonText}>Back</Text>
+            </Pressable>
+            <Pressable
+              style={styles.button}
+              onPress={handleSubmit}
+              // if (isFormValid) {
+              //   console.log("Location Data:", base);
+              //   dispatch(nextStep());
+              // }
+            >
+              <Text style={styles.buttonText}>Publish</Text>
+            </Pressable>
+          </View>
+          {showConfetti && (
+            <View style={styles.overlay}>
+              <LottieView
+                source={require("../../../../assets/animations/confetti.json")}
+                autoPlay
+                loop={false}
+                style={styles.animation}
+              />
+            </View>
+          )}
+        </>
       )}
-
-      <Pressable style={styles.uploadBox} onPress={pickFile}>
-        <ImageListIcon width={50} height={40} color="#82D1A3" />
-
-        <View style={styles.uploadContent}>
-          <Text style={styles.uploadText}>
-            Tap here to upload your document.
-          </Text>
-
-          <Text style={styles.uploadText}>Max 1 image : upto 5 MB</Text>
-        </View>
-
-        <Text style={styles.uploadButton}>Upload document</Text>
-      </Pressable>
-
-      {fieldErrors?.verificationDocuments?.[0] && (
-        <Text style={styles.error}>{fieldErrors.verificationDocuments[0]}</Text>
-      )}
-
-      {/* Continue */}
-      <View style={styles.btnOptions}>
-        <Pressable
-          style={styles.backButton}
-          onPress={() => dispatch(prevStep())}
-        >
-          <Text style={styles.backButtonText}>Back</Text>
-        </Pressable>
-        <Pressable
-          style={styles.button}
-          onPress={handleSubmit}
-          // if (isFormValid) {
-          //   console.log("Location Data:", base);
-          //   dispatch(nextStep());
-          // }
-        >
-          <Text style={styles.buttonText}>Publish</Text>
-        </Pressable>
-      </View>
-      {showConfetti && (
-        <View style={styles.overlay}>
-          <LottieView
-            source={require("../../../../assets/animations/confetti.json")}
-            autoPlay
-            loop={false}
-            style={styles.animation}
-          />
-        </View>
-      )}
-      </>} 
     </ScrollView>
   );
 };
