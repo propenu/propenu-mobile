@@ -50,14 +50,15 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     paddingHorizontal: 16,
     paddingVertical: 14,
-    // flexDirection: width > 768 ? "row" : "column",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 16,
   },
   leftSection: {
     flex: 1,
-    alignItems: width > 768 ? "flex-start" : "center",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 30,
   },
   title: {
     fontSize: 14,

@@ -11,6 +11,8 @@ const LikedIconContainer = ({ slug, id, type }) => {
   const { isLoggedIn } = useAuth();
   const queryClient = useQueryClient();
 
+  console.log("checking in liked icon container id", id, slug, type)
+
   useEffect(() => {
     checkInitialStatus();
   }, [slug]);

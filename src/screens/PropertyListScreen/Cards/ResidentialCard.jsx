@@ -54,6 +54,8 @@ const ResidentialCard = ({ item }) => {
   };
   const horizontalSpace = 2 * 2 + 10 * 4; //marginHorizontal is 2, padding is 10 here and parent component is 10, total : 44
 
+
+  console.log("iddddddd", item._id)
   return (
     <Pressable style={styles.card} onPress={handleNavigate}>
       {/* Image slider */}
@@ -67,7 +69,7 @@ const ResidentialCard = ({ item }) => {
         {/* Top-right like icon */}
         <View style={styles.likeIcon}>
           <LikedIconContainer
-            id={item?.id}
+            id={item?._id || item?.id}
             slug={item?.slug}
             type={item?.type}
           />

@@ -2,6 +2,7 @@ import { ENV } from "../../config";
 import { API_ROUTES } from "./apiRoutes";
 import { ToastError, ToastSuccess } from "../utils/Toast";
 import * as Keychain from "react-native-keychain";
+import { Platform } from "react-native";
 
 const getToken = async () => {
   const credentials = await Keychain.getGenericPassword();
@@ -250,65 +251,68 @@ export const agentServices = {
       throw error;
     }
   },
+  
+registerAgency: async (payload, files) => {
+  const getFile = (file, defaultName) => ({
+    uri: Platform.OS === "ios" ? file.uri.replace("file://", "") : file.uri,
+    type: file.mimeType || "image/jpeg",
+    name: file.fileName || defaultName,
+  });
 
- registerAgency : async (payload, files) => {
   try {
-       const token = await getToken();
-
+    const token = await getToken();
     const formData = new FormData();
 
-    // ✅ Basic fields
-    formData.append("name", payload.name);
-    formData.append("bio", payload.bio);
-    formData.append("agencyName", payload.agencyName);
-    formData.append("licenseNumber", payload.licenseNumber);
-    formData.append("licenseValidTill", payload.licenseValidTill);
-    formData.append("city", payload.city);
-    formData.append("experienceYears", String(payload.experienceYears));
-    formData.append("dealsClosed", String(payload.dealsClosed));
-    formData.append("verificationStatus", payload.verificationStatus);
-    formData.append("user", payload.user);
+    formData.append("name", payload?.name || "");
+    formData.append("bio", payload?.bio || "");
+    formData.append("agencyName", payload?.agencyName || "");
+    formData.append("licenseNumber", payload?.licenseNumber || "");
+    formData.append("licenseValidTill", payload?.licenseValidTill || "");
+    formData.append("city", payload?.city || "");
+    formData.append("experienceYears", String(payload?.experienceYears || 0));
+    formData.append("dealsClosed", String(payload?.dealsClosed || 0));
+    formData.append("verificationStatus", payload?.verificationStatus || "pending");
 
-    // ✅ Arrays
-    payload.areasServed?.forEach((area) => {
-      formData.append("areasServed[]", area.trim());
+    if (payload?.user) {
+      formData.append("user", payload.user);
+    }
+
+    payload?.areasServed?.forEach((area) => {
+      if (area?.trim()) formData.append("areasServed[]", area.trim());
     });
 
-    payload.languages?.forEach((lang) => {
-      formData.append("languages[]", lang.trim());
+    payload?.languages?.forEach((lang) => {
+      if (lang?.trim()) formData.append("languages[]", lang.trim());
     });
 
-    // ✅ Objects
-    formData.append("rera[reraAgentId]", payload.rera?.reraAgentId);
-    formData.append("rera[isVerified]", String(payload.rera?.isVerified));
+    if (payload?.rera?.reraAgentId) {
+      formData.append("rera[reraAgentId]", payload.rera.reraAgentId);
+    }
+    formData.append("rera[isVerified]", String(payload?.rera?.isVerified ?? false));
 
     formData.append(
       "stats[totalProperties]",
-      String(payload.stats?.totalProperties)
+      String(payload?.stats?.totalProperties ?? 0)
     );
     formData.append(
       "stats[publishedCount]",
-      String(payload.stats?.publishedCount)
+      String(payload?.stats?.publishedCount ?? 0)
     );
 
-    // ✅ Files (IMPORTANT for React Native)
-    if (files?.avatar) {
-      formData.append("avatar", {
-        uri: files.avatar.uri,
-        type: files.avatar.type || "image/jpeg",
-        name: files.avatar.fileName || "avatar.jpg",
-      });
+    if (files?.avatar?.uri) {
+      console.log("Uploading avatar:", files.avatar);
+      formData.append("avatar", getFile(files.avatar, "avatar.jpg"));
     }
 
-    if (files?.coverImage) {
-      formData.append("coverImage", {
-        uri: files.coverImage.uri,
-        type: files.coverImage.type || "image/jpeg",
-        name: files.coverImage.fileName || "cover.jpg",
-      });
+    if (files?.coverImage?.uri) {
+      console.log("Uploading cover:", files.coverImage);
+      formData.append("coverImage", getFile(files.coverImage, "cover.jpg"));
     }
 
-    const response = await fetch(`${ENV.BASE_URL}/api/users/agent`, {
+    const url = `${ENV.BASE_URL}/api/users/agent`;
+    console.log("API URL:", url);
+
+    const response = await fetch(url, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -316,18 +320,35 @@ export const agentServices = {
       body: formData,
     });
 
-    const data = await response.json();
+    console.log("Response status:", response.status);
 
-    if (!response.ok) {
-      console.log("API Error:", data);
-      return data;
+    let data;
+    try {
+      data = await response.json();
+    } catch {
+      data = await response.text();
     }
 
-    return data;
+    console.log("Response data:", data);
+
+    if (!response.ok) {
+      return {
+        success: false,
+        message: data?.message || "Something went wrong",
+        data,
+      };
+    }
+
+    return {
+      success: true,
+      data,
+    };
   } catch (error) {
     console.log("Register Agency Error:", error);
-    return data;
+    return {
+      success: false,
+      message: error?.message || "Network request failed",
+    };
   }
 },
- 
 };

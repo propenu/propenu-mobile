@@ -5,10 +5,7 @@ import { ToastSuccess, ToastInfo } from "../../../utils/Toast";
 import useDimensions from "../../../components/CustomHooks/UseDimension";
 import formatINR from "../../../utils/FormatINR";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import {
-  AreaIcon,
-  PhoneIcon,
-} from "../../../../assets/svg/Logo";
+import { AreaIcon, PhoneIcon } from "../../../../assets/svg/Logo";
 import AutoImageSlider from "../../../components/ui/AutoImageSlider";
 import { useAuth } from "../../../context/AuthContext";
 import LikedIconContainer from "../../../components/ui/LikedIconContainer";
@@ -18,7 +15,7 @@ const AgriculturalCard = ({ item }) => {
   const navigation = useNavigation();
   const { isLoggedIn, userDetails } = useAuth();
 
-   const listingSourceRaw = (
+  const listingSourceRaw = (
     item?.listingSource ||
     item?.createdBy?.roleName ||
     item?.createdBy?.role ||
@@ -32,7 +29,6 @@ const AgriculturalCard = ({ item }) => {
         ? "builder"
         : "Owner";
 
-        
   const handleNavigate = async () => {
     console.log("Checking property id : ", item?.slug);
     navigation.navigate("MoreAgriculturalDetails", {
@@ -53,16 +49,19 @@ const AgriculturalCard = ({ item }) => {
     <Pressable style={styles.card} onPress={handleNavigate}>
       {/* Image slider */}
       <View style={styles.imageWrapper}>
-      <AutoImageSlider
-        images={item?.gallery?.map((img) => ({ uri: img.url }))}
-        height={200}
-        width={width - horizontalSpace}
-      />
-       <View style={styles.likeIcon}>
-                <LikedIconContainer id={item?.id} slug={item?.slug} type={item?.type} />
-              </View>
-            </View>
-      
+        <AutoImageSlider
+          images={item?.gallery?.map((img) => ({ uri: img.url }))}
+          height={200}
+          width={width - horizontalSpace}
+        />
+        <View style={styles.likeIcon}>
+          <LikedIconContainer
+            id={item?.id || item._id}
+            slug={item?.slug}
+            type={item?.type}
+          />
+        </View>
+      </View>
 
       {/* Content */}
       <View style={styles.content}>
@@ -111,7 +110,7 @@ const AgriculturalCard = ({ item }) => {
             <Text style={styles.priceSub}>₹ {item?.pricePerSqft} / sqft</Text>
           ) : null}
         </View>
-         <ContactOwnerButton
+        <ContactOwnerButton
           projectId={item?.id ?? item?._id}
           propertyType={item?.type}
           listingType={item?.listingType}
@@ -160,7 +159,7 @@ const styles = StyleSheet.create({
     height: 180,
     borderRadius: 10,
   },
-    imageWrapper: {
+  imageWrapper: {
     position: "relative",
   },
 

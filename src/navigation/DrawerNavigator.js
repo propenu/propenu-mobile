@@ -38,6 +38,7 @@ import {
   ShortList,
   Dollar,
   Leads,
+  DashBoard,
   MyProperties,
 } from "../../assets/svg/UserProfile";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -46,7 +47,9 @@ import { ToastSuccess } from "../utils/Toast";
 import * as Keychain from "react-native-keychain";
 import { useAuth } from "../context/AuthContext";
 import { Image } from "react-native";
-
+import { agentServices } from "../services/agentServices";
+import { useQuery } from "@tanstack/react-query";
+import AgentRegistrationModal from "../screens/AgentAccount/ui/AgentRegistrationModal";
 {
   /*--------------------Static menu items---------------------- */
 }
@@ -77,7 +80,7 @@ const agentMenuItems = [
   {
     label: "DashBoard   ",
     route: "AgentDashBoard",
-    icon: Dollar,
+    icon: DashBoard,
   },
   {
     label: "My Properties",
@@ -90,6 +93,11 @@ const agentMenuItems = [
     icon: Leads,
   },
   {
+    label: "Shortlisted Properties",
+    route: "AgentShortListedScreen",
+    icon: ShortList,
+  },
+  {
     label: "My Plans",
     route: "AgentPlans",
     icon: Dollar,
@@ -100,7 +108,7 @@ const builderMenuItems = [
   {
     label: "Dashboard",
     route: "BuilderDashBoard",
-    icon: Dollar,
+    icon: DashBoard,
   },
   {
     label: "My Properties",
@@ -160,7 +168,9 @@ const Drawer = createDrawerNavigator();
 const CustomDrawerContent = ({ navigation, state }) => {
   const { isLoggedIn, userDetails, refreshAuth } = useAuth();
   const [selectedRoute, setSelectedRoute] = useState(null);
-  console.log("Checking Login ", isLoggedIn, userDetails)
+  // console.log("Checking Login ", isLoggedIn, userDetails);
+  const [showModal, setShowModal] = useState(false);
+  const [dateRange, setDateRange] = useState("30");
 
   const capitalize = (str) =>
     str
@@ -168,27 +178,54 @@ const CustomDrawerContent = ({ navigation, state }) => {
       .map((w) => w[0].toUpperCase() + w.slice(1))
       .join(" ") || "";
 
+  const {
+    data: agentData,
+    isLoading: loading,
+    error: err,
+  } = useQuery({
+    queryKey: ["myAgentProfile", dateRange],
+    queryFn: () => agentServices.getAgent(dateRange),
+    staleTime: 1000 * 60 * 5,
+  });
+
+  // console.log("agentDataagentDataagentData", agentData);
+  //   useEffect(() => {
+  //   if (
+  //     userDetails?.roleName === "agent" &&
+  //     agentData?.exists === false
+  //   ) {
+  //     setShowModal(true);
+  //   }
+  // }, [agentData, userDetails]);
+
   const handleNavigate = (route) => {
     console.log("Route in left menu : ", route);
-    if (userDetails != null) {
+    if (userDetails?.roleName === "agent" && agentData?.exists === false) {
+      setShowModal(true);
+    } else if (userDetails != null) {
       navigation.navigate("HomeStack", { screen: route });
     } else {
       navigation.navigate("HomeStack", { screen: "Login" });
     }
   };
-
   const navigateByRole = () => {
     switch (userDetails?.roleName) {
       case "agent":
+        if (agentData?.exists === false) {
+          setShowModal(true);
+          return null;
+        }
         return "AgentAccountSettings";
+
       case "user":
         return "Settings";
+
       default:
         return null;
     }
   };
 
-  console.log("checking Login status :", isLoggedIn)
+  console.log("checking Login status :", isLoggedIn);
   const handleLogout = async () => {
     if (userDetails != null) {
       await clearStorage();
@@ -261,6 +298,17 @@ const CustomDrawerContent = ({ navigation, state }) => {
             </Text>
           </Pressable>
         </View>
+      )}
+
+      {showModal && (
+        <AgentRegistrationModal
+          open={showModal}
+          userId={userDetails?.id}
+          onCompleted={() => {
+            setShowModal(false);
+            console.log("Registration completed");
+          }}
+        />
       )}
 
       {/*--------------------Based on the role rendering menu items---------------------- */}
@@ -424,22 +472,23 @@ const CustomDrawerContent = ({ navigation, state }) => {
           {/* )} */}
 
           {/*--------------------Bottom card---------------------- */}
-                  {!userDetails?.roleName === "builder" && (
-          <Pressable
-            style={[styles.card, { marginTop: 10 }]}
-            onPress={() =>
-              navigation.navigate("HomeStack", { screen: "PostProperty" })
-            }
-          >
-            <View style={{ paddingLeft: 5 }}>
-              <Text style={styles.textPost}>Post Property</Text>
-              <Text style={styles.subTitle}>
-                Sell/Rent Faster with Propenu
-              </Text>
-            </View>
+          {!userDetails?.roleName === "builder" && (
+            <Pressable
+              style={[styles.card, { marginTop: 10 }]}
+              onPress={() =>
+                navigation.navigate("HomeStack", { screen: "PostProperty" })
+              }
+            >
+              <View style={{ paddingLeft: 5 }}>
+                <Text style={styles.textPost}>Post Property</Text>
+                <Text style={styles.subTitle}>
+                  Sell/Rent Faster with Propenu
+                </Text>
+              </View>
 
-            <Image source={HouseSell} style={{ width: 40, height: 40 }} />
-          </Pressable>)}
+              <Image source={HouseSell} style={{ width: 40, height: 40 }} />
+            </Pressable>
+          )}
           {/* <View style={styles.card}>
             <View style={{ paddingLeft: 5 }}>
               <Text style={styles.textPost}>Search Property</Text>

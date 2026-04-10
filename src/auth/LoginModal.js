@@ -97,15 +97,28 @@ export default function LoginModal({ navigation }) {
         phone: fullNumber,
       });
 
-      if (res?.status === 200) {
+      const status = res?.status;
+      const message = res?.data?.message;
+
+      if (status === 200) {
         await syncGuestShortlist();
         ToastSuccess("OTP sent successfully");
         navigation.navigate("OTPLogin", { phone: fullNumber });
-      } else if (res?.status === 404) {
-        ToastInfo(
-          res?.data?.message || "Account not registered. Please sign up first.",
-        );
+        return;
       }
+
+      if (status === 404) {
+        ToastInfo(message || "Account not registered. Please sign up first.");
+        return;
+      }
+
+      if (status === 403) {
+        ToastInfo(message || "Please complete the account creation");
+        return;
+      }
+
+      // 🔥 fallback (very important)
+      ToastInfo(message || "Something went wrong. Please try again.");
     } catch (err) {
       console.log("Login error:", err);
     } finally {

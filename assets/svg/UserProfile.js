@@ -10,7 +10,7 @@ import Svg, {
   Use,
   Image,
 } from "react-native-svg";
-let idCounter = 0
+let idCounter = 0;
 
 export const getUniqueMaskId = (prefix = "mask") => {
   idCounter += 1;
@@ -480,3 +480,28 @@ export const MyProperties = ({ width = 50, height = 50, ...props }) => (
   </Svg>
 );
 
+export const DashBoard = ({ width = 19, height = 19, ...props }) => (
+  <Svg viewBox="0 0 25 25" width={width} height={height} fill="none" {...props}>
+    <Mask
+      id={getUniqueMaskId("hjjjj")}
+      width={24}
+      height={24}
+      x={0}
+      y={0}
+      maskUnits="userSpaceOnUse"
+      style={{
+        maskType: "alpha",
+      }}
+    >
+      <Path fill="#ddf3e7" d="M0 0h24v24H0z" />
+    </Mask>
+    <G mask="url(#a)">
+      <Path
+        fill="#27AE60"
+        opacity={0.7}
+        strokeWidth={0.5}
+        d="M15.857 21.286v-8h8v8h-8ZM11.286 11V3h12.571v8H11.286ZM1 21.286v-8h12.571v8H1ZM1 11V3h8v8H1Zm12.571-2.286h8V5.286h-8v3.428ZM3.286 19h8v-3.429h-8V19Zm14.857 0h3.428v-3.429h-3.428V19ZM3.286 8.714h3.428V5.286H3.286v3.428Z"
+      />
+    </G>
+  </Svg>
+);

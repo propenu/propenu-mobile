@@ -77,7 +77,7 @@ const resolvedListingSource =
       </View>
     </View>
   );
-  // console.log("Details :", details);
+  console.log("Details sssss:", details._id, details.type);
   return (
     <Pressable
       onPress={handleClick}

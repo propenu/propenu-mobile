@@ -66,7 +66,7 @@ const LandCard = ({ item }) => {
         />
         <View style={styles.likeIcon}>
           <LikedIconContainer
-            id={item?.id}
+            id={item?.id || item._id}
             slug={item?.slug}
             type={item?.type}
           />

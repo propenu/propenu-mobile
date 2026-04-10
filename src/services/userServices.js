@@ -32,8 +32,11 @@ export const userServices = {
       );
 
       if (!response.ok) {
-        throw Error("Failed to fetch shortlisted", error);
+        const err = await response.json();
+        console.log("GET getShortlistedProperties Error:", err);
+        throw new Error(err?.message || "Failed to fetch shortlisted");
       }
+      // console.log("Response :", response);
 
       const data = await response.json();
       return data;
@@ -45,6 +48,7 @@ export const userServices = {
   postShortlistedProperties: async (payload) => {
     try {
       const token = await getToken();
+      console.log("Payload ", payload)
 
       const response = await fetch(
         `${ENV.BASE_URL}${API_ROUTES.SHORTLIST.SHORTLISTED_PROP}`,
@@ -59,9 +63,10 @@ export const userServices = {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to post shortlisted property");
+        const error = await response.json();
+        console.log("Error:", error);
+        return;
       }
-
       const data = await response.json();
       console.log("Response when posting:", data);
       return data;
@@ -92,7 +97,7 @@ export const userServices = {
       }
 
       const data = await response.json();
-      console.log("Response when deleting:", data);
+      // console.log("Response when deleting:", data);
 
       return data;
     } catch (error) {
@@ -185,7 +190,7 @@ export const userServices = {
   },
 
   postLeads: async (payload) => {
-    console.log("Pauyload :",payload)
+    console.log("Pauyload :", payload);
     try {
       const token = await getToken();
 
@@ -202,7 +207,6 @@ export const userServices = {
       );
 
       const data = await response.json();
-      console.log(data, "LLLLL");
 
       if (!response.ok) {
         throw data;
@@ -275,7 +279,11 @@ export const userServices = {
           },
         },
       );
-      console.log("Agent Response :", `${ENV.BASE_URL}${API_ROUTES.AGENT.AGENT_DETAILS}`, response)
+      console.log(
+        "Agent Response :",
+        `${ENV.BASE_URL}${API_ROUTES.AGENT.AGENT_DETAILS}`,
+        response,
+      );
 
       if (!response.ok) {
         throw new Error("Failed to fetch profile");

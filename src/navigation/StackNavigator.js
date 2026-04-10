@@ -51,6 +51,7 @@ import ViewAllOwnerProperties from "../screens/ViewAll/ViewAllOwnerProperties";
 import AllAgents from "../screens/ViewAll/AllAgents";
 import MapScreen from "../components/location/MapScreen";
 import splashIcon from "../../assets/splashIcon.png";
+import AgentShortListedScreen from "../screens/AgentAccount/AgentShortlisted";
 const Stack = createNativeStackNavigator();
 
 const HEADER_TYPES = {
@@ -323,6 +324,12 @@ export default function StackNavigator() {
       component: AgentLeads,
       headerType: HEADER_TYPES.INNER,
       title: "Leads",
+    },
+        {
+      name: "AgentShortListedScreen",
+      component: AgentShortListedScreen,
+      headerType: HEADER_TYPES.INNER,
+      title: "My ShortListed Properties",
     },
 
     {
