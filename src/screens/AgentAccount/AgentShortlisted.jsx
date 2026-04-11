@@ -57,7 +57,7 @@ if (error) {
   const filteredProperties =
     likedProperties?.filter((item) => item?.propertyType === selected) || [];
 
-  console.log(" SHORTLISTED LENGTH :::::", filteredProperties?.length);
+  console.log("SHORTLISTED LENGTH :::::",likedProperties.length, filteredProperties?.length);
 
   return (
     <ScrollView style={[styles.mainContainer]} contentContainerStyle={{paddingBottom:insets.bottom +5}}>

@@ -11,31 +11,31 @@ const LikedIconContainer = ({ slug, id, type }) => {
   const { isLoggedIn } = useAuth();
   const queryClient = useQueryClient();
 
-  console.log("checking in liked icon container id", id, slug, type)
+  console.log("checking in liked icon container id", id, slug, type);
 
   useEffect(() => {
     checkInitialStatus();
   }, [slug]);
 
-const checkInitialStatus = async () => {
-  try {
-    if (!isLoggedIn) {
-      const stored = await getItem("guest_shortlist");
-      const parsed = stored ? JSON.parse(stored) : [];
+  const checkInitialStatus = async () => {
+    try {
+      if (!isLoggedIn) {
+        const stored = await getItem("guest_shortlist");
+        const parsed = stored ? JSON.parse(stored) : [];
 
-      const exists = parsed.some((item) => item.propertyId === id);
+        const exists = parsed.some((item) => item.propertyId === id);
+        setLiked(exists);
+        return;
+      }
+
+      const res = await userServices.getShortlistedProperties();
+
+      const exists = res?.data?.some((item) => item?.property?.slug === slug);
       setLiked(exists);
-      return;
+    } catch (error) {
+      console.log("Error fetching shortlist:", error);
     }
-
-    const res = await userServices.getShortlistedProperties();
-
-    const exists = res?.data?.some((item) => item?.property?.slug === slug);
-    setLiked(exists);
-  } catch (error) {
-    console.log("Error fetching shortlist:", error);
-  }
-};
+  };
 
   const postShortlisted = async () => {
     const payload = {
@@ -96,11 +96,12 @@ const checkInitialStatus = async () => {
         const parsed = stored ? JSON.parse(stored) : [];
 
         if (!previous) {
-const exists = parsed.some((item) => item.propertyId === id);
+          const exists = parsed.some((item) => item.propertyId === id);
 
-if (!exists) {
-  parsed.push(payload);
-}        } else {
+          if (!exists) {
+            parsed.push(payload);
+          }
+        } else {
           const updated = parsed.filter((item) => item.propertyId !== id);
           await setItem("guest_shortlist", JSON.stringify(updated));
           return;
