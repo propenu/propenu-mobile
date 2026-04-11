@@ -171,6 +171,7 @@ const CustomDrawerContent = ({ navigation, state }) => {
   // console.log("Checking Login ", isLoggedIn, userDetails);
   const [showModal, setShowModal] = useState(false);
   const [dateRange, setDateRange] = useState("30");
+  const [agentData, setAgentData] = useState(null);
 
   const capitalize = (str) =>
     str
@@ -178,25 +179,23 @@ const CustomDrawerContent = ({ navigation, state }) => {
       .map((w) => w[0].toUpperCase() + w.slice(1))
       .join(" ") || "";
 
-  const {
-    data: agentData,
-    isLoading: loading,
-    error: err,
-  } = useQuery({
-    queryKey: ["myAgentProfile", dateRange],
-    queryFn: () => agentServices.getAgent(dateRange),
-    staleTime: 1000 * 60 * 5,
-  });
+  const getAgentData = async () => {
+    try {
+      const response = await agentServices.getAgent(dateRange);
+
+      console.log("API RESPONSE:", response);
+
+      setAgentData(response); // or response.data
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+
+  useEffect(() => {
+    getAgentData();
+  }, []);
 
   // console.log("agentDataagentDataagentData", agentData);
-  //   useEffect(() => {
-  //   if (
-  //     userDetails?.roleName === "agent" &&
-  //     agentData?.exists === false
-  //   ) {
-  //     setShowModal(true);
-  //   }
-  // }, [agentData, userDetails]);
 
   const handleNavigate = (route) => {
     console.log("Route in left menu : ", route);
@@ -225,7 +224,7 @@ const CustomDrawerContent = ({ navigation, state }) => {
     }
   };
 
-  console.log("checking Login status :", isLoggedIn);
+  // console.log("checking Login status :", isLoggedIn, userDetails);
   const handleLogout = async () => {
     if (userDetails != null) {
       await clearStorage();
@@ -306,6 +305,7 @@ const CustomDrawerContent = ({ navigation, state }) => {
           userId={userDetails?.id}
           onCompleted={() => {
             setShowModal(false);
+            getAgentData();
             console.log("Registration completed");
           }}
         />

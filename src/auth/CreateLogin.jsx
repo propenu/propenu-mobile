@@ -265,7 +265,7 @@ export default function CreateLogin({
           }
 
           // ToastSuccess("Login Successfully");
-          navigation.navigate("Home");
+          // navigation.navigate("Home");
         }
       }
 
@@ -276,7 +276,6 @@ export default function CreateLogin({
     };
 
     const sub = Linking.addEventListener("url", (event) => {
-      console.log("KKKKKKKKKKK", event);
       handleDeepLink(event.url);
     });
 
@@ -383,7 +382,7 @@ export default function CreateLogin({
       }
 
       // ToastSuccess("Login Successfully");
-      navigation.navigate("Home");
+      // navigation.navigate("Home");
     }
     // }
 
