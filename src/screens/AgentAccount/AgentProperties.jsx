@@ -54,28 +54,12 @@ const AgentProperties = () => {
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [selectedFilter, setSelectedFilter] = useState("All");
   const [dateRange, setDateRange] = useState("30");
-  const [showModal, setShowModal] = useState(false);
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["myProperties"],
     queryFn: userServices.getMyProperties,
   });
 
-  const {
-    data: agentData,
-    isLoading: loading,
-    error: err,
-  } = useQuery({
-    queryKey: ["myAgentProfile", dateRange],
-    queryFn: () => agentServices.getAgent(dateRange),
-    staleTime: 1000 * 60 * 5,
-  });
-
-  useEffect(() => {
-    if (agentData?.exists === false) {
-      setShowModal(true);
-    }
-  }, [agentData]);
 
   /* ================= FILTER ================= */
 
@@ -253,16 +237,6 @@ const AgentProperties = () => {
           </Pressable>
         ))}
       </View>
-      {showModal && (
-        <AgentRegistrationModal
-          open={showModal}
-          userId={userDetails?.id}
-          onCompleted={() => {
-            setShowModal(false);
-            console.log("Registration completed");
-          }}
-        />
-      )}
       <FlatList
         data={filteredProperties}
         keyExtractor={(item) => item._id}
