@@ -1,14 +1,30 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Image, Platform, StyleSheet, Text, View } from "react-native";
 import MapplsGL from "mappls-map-react-native";
+import MapView, { Marker } from "react-native-maps";
+import { buildMapplsHandlers } from "../../../utils/mapplsConfig";
 
 export default function NearByLocations({
   nearbyPlaces = [],
   location = null,
 }) {
-  console.log("nearbyPlacesnearbyPlaces", nearbyPlaces, location);
+
   const cameraRef = useRef(null);
+  const iosMapRef = useRef(null);
   const [selectedPlaceName, setSelectedPlaceName] = useState("");
+  const isIos = Platform.OS === "ios";
+  const propertyIcon = useMemo(
+    () => require("../../../../assets/location.png"),
+    [],
+  );
+  const nearbyIcon = useMemo(
+    () => require("../../../../assets/redLocation.png"),
+    [],
+  );
+  const mapHandlers = useMemo(
+    () => buildMapplsHandlers("NearByLocations"),
+    [],
+  );
 
   useEffect(() => {
     MapplsGL.Logger.setLogCallback((log) => {
@@ -135,6 +151,132 @@ export default function NearByLocations({
   );
 
   useEffect(() => {
+    if (isIos || !cameraRef.current || !allPoints.length) {
+      return;
+    }
+
+    if (propertyPoint) {
+      cameraRef.current.moveTo([propertyPoint.lng, propertyPoint.lat], 800);
+    }
+
+    if (allPoints.length === 1) {
+      cameraRef.current.zoomTo(14, 800);
+      return;
+    }
+
+    const bounds = allPoints.reduce(
+      (acc, point) => ({
+        minLng: Math.min(acc.minLng, point.lng),
+        maxLng: Math.max(acc.maxLng, point.lng),
+        minLat: Math.min(acc.minLat, point.lat),
+        maxLat: Math.max(acc.maxLat, point.lat),
+      }),
+      {
+        minLng: allPoints[0].lng,
+        maxLng: allPoints[0].lng,
+        minLat: allPoints[0].lat,
+        maxLat: allPoints[0].lat,
+      },
+    );
+
+    cameraRef.current.fitBounds(
+      [bounds.maxLng, bounds.maxLat],
+      [bounds.minLng, bounds.minLat],
+      40,
+      800,
+    );
+  }, [allPoints, isIos, propertyPoint]);
+
+  useEffect(() => {
+    if (!isIos || !iosMapRef.current || !allPoints.length) {
+      return;
+    }
+
+    if (allPoints.length === 1) {
+      iosMapRef.current.animateToRegion(
+        {
+          latitude: allPoints[0].lat,
+          longitude: allPoints[0].lng,
+          latitudeDelta: 0.02,
+          longitudeDelta: 0.02,
+        },
+        800,
+      );
+      return;
+    }
+
+    iosMapRef.current.fitToCoordinates(
+      allPoints.map((point) => ({
+        latitude: point.lat,
+        longitude: point.lng,
+      })),
+      {
+        edgePadding: {
+          top: 40,
+          right: 40,
+          bottom: 40,
+          left: 40,
+        },
+        animated: true,
+      },
+    );
+  }, [allPoints, isIos]);
+
+  const initialRegion = useMemo(
+    () => ({
+      latitude: initialCenter[1],
+      longitude: initialCenter[0],
+      latitudeDelta: allPoints.length <= 1 ? 0.02 : 0.12,
+      longitudeDelta: allPoints.length <= 1 ? 0.02 : 0.12,
+    }),
+    [allPoints.length, initialCenter],
+  );
+
+  if (isIos) {
+    return (
+      <View style={styles.container}>
+        <MapView
+          ref={iosMapRef}
+          style={styles.map}
+          initialRegion={initialRegion}
+          onPress={() => setSelectedPlaceName("")}
+        >
+          {propertyPoint ? (
+            <Marker
+              coordinate={{
+                latitude: propertyPoint.lat,
+                longitude: propertyPoint.lng,
+              }}
+              title={propertyPoint.label}
+            >
+              <Image source={propertyIcon} style={styles.propertyMarkerIcon} />
+            </Marker>
+          ) : null}
+          {nearbyPoints.map((point) => (
+            <Marker
+              key={point.id}
+              coordinate={{
+                latitude: point.lat,
+                longitude: point.lng,
+              }}
+              title={point.label}
+              onPress={() => setSelectedPlaceName(point.label)}
+            >
+              <Image source={nearbyIcon} style={styles.nearbyMarkerIcon} />
+            </Marker>
+          ))}
+        </MapView>
+
+        {selectedPlaceName ? (
+          <View style={styles.labelBubble}>
+            <Text style={styles.labelText}>{selectedPlaceName}</Text>
+          </View>
+        ) : null}
+      </View>
+    );
+  }
+
+  useEffect(() => {
     if (!cameraRef.current || !allPoints.length) {
       return;
     }
@@ -179,6 +321,9 @@ export default function NearByLocations({
         rotateEnabled={false}
         pitchEnabled={false}
         onPress={() => setSelectedPlaceName("")}
+        onMapError={mapHandlers.onMapError}
+        onMapReinit={mapHandlers.onMapReinit}
+        onDidFailLoadingMap={mapHandlers.onDidFailLoadingMap}
       >
         <MapplsGL.Camera
           ref={cameraRef}
@@ -191,7 +336,7 @@ export default function NearByLocations({
           <>
             <MapplsGL.Images
               images={{
-                nearbyIcon: require("../../../../assets/redLocation.png"),
+                nearbyIcon,
               }}
             />
 
@@ -228,7 +373,7 @@ export default function NearByLocations({
           <>
             <MapplsGL.Images
               images={{
-                propertyLocationIcon: require("../../../../assets/location.png"),
+                propertyLocationIcon: propertyIcon,
               }}
             />
             <MapplsGL.ShapeSource
@@ -294,5 +439,15 @@ const styles = StyleSheet.create({
   emptyText: {
     color: "#6B7280",
     fontSize: 14,
+  },
+  propertyMarkerIcon: {
+    width: 28,
+    height: 28,
+    resizeMode: "contain",
+  },
+  nearbyMarkerIcon: {
+    width: 22,
+    height: 22,
+    resizeMode: "contain",
   },
 });

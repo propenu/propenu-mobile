@@ -82,3 +82,5 @@ To check SHA : keytool -printcert -jarfile app/build/outputs/bundle/release/app-
 
 want to release app in play store :
 create new .aab (need to change versions) like above and then upload in the play store
+
+-----------------------------------------------------------------------------------------------------------------------------

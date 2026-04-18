@@ -102,8 +102,9 @@ const styles = StyleSheet.create({
   mainContainer: { flex: 1, paddingHorizontal: 10, backgroundColor: "white" },
   container: {
     flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 10,
+    // flexWrap: "wrap",
+    // gap: 8,
+    justifyContent:"space-between"
   },
   label: {
     marginBottom: 8,

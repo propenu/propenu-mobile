@@ -25,7 +25,6 @@ import { setPropertyType } from "../../redux/slice/PostPropertySlice";
 // import ResponsesModal from "./ResponseModal";
 import DropdownUI from "../../components/ui/DropDownUI";
 import { agentServices } from "../../services/agentServices";
-import AgentRegistrationModal from "../AgentAccount/ui/AgentRegistrationModal";
 import { useAuth } from "../../context/AuthContext";
 const TAB_KEY_MAP = {
   Residential: "residential",

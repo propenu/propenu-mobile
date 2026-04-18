@@ -17,6 +17,7 @@ const CardDetails = ({ details, onPress }) => {
     navigation.navigate("PropertyDetails", { propertyId: details._id });
   };
 
+
   return (
     <Pressable onPress={handleClick} style={styles.card}>
       <Image source={{ uri: heroImage }} style={styles.image} />

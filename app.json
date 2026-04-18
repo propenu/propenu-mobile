@@ -7,7 +7,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "splash": {
       "image": "./assets/splashIcon.png",
       "resizeMode": "contain",
@@ -15,16 +15,14 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.propenu.app"
+      "bundleIdentifier": "com.propenu.app",
+      "icon": "./assets/icon.png"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions": [
-           "android.permission.READ_MEDIA_IMAGES"
-      ],
       "edgeToEdgeEnabled": true,
       "package": "com.propenu.app"
     },
@@ -33,7 +31,6 @@
     },
     "plugins": [
       "@react-native-community/datetimepicker",
-      "@maplibre/maplibre-react-native",
       [
         "expo-image-picker",
         {

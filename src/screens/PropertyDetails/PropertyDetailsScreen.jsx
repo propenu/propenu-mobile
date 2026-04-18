@@ -63,7 +63,6 @@ const PropertyDetailsScreen = ({ route }) => {
     try {
       setIsLoadiing(true);
       const res = await apiService.featuredProjectById(propertyId);
-      console.log("RESsPPPPPPPP:", res);
       setProperty(res.data);
     } catch (error) {
       console.error(error);
@@ -124,8 +123,6 @@ const PropertyDetailsScreen = ({ route }) => {
 
     return R * c;
   };
-
-  console.log("PROPERTY DETAILS", property);
 
   return (
     <SafeAreaView style={styles.safe}>

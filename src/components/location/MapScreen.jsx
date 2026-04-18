@@ -1,11 +1,19 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { View } from "react-native";
+import { Image, Platform, View } from "react-native";
 import MapplsGL from "mappls-map-react-native";
+import MapView, { Marker } from "react-native-maps";
 import { useDispatch } from "react-redux";
 import { setBaseField } from "../../redux/slice/PostPropertySlice";
+import { buildMapplsHandlers } from "../../utils/mapplsConfig";
 
 export default function MapScreen() {
   const dispatch = useDispatch();
+  const mapHandlers = useMemo(() => buildMapplsHandlers("MapScreen"), []);
+  const isIos = Platform.OS === "ios";
+  const locationIcon = useMemo(
+    () => require("../../../assets/location.png"),
+    [],
+  );
 
   // initial position [lat, lng]
   const initialPosition = useMemo(() => [17.4013, 78.41104], []);
@@ -39,13 +47,11 @@ export default function MapScreen() {
     if (!Array.isArray(coordinates) || coordinates.length < 2) return;
 
     const [lng, lat] = coordinates;
+    updateLocation(lat, lng);
+  };
 
-    // update state
+  const updateLocation = (lat, lng) => {
     setPosition([lat, lng]);
-
-    console.log("Selected:", lat, lng);
-
-    // redux update
     dispatch(
       setBaseField({
         key: "location",
@@ -57,11 +63,58 @@ export default function MapScreen() {
     );
   };
 
+  const handleIosMapPress = (event) => {
+    const { latitude, longitude } = event.nativeEvent.coordinate || {};
+    if (typeof latitude !== "number" || typeof longitude !== "number") {
+      return;
+    }
+
+    updateLocation(latitude, longitude);
+  };
+
+  if (isIos) {
+    return (
+      <View style={{ flex: 1 }}>
+        <MapView
+          style={{ flex: 1 }}
+          initialRegion={{
+            latitude: position[0],
+            longitude: position[1],
+            latitudeDelta: 0.05,
+            longitudeDelta: 0.05,
+          }}
+          region={{
+            latitude: position[0],
+            longitude: position[1],
+            latitudeDelta: 0.05,
+            longitudeDelta: 0.05,
+          }}
+          onPress={handleIosMapPress}
+        >
+          <Marker
+            coordinate={{
+              latitude: position[0],
+              longitude: position[1],
+            }}
+          >
+            <Image
+              source={locationIcon}
+              style={{ width: 28, height: 28, resizeMode: "contain" }}
+            />
+          </Marker>
+        </MapView>
+      </View>
+    );
+  }
+
   return (
     <View style={{ flex: 1 }}>
       <MapplsGL.MapView
         style={{ flex: 1 }}
         onPress={handleMapPress}
+        onMapError={mapHandlers.onMapError}
+        onMapReinit={mapHandlers.onMapReinit}
+        onDidFailLoadingMap={mapHandlers.onDidFailLoadingMap}
         logoEnabled
         attributionEnabled
       >
@@ -76,7 +129,7 @@ export default function MapScreen() {
         {/* Register Image */}
         <MapplsGL.Images
           images={{
-            locationIcon: require("../../../assets/location.png"),
+            locationIcon,
           }}
         />
 

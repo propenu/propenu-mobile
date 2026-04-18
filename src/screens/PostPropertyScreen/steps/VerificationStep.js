@@ -23,7 +23,6 @@ import { submitVerificationThunk } from "../../../redux/thunk/SubmitPropertyThun
 import { validatePropertyVerify } from "../../../zod/verificationZod/propertyVerifyZod";
 import { ToastSuccess, ToastInfo, ToastError } from "../../../utils/Toast";
 import Feather from "@expo/vector-icons/Feather";
-import LottieView from "lottie-react-native";
 import TrackPropertyStatus from "./TrackPropertyStatus ";
 
 const VerificationStep = () => {
@@ -79,7 +78,6 @@ const VerificationStep = () => {
         : propertyType === "land"
           ? land
           : agricultural;
-  console.log("propertyProfilepropertyProfilepropertyProfile", propertyProfile);
 
   const navigation = useNavigation();
 
@@ -161,7 +159,6 @@ const VerificationStep = () => {
       // });
       .unwrap()
       .then((res) => {
-        console.log("RESPONSE :::", res);
         ToastSuccess("Property is under review");
 
         const data = res?.data;
@@ -390,16 +387,6 @@ const VerificationStep = () => {
               <Text style={styles.buttonText}>Publish</Text>
             </Pressable>
           </View>
-          {showConfetti && (
-            <View style={styles.overlay}>
-              <LottieView
-                source={require("../../../../assets/animations/confetti.json")}
-                autoPlay
-                loop={false}
-                style={styles.animation}
-              />
-            </View>
-          )}
         </>
       )}
     </ScrollView>

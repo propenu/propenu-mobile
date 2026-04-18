@@ -1,5 +1,6 @@
-import { Pressable, View, Text, StyleSheet,Image } from "react-native";
+import { Pressable, View, Text, StyleSheet, Image } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import PostProperty from "../screens/PostPropertyScreen/PostProperty";
 import PropertyDetailsScreen from "../screens/PropertyDetails/PropertyDetailsScreen";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -63,7 +64,8 @@ export default function StackNavigator() {
   const dispatch = useDispatch();
   const isOpen = useSelector((state) => state.dropdown.isOpen);
   const { selectedCity } = useCity();
-  const {userDetails, isLoggedIn} = useAuth();
+  const { userDetails, isLoggedIn } = useAuth();
+  const insets = useSafeAreaInsets();
 
   const handleCity = () => {
     dispatch(toggleDropdown());
@@ -71,7 +73,11 @@ export default function StackNavigator() {
 
   const renderMenuButton = (navigation) => (
     <View style={styles.locationBar}>
-      <Pressable onPress={navigation.openDrawer} hitSlop={10}>
+      <Pressable
+        onPress={navigation.openDrawer}
+        hitSlop={10}
+        style={styles.transparentButton}
+      >
         <MaterialIcons name="menu" size={26} color="#000" />
       </Pressable>
 
@@ -89,32 +95,62 @@ export default function StackNavigator() {
     </View>
   );
 
-  const renderPostPropertyButton = (navigation) => (
-  userDetails?.roleName === "builder" ? (
-    <View>
-      <Image
-        source={splashIcon}
-        style={styles.fullIcon}
-      />
+  const renderPostPropertyButton = (navigation) =>
+    userDetails?.roleName === "builder" ? (
+      <View>
+        <Image source={splashIcon} style={styles.fullIcon} />
+      </View>
+    ) : (
+      <Pressable
+        onPress={() => navigation.navigate("PostProperty")}
+        style={styles.postBtn}
+      >
+        <Text style={styles.postText}>Post Property</Text>
+        <Text style={styles.freeBadge}>Free</Text>
+      </Pressable>
+    );
+
+  const renderHomeHeader = (navigation) => (
+    <View style={[styles.customHeader, { paddingTop: insets.top }]}>
+      <View style={styles.customHeaderRow}>
+        {renderMenuButton(navigation)}
+        {renderPostPropertyButton(navigation)}
+      </View>
     </View>
-  ) : (
+  );
+
+  const renderBackButton = (navigation) => (
     <Pressable
-      onPress={() => navigation.navigate("PostProperty")}
-      style={styles.postBtn}
+      onPress={() => navigation.goBack()}
+      hitSlop={10}
+      style={styles.backButton}
     >
-      <Text style={styles.postText}>Post Property</Text>
-      <Text style={styles.freeBadge}>Free</Text>
+      <MaterialIcons name="arrow-back" size={24} color="#000" />
     </Pressable>
-  )
-);
+  );
+
+  const renderInnerHeader = (navigation, title) => (
+    <View style={[styles.customInnerHeader, { paddingTop: insets.top }]}>
+      <View style={styles.customInnerHeaderRow}>
+        <View style={styles.innerSide}>{renderBackButton(navigation)}</View>
+        <View style={styles.innerTitleWrap}>
+          <Text style={styles.innerHeaderTitle} numberOfLines={1}>
+            {title}
+          </Text>
+        </View>
+        <View style={styles.innerSide} />
+      </View>
+    </View>
+  );
 
   const baseHeader = {
     headerShadowVisible: false,
     headerStyle: {
       elevation: 0,
-      shadowColor: "transparent",
+      // shadowColor: "transparent",
       borderBottomWidth: 0,
-      backgroundColor: "#fff",
+      // backgroundColor: "#fff",
+      // backgroundColor: "#f46d6d", // change this
     },
     headerTitleStyle: {
       fontSize: 16,
@@ -127,20 +163,14 @@ export default function StackNavigator() {
       case "HOME":
         return {
           ...baseHeader,
-          headerTitle: () => null,
-          headerLeft: () => renderMenuButton(navigation),
-        //   headerRight: () =>
-        //  userDetails?.roleName === "builder" ? null : renderPostPropertyButton(navigation),
-          headerRight: () => renderPostPropertyButton(navigation),
+          header: () => renderHomeHeader(navigation),
         };
 
       case "INNER":
         return {
           ...baseHeader,
-          headerTitle: title,
-          headerBackTitleVisible: false,
-          headerLeft: undefined,
-          headerRight: undefined,
+          
+          header: () => renderInnerHeader(navigation, title),
         };
 
       case "NONE":
@@ -154,7 +184,6 @@ export default function StackNavigator() {
   };
 
   const stackScreens = [
-
     { name: "Home", component: HomeScreen, headerType: HEADER_TYPES.HOME },
 
     {
@@ -325,7 +354,7 @@ export default function StackNavigator() {
       headerType: HEADER_TYPES.INNER,
       title: "Leads",
     },
-        {
+    {
       name: "AgentShortListedScreen",
       component: AgentShortListedScreen,
       headerType: HEADER_TYPES.INNER,
@@ -425,8 +454,59 @@ export default function StackNavigator() {
   );
 }
 const styles = StyleSheet.create({
+  customHeader: {
+    backgroundColor: "#fff",
+    paddingHorizontal: 15,
+    paddingBottom: 10,
+  },
+
+  customHeaderRow: {
+    minHeight: 40,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+
+  customInnerHeader: {
+    backgroundColor: "#fff",
+    paddingHorizontal: 12,
+    paddingBottom: 10,
+  },
+
+  customInnerHeaderRow: {
+    minHeight: 40,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent:"flex-start"
+  },
+
+  innerSide: {
+    width: 44,
+    justifyContent: "center",
+    alignItems: "flex-start",
+  },
+
+  innerTitleWrap: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 8,
+  },
+
+  innerHeaderTitle: {
+    color: "#000",
+    fontSize: 16,
+    fontWeight: "600",
+    textAlign: "center",
+  },
+
   headerLeft: {
     paddingLeft: 15,
+    backgroundColor: "transparent",
+  },
+
+  transparentButton: {
+    backgroundColor: "transparent",
   },
 
   dropdownWrapper: {
@@ -454,6 +534,7 @@ const styles = StyleSheet.create({
   },
 
   locationBar: {
+    backgroundColor: "transparent",
     flexDirection: "row",
     gap: 10,
     alignItems: "center",
@@ -461,22 +542,33 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   select: {
+    backgroundColor: "transparent",
     flexDirection: "row",
     gap: 6,
     alignItems: "center",
   },
 
   headerRight: {
+    backgroundColor: "transparent",
     flexDirection: "row",
     alignItems: "center",
     marginRight: 8,
   },
-  fullIcon:{
-    height:25,
-    width:100
+
+  backButton: {
+    backgroundColor: "transparent",
+    alignItems: "center",
+    justifyContent: "center",
+    width: 36,
+    height: 36,
+  },
+  fullIcon: {
+    height: 25,
+    width: 100,
   },
 
   postBtn: {
+    backgroundColor: "transparent",
     flexDirection: "row",
     alignItems: "center",
     gap: 6,

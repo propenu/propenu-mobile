@@ -1,4 +1,10 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Platform,
+} from "react-native";
 import useDimensions from "../../components/CustomHooks/UseDimension";
 import { apiService } from "../../services/apiService";
 import { useNavigation } from "@react-navigation/native";
@@ -18,7 +24,13 @@ const CardHome = ({ title, icon, id }) => {
 
   return (
     <TouchableOpacity
-      style={[styles.card, { width: width * 0.21 }]}
+      style={[
+        styles.card,
+        {
+          width: Platform.OS === "ios" ? width * 0.22 : width * 0.21,
+          marginRight: Platform.OS === "ios" ? 6 : 10,
+        },
+      ]}
       onPress={handlePress}
     >
       <View style={styles.iconContainer}>{icon}</View>
@@ -33,7 +45,7 @@ const styles = StyleSheet.create({
     padding: 2,
     marginVertical: 10,
     marginHorizontal: 2,
-    marginRight: 10,
+    // marginRight: 10,
     borderRadius: 7,
     // elevation:1,
     borderWidth: 1,
@@ -48,8 +60,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 6,
-        // backgroundColor: "#F1FCF5",
-
+    // backgroundColor: "#F1FCF5",
   },
   cardTitle: {
     fontSize: 12,
