@@ -177,6 +177,13 @@ const styles = StyleSheet.create({
     marginTop: 3,
     marginHorizontal: 5,
     elevation: 2,
+    shadowColor: "#000",
+  shadowOffset: {
+    width: 0,
+    height: 2,
+  },
+  shadowOpacity: 0.2,
+  shadowRadius: 2,
   },
   status: {
     position: "absolute",

@@ -552,6 +552,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 5,
     elevation: 5,
+    
   },
   imagePlaceholder: {
     alignItems: "center",

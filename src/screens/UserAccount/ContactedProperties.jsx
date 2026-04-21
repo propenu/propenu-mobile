@@ -97,6 +97,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginVertical: 12,
     elevation: 2,
+    shadowColor: "#000",
+  shadowOffset: {
+    width: 0,
+    height: 2,
+  },
+  shadowOpacity: 0.2,
+  shadowRadius: 2,
     padding: 8,
   },
   propertyTitle: {

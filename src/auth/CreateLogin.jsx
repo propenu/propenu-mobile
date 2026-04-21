@@ -605,7 +605,9 @@ export default function CreateLogin({
                       keyboardType="phone-pad"
                       value={phone}
                       onChangeText={handlePhoneChange}
-                      style={styles.phoneinput}
+                      style={[styles.phoneinput, 
+                        // {marginTop:Platform.OS === "ios" ? 1 : 3}
+                      ]}
                       maxLength={10}
                       placeholderTextColor="#9ca3af"
                     />
@@ -715,7 +717,7 @@ export default function CreateLogin({
                   {/* Pincode */}
                   <View>
                     <Text style={styles.label}>Pincode</Text>
-                    <View style={styles.inputBox}>
+                    <View style={[styles.inputBox,{paddingVertical:Platform.OS === "ios" ? 10 : 0}]}>
                       <TextInput
                         keyboardType="numeric"
                         value={formData.pincode}
@@ -763,7 +765,7 @@ export default function CreateLogin({
                   {/* Locality */}
                   <View>
                     <Text style={styles.label}>Locality</Text>
-                    <View style={styles.inputBox}>
+                    <View style={[styles.inputBox,{paddingVertical:Platform.OS === "ios" ? 10 : 0}]}>
                       <TextInput
                         value={formData.locality}
                         onChangeText={(text) => {
@@ -786,7 +788,7 @@ export default function CreateLogin({
                   {/* City */}
                   <View>
                     <Text style={styles.label}>City</Text>
-                    <View style={styles.inputBox}>
+                    <View style={[styles.inputBox,{paddingVertical:Platform.OS === "ios" ? 10 : 0}]}>
                       <TextInput
                         value={formData.city}
                         onChangeText={(text) => {
@@ -806,7 +808,7 @@ export default function CreateLogin({
                   {/* State */}
                   <View>
                     <Text style={styles.label}>State</Text>
-                    <View style={styles.inputBox}>
+                    <View style={[styles.inputBox,{paddingVertical:Platform.OS === "ios" ? 10 : 0}]}>
                       <TextInput
                         value={formData.state}
                         onChangeText={(text) => {
@@ -931,7 +933,7 @@ const styles = StyleSheet.create({
   },
 
   backOption: {
-    marginTop: 20,
+    marginTop: 10,
     marginLeft: 20,
   },
   closeBtn: { position: "absolute", top: 10, right: 10, zIndex: 10 },
@@ -1028,7 +1030,7 @@ const styles = StyleSheet.create({
   // phoneInput: { backgroundColor: "#f2fcf6" },
   phoneinput: {
     flex: 1,
-    marginTop: 3,
+    // marginTop: 3,
     // height: 50,
   },
   otpContainer: {
@@ -1098,7 +1100,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     paddingHorizontal: 12,
-    // paddingVertical: 7,
   },
 
   input: {

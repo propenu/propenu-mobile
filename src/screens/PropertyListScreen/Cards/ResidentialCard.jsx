@@ -39,7 +39,7 @@ const ResidentialCard = ({ item }) => {
         : "Owner";
 
   const handleNavigate = async () => {
-    // console.log("Checking property id : ", item.slug);
+    console.log("Checking property id : ", item.slug);
     navigation.navigate("MoreResidentialDetails", {
       slug: item?.slug,
     });
@@ -165,6 +165,13 @@ const styles = StyleSheet.create({
     padding: 10,
     overflow: "hidden",
     elevation: 3,
+    shadowColor: "#000",
+  shadowOffset: {
+    width: 0,
+    height: 2,
+  },
+  shadowOpacity: 0.2,
+  shadowRadius: 2,
   },
   imageWrapper: {
     position: "relative",

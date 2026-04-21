@@ -158,6 +158,13 @@ const styles = StyleSheet.create({
     padding: 10,
     overflow: "hidden",
     elevation: 3,
+    shadowColor: "#000",
+  shadowOffset: {
+    width: 0,
+    height: 2,
+  },
+  shadowOpacity: 0.2,
+  shadowRadius: 2,
   },
   image: {
     width: "100%",

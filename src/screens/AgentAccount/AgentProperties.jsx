@@ -354,6 +354,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 7,
     borderRadius: 5,
     elevation: 5,
+    shadowColor: "#000",
+  shadowOffset: {
+    width: 0,
+    height: 2,
+  },
+  shadowOpacity: 0.2,
+  shadowRadius: 2,
   },
   menuItem: {
     paddingVertical: 6,
@@ -386,6 +393,13 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     padding: 8,
     elevation: 2,
+    shadowColor: "#000",
+  shadowOffset: {
+    width: 0,
+    height: 2,
+  },
+  shadowOpacity: 0.2,
+  shadowRadius: 2,
   },
   hrLine: {
     borderTopWidth: 1,

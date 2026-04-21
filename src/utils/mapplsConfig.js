@@ -1,5 +1,4 @@
 import { Platform } from "react-native";
-import MapplsGL from "mappls-map-react-native";
 
 let hasConfiguredMappls = false;
 
@@ -8,6 +7,19 @@ const IOS_CONFIG_HINT =
 
 function isFunction(value) {
   return typeof value === "function";
+}
+
+export function getMapplsGL() {
+  if (Platform.OS === "ios") {
+    return null;
+  }
+
+  try {
+    return require("mappls-map-react-native").default;
+  } catch (error) {
+    console.warn("Mappls module is unavailable on this platform:", error);
+    return null;
+  }
 }
 
 function isAuthorizationMessage(message = "") {
@@ -31,6 +43,11 @@ export function initializeMappls() {
   hasConfiguredMappls = true;
 
   try {
+    const MapplsGL = getMapplsGL();
+    if (!MapplsGL) {
+      return;
+    }
+
     if (isFunction(MapplsGL.setRegion)) {
       MapplsGL.setRegion("IND");
     }

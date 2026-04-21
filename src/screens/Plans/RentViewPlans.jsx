@@ -180,7 +180,7 @@ const RentViewPlans = ({ navigation }) => {
           //   })}
           keyExtractor={(item) => item._id}
           renderItem={renderPlanCard}
-          contentContainerStyle={{ paddingHorizontal: 20, paddingVertical: 5 }}
+          contentContainerStyle={{ paddingHorizontal: 20, paddingVertical: 8}}
         />
       </View>
       <Text style={styles.subText}>
@@ -240,15 +240,25 @@ const styles = StyleSheet.create({
     paddingRight: 14,
     paddingTop: 7,
   },
+
   card: {
-    width: 270,
-    // height: 300,
-    backgroundColor: "white",
-    marginRight: 18,
-    // padding: 14,
-    borderRadius: 10,
-    elevation: 2,
+  width: 270,
+  backgroundColor: "white",
+  marginRight: 18,
+  borderRadius: 8,
+
+  // Android
+  elevation: 2,
+
+  // iOS
+  shadowColor: "#000",
+  shadowOffset: {
+    width: 0,
+    height: 2,
   },
+  shadowOpacity: 0.2,
+  shadowRadius: 2,
+},
   planName: {
     color: "#27AE60",
     fontSize: 16,

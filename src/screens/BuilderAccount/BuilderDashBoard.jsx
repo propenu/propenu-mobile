@@ -294,5 +294,12 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     borderRadius: 8,
     padding: 5,
+    shadowColor: "#000",
+  shadowOffset: {
+    width: 0,
+    height: 2,
+  },
+  shadowOpacity: 0.2,
+  shadowRadius: 2,
   },
 });

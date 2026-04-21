@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Image, Platform, StyleSheet, Text, View } from "react-native";
-import MapplsGL from "mappls-map-react-native";
 import MapView, { Marker } from "react-native-maps";
-import { buildMapplsHandlers } from "../../../utils/mapplsConfig";
+import { buildMapplsHandlers, getMapplsGL } from "../../../utils/mapplsConfig";
 
 export default function NearByLocations({
   nearbyPlaces = [],
@@ -13,6 +12,7 @@ export default function NearByLocations({
   const iosMapRef = useRef(null);
   const [selectedPlaceName, setSelectedPlaceName] = useState("");
   const isIos = Platform.OS === "ios";
+  const MapplsGL = useMemo(() => (isIos ? null : getMapplsGL()), [isIos]);
   const propertyIcon = useMemo(
     () => require("../../../../assets/location.png"),
     [],
@@ -27,6 +27,10 @@ export default function NearByLocations({
   );
 
   useEffect(() => {
+    if (!MapplsGL?.Logger?.setLogCallback) {
+      return;
+    }
+
     MapplsGL.Logger.setLogCallback((log) => {
       const msg = log?.message || "";
       const mutedProvisionMessages = [
@@ -44,7 +48,7 @@ export default function NearByLocations({
 
       return mutedProvisionMessages.includes(msg) || shouldMuteTile412;
     });
-  }, []);
+  }, [MapplsGL]);
 
   const nearbyPoints = useMemo(
     () =>
@@ -312,6 +316,10 @@ export default function NearByLocations({
       800,
     );
   }, [allPoints, propertyPoint]);
+  if (!MapplsGL) {
+    return null;
+  }
+
   return (
     <View style={styles.container}>
       <MapplsGL.MapView

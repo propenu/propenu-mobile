@@ -592,7 +592,15 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: "#fcf7f7",
     marginBottom: 13,
+  shadowColor: "#000",
+  shadowOffset: {
+    width: 0,
+    height: 2,
   },
+  shadowOpacity: 0.2,
+  shadowRadius: 2,
+  },
+
   response: {
     color: "#27AE60",
     marginLeft: 12,

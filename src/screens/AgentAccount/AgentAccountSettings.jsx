@@ -446,6 +446,13 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginVertical: 16,
     elevation: 1,
+    shadowColor: "#000",
+  shadowOffset: {
+    width: 0,
+    height: 1,
+  },
+  shadowOpacity: 0.2,
+  shadowRadius: 1,
   },
   cardTitle: {
     fontWeight: "bold",

@@ -132,6 +132,13 @@ const styles = StyleSheet.create({
     padding: 16,
     elevation: 2,
     marginTop: 17,
+    shadowColor: "#000",
+  shadowOffset: {
+    width: 0,
+    height: 2,
+  },
+  shadowOpacity: 0.2,
+  shadowRadius: 2,
   },
   header: {
     marginBottom: 16,

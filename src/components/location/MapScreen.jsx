@@ -1,15 +1,15 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { Image, Platform, View } from "react-native";
-import MapplsGL from "mappls-map-react-native";
 import MapView, { Marker } from "react-native-maps";
 import { useDispatch } from "react-redux";
 import { setBaseField } from "../../redux/slice/PostPropertySlice";
-import { buildMapplsHandlers } from "../../utils/mapplsConfig";
+import { buildMapplsHandlers, getMapplsGL } from "../../utils/mapplsConfig";
 
 export default function MapScreen() {
   const dispatch = useDispatch();
   const mapHandlers = useMemo(() => buildMapplsHandlers("MapScreen"), []);
   const isIos = Platform.OS === "ios";
+  const MapplsGL = useMemo(() => (isIos ? null : getMapplsGL()), [isIos]);
   const locationIcon = useMemo(
     () => require("../../../assets/location.png"),
     [],
@@ -20,6 +20,10 @@ export default function MapScreen() {
   const [position, setPosition] = useState(initialPosition);
 
   useEffect(() => {
+    if (!MapplsGL?.Logger?.setLogCallback) {
+      return;
+    }
+
     MapplsGL.Logger.setLogCallback((log) => {
       const msg = log?.message || "";
       const mutedProvisionMessages = [
@@ -39,7 +43,7 @@ export default function MapScreen() {
       }
       return false;
     });
-  }, []);
+  }, [MapplsGL]);
 
   // Handle map click
   const handleMapPress = (feature) => {
@@ -105,6 +109,10 @@ export default function MapScreen() {
         </MapView>
       </View>
     );
+  }
+
+  if (!MapplsGL) {
+    return null;
   }
 
   return (

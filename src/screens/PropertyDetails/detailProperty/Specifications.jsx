@@ -124,7 +124,14 @@ fontSize: 14,
     padding: 12,
     borderRadius: 8,
     elevation: 1,
-    marginBottom:2
+    marginBottom:2,
+    shadowColor: "#000",
+  shadowOffset: {
+    width: 0,
+    height: 2,
+  },
+  shadowOpacity: 0.2,
+  shadowRadius: 2,
   },
   row: {
     flexDirection: "row",
