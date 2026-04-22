@@ -23,17 +23,17 @@ import EnquiryModal from "../../components/ui/EnquiryModal";
 import Specifications from "./detailProperty/Specifications";
 import RenderHTML from "react-native-render-html";
 import useDimensions from "../../components/CustomHooks/UseDimension";
-import { prop } from "ramda";
+import { ap, prop } from "ramda";
 import formatINR from "../../utils/FormatINR";
 const PropertyDetailsScreen = ({ route }) => {
   const { width } = useDimensions();
-  const { propertyId } = route.params;
+  const { propertyId, slug, type } = route.params;
   const [property, setProperty] = useState(null);
   const [showNav, setShowNav] = useState(false);
   const [showEnquiryModal, setShowEnquiryModal] = useState(false);
   const [isLoading, setIsLoadiing] = useState(false);
 
-  console.log("propertyIdpropertyIdpropertyId", propertyId);
+  console.log("propertyIdpropertyIdpropertyId", propertyId, slug, type);
   const scrollRef = useRef(null);
   const sectionPositions = useRef({
     properties: 0,
@@ -59,11 +59,20 @@ const PropertyDetailsScreen = ({ route }) => {
     return () => setShowNav(false);
   }, []);
 
+  useEffect(() => {
+  // console.log("Updated property:", property);
+}, [property]);
+
   const fetchPropertyDetails = async () => {
     try {
       setIsLoadiing(true);
-      const res = await apiService.featuredProjectById(propertyId);
-      setProperty(res.data);
+      if (type === "FeaturedProject") {
+        const res = await apiService.featured(slug);
+        setProperty(res?.[0]?.data);
+      } else {
+        const res = await apiService.featuredProjectById(propertyId);
+        setProperty(res.data);
+      }
     } catch (error) {
       console.error(error);
     } finally {
@@ -123,6 +132,7 @@ const PropertyDetailsScreen = ({ route }) => {
 
     return R * c;
   };
+
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -310,7 +320,16 @@ const PropertyDetailsScreen = ({ route }) => {
             {property?.pricePersqft ? ` / ${property.pricePersqft}` : ""}
           </Text>
         </Text>
-        <View style={[styles.section, { backgroundColor: property?.color ?`${property.color}0A` : "#f7f4f4"}]}>
+        <View
+          style={[
+            styles.section,
+            {
+              backgroundColor: property?.color
+                ? `${property.color}0A`
+                : "#f7f4f4",
+            },
+          ]}
+        >
           <View style={styles.sectionRow}>
             <View style={styles.center}>
               <Text style={styles.sectionData}>
@@ -552,7 +571,6 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 5,
     elevation: 5,
-    
   },
   imagePlaceholder: {
     alignItems: "center",

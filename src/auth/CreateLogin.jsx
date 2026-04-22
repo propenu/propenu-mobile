@@ -251,7 +251,7 @@ export default function CreateLogin({
         if (!token) return;
 
         const tokenResult = await apiService.verifyToken(token);
-        console.log("tokenResulttokenResult", tokenResult)
+        console.log("tokenResulttokenResult", tokenResult);
 
         if (tokenResult?.status === 200) {
           const data = tokenResult?.data;
@@ -283,6 +283,11 @@ export default function CreateLogin({
 
     return () => sub.remove();
   }, []);
+
+  const toTitleCase = (text) => {
+    if (!text) return "";
+    return text.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
+  };
 
   const handlePincodeChange = (value) => {
     const numericValue = value.replace(/\D/g, "").slice(0, 6);
@@ -321,8 +326,8 @@ export default function CreateLogin({
     setFormData((prev) => ({
       ...prev,
       locality: pin.village || pin.office,
-      city: pin.city,
-      state: pin.state,
+      city: toTitleCase(pin.city),
+      state: toTitleCase(pin.state),
     }));
   };
 
@@ -605,7 +610,8 @@ export default function CreateLogin({
                       keyboardType="phone-pad"
                       value={phone}
                       onChangeText={handlePhoneChange}
-                      style={[styles.phoneinput, 
+                      style={[
+                        styles.phoneinput,
                         // {marginTop:Platform.OS === "ios" ? 1 : 3}
                       ]}
                       maxLength={10}
@@ -717,7 +723,12 @@ export default function CreateLogin({
                   {/* Pincode */}
                   <View>
                     <Text style={styles.label}>Pincode</Text>
-                    <View style={[styles.inputBox,{paddingVertical:Platform.OS === "ios" ? 10 : 0}]}>
+                    <View
+                      style={[
+                        styles.inputBox,
+                        { paddingVertical: Platform.OS === "ios" ? 10 : 0 },
+                      ]}
+                    >
                       <TextInput
                         keyboardType="numeric"
                         value={formData.pincode}
@@ -765,7 +776,12 @@ export default function CreateLogin({
                   {/* Locality */}
                   <View>
                     <Text style={styles.label}>Locality</Text>
-                    <View style={[styles.inputBox,{paddingVertical:Platform.OS === "ios" ? 10 : 0}]}>
+                    <View
+                      style={[
+                        styles.inputBox,
+                        { paddingVertical: Platform.OS === "ios" ? 10 : 0 },
+                      ]}
+                    >
                       <TextInput
                         value={formData.locality}
                         onChangeText={(text) => {
@@ -788,7 +804,12 @@ export default function CreateLogin({
                   {/* City */}
                   <View>
                     <Text style={styles.label}>City</Text>
-                    <View style={[styles.inputBox,{paddingVertical:Platform.OS === "ios" ? 10 : 0}]}>
+                    <View
+                      style={[
+                        styles.inputBox,
+                        { paddingVertical: Platform.OS === "ios" ? 10 : 0 },
+                      ]}
+                    >
                       <TextInput
                         value={formData.city}
                         onChangeText={(text) => {
@@ -808,7 +829,12 @@ export default function CreateLogin({
                   {/* State */}
                   <View>
                     <Text style={styles.label}>State</Text>
-                    <View style={[styles.inputBox,{paddingVertical:Platform.OS === "ios" ? 10 : 0}]}>
+                    <View
+                      style={[
+                        styles.inputBox,
+                        { paddingVertical: Platform.OS === "ios" ? 10 : 0 },
+                      ]}
+                    >
                       <TextInput
                         value={formData.state}
                         onChangeText={(text) => {

@@ -39,10 +39,15 @@ const ResidentialCard = ({ item }) => {
         : "Owner";
 
   const handleNavigate = async () => {
-    console.log("Checking property id : ", item.slug);
+    console.log("Checking property id : ", item.slug, item?.type);
+    if(item?.type === "FeaturedProject"){
+      navigation.navigate("PropertyDetails", { slug: item.slug, type:item?.type });
+    }
+    else{
     navigation.navigate("MoreResidentialDetails", {
       slug: item?.slug,
     });
+  }
   };
 
   const handleContact = async () => {
@@ -54,8 +59,6 @@ const ResidentialCard = ({ item }) => {
   };
   const horizontalSpace = 2 * 2 + 10 * 4; //marginHorizontal is 2, padding is 10 here and parent component is 10, total : 44
 
-
-  console.log("iddddddd", item._id)
   return (
     <Pressable style={styles.card} onPress={handleNavigate}>
       {/* Image slider */}
@@ -97,7 +100,15 @@ const ResidentialCard = ({ item }) => {
           <MetaItem
             Icon={AreaIcon}
             label="Area"
-            value={`${item?.builtUpArea ?? "—"} sqft`}
+            value={
+              item?.builtUpArea?.min && item?.builtUpArea?.max
+                ? `${item.builtUpArea.min} - ${item.builtUpArea.max} sqft`
+                : item?.builtUpArea?.min
+                  ? `${item.builtUpArea.min} sqft`
+                  : item?.builtUpArea?.max
+                    ? `${item.builtUpArea.max} sqft`
+                    : "—"
+            }
           />
           <MetaItem
             Icon={BedIcon}
@@ -106,10 +117,11 @@ const ResidentialCard = ({ item }) => {
           />
           <MetaItem
             Icon={ReadyToMoveIcon}
-            label="Parking"
-            value={`${item?.parkingDetails?.twoWheeler || 0} + ${
-              item?.parkingDetails?.fourWheeler || 0
-            }`}
+            label="Availability"
+            value={"Available"}
+            // value={`${item?.parkingDetails?.twoWheeler || 0} + ${
+            //   item?.parkingDetails?.fourWheeler || 0
+            // }`}
           />
         </View>
       </View>
@@ -166,12 +178,12 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     elevation: 3,
     shadowColor: "#000",
-  shadowOffset: {
-    width: 0,
-    height: 2,
-  },
-  shadowOpacity: 0.2,
-  shadowRadius: 2,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
   },
   imageWrapper: {
     position: "relative",

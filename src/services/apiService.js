@@ -544,7 +544,6 @@ export const apiService = {
     }
   },
   residential_category_search: async (slug) => {
-    console.log("        `${ENV.BASE_URL}${API_ROUTES.SEARCH.RESIDENTIAL_CATEGORY_SEARCH}/slug/${slug}`,", `${ENV.BASE_URL}${API_ROUTES.SEARCH.RESIDENTIAL_CATEGORY_SEARCH}/slug/${slug}`,)
     try {
       const response = await fetch(
         `${ENV.BASE_URL}${API_ROUTES.SEARCH.RESIDENTIAL_CATEGORY_SEARCH}/slug/${slug}`,
@@ -572,6 +571,34 @@ export const apiService = {
       return items;
     } catch (error) {
       console.error("residential_category Search error:", error);
+      throw error;
+    }
+  },
+  featured: async (slug) => {
+    try {
+      const response = await fetch(
+        `${ENV.BASE_URL}/api/properties/featured-project/slug/${slug}`,
+        {
+          method: "GET",
+        },
+      );
+      if (!response.ok) {
+      console.error("Error :", response)
+      }
+
+      // 🔥 NDJSON handling
+      const text = await response.text();
+
+      if (!text) return [];
+
+      const items = text
+        .split("\n")
+        .filter(Boolean)
+        .map((line) => JSON.parse(line));
+
+      return items;
+    } catch (error) {
+      console.error("featured Search error:", error);
       throw error;
     }
   },
