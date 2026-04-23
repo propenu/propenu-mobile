@@ -9,6 +9,7 @@ import {
   TextInput,
   Linking,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Feather from "react-native-vector-icons/Feather";
@@ -23,6 +24,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
 import { userServices } from "../../services/userServices";
 import * as Keychain from "react-native-keychain";
+import { apiService } from "../../services/apiService";
 
 const SettingsScreen = () => {
   const { isLoggedIn, updateUserDetails, userDetails, refreshAuth } = useAuth();
@@ -66,18 +68,35 @@ const SettingsScreen = () => {
       await setItem("profileImage", uri);
     }
   };
-  const handleLogout = async () => {
-    if (userDetails != null) {
-      await clearStorage();
-      await Keychain.resetGenericPassword();
-      await new Promise((resolve) => setTimeout(resolve, 100));
-      await refreshAuth();
-      // setUserData(null);
-      ToastSuccess("Logged out successfully");
-      navigation.navigate("HomeStack", { screen: "Home" });
-    } else {
-      ToastSuccess("You are already logged out");
+  const handleDelete = async () => {
+    try {
+      const response = await apiService.deleteAccount();
+      console.log("why u r deleting account?, response", response);
+
+      if (response.status === 200) {
+        await clearStorage();
+        await Keychain.resetGenericPassword();
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        await refreshAuth();
+
+        ToastSuccess("Account deleted successfully");
+        navigation.navigate("HomeStack", { screen: "Home" });
+      }
+    } catch (error) {
+      console.log("Delete account error:", error);
+      ToastError("Failed to delete account");
     }
+  };
+
+  const confirmDelete = () => {
+    Alert.alert(
+      "Delete Account",
+      "This will permanently delete your account and all data.",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Delete", style: "destructive", onPress: handleDelete },
+      ],
+    );
   };
 
   const formatDate = (date) =>
@@ -309,10 +328,10 @@ const SettingsScreen = () => {
         </ScrollView>
       )}
       {/* LOGOUT BUTTON */}
-      {/* <Pressable onPress={handleLogout} style={[styles.menuItem]}>
-        <AntDesign name="logout" size={19} color="#E53935" />
-        <Text style={[styles.label, styles.logoutLabel]}>Logout</Text>
-      </Pressable> */}
+      <Pressable onPress={confirmDelete} style={[styles.menuItem]}>
+        <MaterialIcons name="delete" size={19} color="#E53935" />
+        <Text style={[styles.label, styles.logoutLabel]}>Delete Account</Text>
+      </Pressable>
 
       {/* Footer */}
       {/* <Pressable>
@@ -358,12 +377,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     elevation: 2,
     shadowColor: "#000",
-  shadowOffset: {
-    width: 0,
-    height: 2,
-  },
-  shadowOpacity: 0.2,
-  shadowRadius: 2,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
   },
 
   avatarWrapper: {
@@ -544,7 +563,7 @@ const styles = StyleSheet.create({
   menuItem: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: 5,
     paddingHorizontal: 23,
     marginTop: 25,
     // paddingVertical: 14,
@@ -552,7 +571,7 @@ const styles = StyleSheet.create({
   },
   label: {
     flex: 1,
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: 400,
     // color: "#82868d",
   },

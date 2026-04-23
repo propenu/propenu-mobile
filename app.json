@@ -17,8 +17,16 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.propenu.app",
       "icon": "./assets/icon.png",
+      "associatedDomains": [
+        "applinks:propenu.com",
+        "applinks:www.propenu.com",
+        "applinks:propenu.in",
+        "applinks:www.propenu.in"
+      ],
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+         "NSPhotoLibraryUsageDescription": "Propenu needs access to your photo library so you can select and upload property images while creating or editing listings and updating your profile.",
+        "NSPhotoLibraryAddUsageDescription": "Propenu needs permission to save downloaded property images to your photo library."
       }
     },
     "android": {
@@ -27,7 +35,36 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.propenu.app"
+      "package": "com.propenu.app",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "propenu.com",
+              "pathPrefix": "/"
+            },
+            {
+              "scheme": "https",
+              "host": "www.propenu.com",
+              "pathPrefix": "/"
+            },
+            {
+              "scheme": "https",
+              "host": "propenu.in",
+              "pathPrefix": "/"
+            },
+            {
+              "scheme": "https",
+              "host": "www.propenu.in",
+              "pathPrefix": "/"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"

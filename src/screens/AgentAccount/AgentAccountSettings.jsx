@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Pressable,
   Linking,
+  Alert
 } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import { userServices } from "../../services/userServices";
@@ -20,6 +21,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import * as Keychain from "react-native-keychain";
 import { clearStorage } from "../../utils/Storage";
+import { apiService } from "../../services/apiService";
 
 const AgentAccountSettings = () => {
   const insets = useSafeAreaInsets();
@@ -76,6 +78,35 @@ const AgentAccountSettings = () => {
       ToastSuccess("You are already logged out");
     }
   };
+    const handleDelete = async () => {
+      try {
+        const response = await apiService.deleteAccount();
+  
+        if (response.status === 200) {
+          await clearStorage();
+          await Keychain.resetGenericPassword();
+          await new Promise((resolve) => setTimeout(resolve, 100));
+          await refreshAuth();
+  
+          ToastSuccess(response.message || "Account deleted successfully");
+          navigation.navigate("HomeStack", { screen: "Home" });
+        }
+      } catch (error) {
+        console.log("Delete account error:", error);
+        ToastError("Failed to delete account");
+      }
+    };
+  
+    const confirmDelete = () => {
+      Alert.alert(
+        "Delete Account",
+        "This will permanently delete your account and all data.",
+        [
+          { text: "Cancel", style: "cancel" },
+          { text: "Delete", style: "destructive", onPress: handleDelete },
+        ],
+      );
+    };
 
   if (isLoading) {
     return (
@@ -181,13 +212,10 @@ const AgentAccountSettings = () => {
           <StatBox label="Exp" value={`${agent.experienceYears} yrs`} />
         </View>
       </Card>
-      {/* <Pressable
-        onPress={handleLogout}
-        style={[styles.menuItem, styles.logoutItem]}
-      >
-        <AntDesign name="logout" size={19} color="#E53935" />
-        <Text style={[styles.label, styles.logoutLabel]}>Logout</Text>
-      </Pressable> */}
+      <Pressable onPress={confirmDelete} style={[styles.menuItem]}>
+              <MaterialIcons name="delete" size={19} color="#E53935" />
+              {/* <Text style={[styles.label, styles.logoutLabel]}>Delete Account</Text> */}
+            </Pressable>
 
       {/* MEMBERSHIP */}
 

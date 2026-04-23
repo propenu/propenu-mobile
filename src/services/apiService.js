@@ -104,7 +104,6 @@ export const apiService = {
 
   updateLocation: async (payload) => {
     const token = await getToken();
-    console.log("PAYLOAD IN LOCATION UPDATE :", payload, token,   `${ENV.BASE_URL}${API_ROUTES.AUTH.LOCATION}`,);
 
     try {
       const response = await fetch(
@@ -190,6 +189,36 @@ export const apiService = {
       throw error;
     }
   },
+  deleteAccount: async () => {
+      const token = await getToken();
+      console.log("Token :", token)
+
+  try {
+    const response = await fetch(
+      `${ENV.BASE_URL}${API_ROUTES.AUTH.VERIFY_TOKEN}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw data || "Delete account failed";
+    }
+
+    return { data, status: response.status };
+  } catch (error) {
+    console.log("Delete account error:", error);
+    throw error;
+  }
+},
+
+
   featuredProjects: async () => {
     try {
       const response = await fetch(
