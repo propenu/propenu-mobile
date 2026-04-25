@@ -193,6 +193,8 @@ const styles = StyleSheet.create({
   homePageImage: {
     width: "100%",
     // borderRadius: 10,
+      // marginHorizontal: 6,
+
   },
   // homePageImage: {
   //   width: "97%",

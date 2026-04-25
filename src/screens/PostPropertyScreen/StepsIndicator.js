@@ -22,8 +22,9 @@ const StepIndicator = ({ steps = [], currentStep = 0 }) => {
     <View style={styles.container}>
       <View style={styles.headerRow}>
         {/* {currentStep > 0 && ( */}
+        {currentStep !== 0 &&
         <Pressable
-          disabled={isDisabled}
+          // disabled={isDisabled}
           onPress={() => dispatch(prevStep())}
           hitSlop={10}
         >
@@ -32,7 +33,7 @@ const StepIndicator = ({ steps = [], currentStep = 0 }) => {
             size={20}
             color={isDisabled ? "#9CA3AF" : "#000"}
           />
-        </Pressable>
+        </Pressable>}
         {/* )} */}
         <View style={styles.help}>
           <Text style={styles.helpText}>Need Help? </Text>

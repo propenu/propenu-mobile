@@ -4,7 +4,7 @@ Built with **React Native (Expo Dev Client)**.
 
 How to Run the Project : 
 Connect your mobile device using a USB cable.
-Enable File Transfer (MTP) and turn on USB Debugging in Developer Options.
+Enable File Transfer (MTP) and turn on USB Debugging in Developer Options.(for android)
 
 Make sure your device is detected: " adb devices. "
 
