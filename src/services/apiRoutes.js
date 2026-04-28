@@ -12,7 +12,8 @@ export const API_ROUTES = {
   },
   USER: {
     FEATURED_PROJECTS: "/api/properties/featured-project",
-    HIGHLIGHT_PROJECTS: "/api/properties/highlight-projects",
+    HIGHLIGHT_PROJECTS: "/api/properties/featured-project?type=featured",
+    // HIGHLIGHT_PROJECTS: "/api/properties/highlight-projects?type=featured",
     OWNERS_PROPERTIES: "/api/properties/owners-properties",
     ARGICULTURAL: "/api/properties/agricultural",
     LAND: "/api/properties/land",

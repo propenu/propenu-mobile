@@ -15,16 +15,21 @@ const AgentProperties = () => {
   const { data, isLoading, isError, error } = useQuery(["agents"], fetchAgents);
   const navigation = useNavigation();
 
-  const filteredData = useMemo(() => {
-    if (!data) return [];
+const filteredData = useMemo(() => {
+  if (!data) return [];
 
-    if (!selectedCity?.city) return data;
+  return data.filter((item) => {
+    const isCityMatch = selectedCity?.city
+      ? item.city?.toLowerCase() === selectedCity.city.toLowerCase()
+      : true;
 
-    return data.filter(
-      (item) => item.city?.toLowerCase() === selectedCity.city.toLowerCase(),
-    );
-  }, [data, selectedCity]);
-  if (isError) console.log("Agent api error :", error);
+    const isVerified = item?.rera?.isVerified === true;
+
+    return isCityMatch && isVerified;
+  });
+}, [data, selectedCity]);
+        console.log("filteredData", filteredData, data);
+
 
   // const [details, setDetails] = useState([]);
   // useEffect(() => {

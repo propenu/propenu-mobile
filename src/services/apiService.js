@@ -218,11 +218,10 @@ export const apiService = {
   }
 },
 
-
   featuredProjects: async () => {
     try {
       const response = await fetch(
-        `${ENV.BASE_URL}${API_ROUTES.USER.FEATURED_PROJECTS}`,
+        `${ENV.BASE_URL}${API_ROUTES.USER.FEATURED_PROJECTS}?type=prime`,
         {
           method: "GET",
           headers: {
