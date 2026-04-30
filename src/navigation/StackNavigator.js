@@ -53,6 +53,7 @@ import AllAgents from "../screens/ViewAll/AllAgents";
 import MapScreen from "../components/location/MapScreen";
 import splashIcon from "../../assets/splashIcon.png";
 import AgentShortListedScreen from "../screens/AgentAccount/AgentShortlisted";
+
 const Stack = createNativeStackNavigator();
 
 const HEADER_TYPES = {

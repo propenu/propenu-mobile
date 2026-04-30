@@ -13,7 +13,7 @@ const CardDetails = ({ details, onPress }) => {
   };
 
   const handleClick = () => {
-    console.log("getting id when select", details._id,details.slug, details);
+    // console.log("getting id when select", details._id,details.slug, details);
     navigation.navigate("PropertyDetails", { propertyId: details._id });
   };
 

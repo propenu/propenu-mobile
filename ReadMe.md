@@ -9,7 +9,7 @@ Enable File Transfer (MTP) and turn on USB Debugging in Developer Options.(for a
 Make sure your device is detected: " adb devices. "
 
 Run the project:  "  npx expo run:android  "  // android device
-Run the project:  "  npx expo run:ios  "  // ios 
+Run the project:  "  npx expo run:ios  "  :: Allow -> reload js // ios 
 
 
 ---------------------------------------------------------------------------------------------------------------------------
@@ -64,14 +64,14 @@ What is the two-letter country code for this unit?
 Is CN=propenu solutions, OU=real estate, O=Propenu Solutions Private Limited, L=Hyderabad, ST=Telangana, C="+91" correct?
 }
 
-
 ---------------------------------------------------------------------------------------------------------------------------
 
 
 .AAB file:(to upload in playstore) 
 Update app version:
 versionCode (must be incremented)
-versionName (optional but recommended)
+versionName
+make sure to change the mappls files for release
 
 cd android
 ./gradlew bundleRelease
